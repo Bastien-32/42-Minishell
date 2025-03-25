@@ -3,25 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
+/*   By: badal-la <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/25 09:20:21 by student           #+#    #+#             */
-/*   Updated: 2025/03/25 09:40:53 by student          ###   ########.fr       */
+/*   Created: 2025/03/25 11:26:32 by badal-la          #+#    #+#             */
+/*   Updated: 2025/03/25 11:29:44 by badal-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 
-int main(int argc, char **argv)
+int main(void)
 {
-    int    i;
-    
-    i = argc;
-    (void)argv;
-    while (i < 10)
+    while (1)
     {
-        printf("i = %d\n", i++);
+        readline("minishell$ ");
     }
-    printf("C'est pas mal!\n");
-    return (0);
 }
