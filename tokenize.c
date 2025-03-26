@@ -126,10 +126,10 @@ char fill_quote_type(const char *str)
 
 int handle_word(const char *line, int i, t_token **tokens)
 {
-	int len;
-	char *string_before_cleaning;
-	char *string_cleaned;
-	char quote_type;
+	int		len;
+	char	*string_before_cleaning;
+	char	*string_cleaned;
+	char	quote_type;
 
 	len = get_word_length(line, i);
 	if (len < 0)
