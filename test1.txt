@@ -1,0 +1,11 @@
+cat < test.txt 
+    afficher le contenu du fichier test sur la sortie
+
+ls > test.txt
+    ecrase le contenu de fichier test et ecrit les caracteres (ici ls ecrira la liste des fichiers du dossier courant)
+
+echo "hello" >> test.txt
+     ecrit les caracteres entre "". Si le fichier a deja des renseignements, les nouveaux caracteres sont ajoutes a la fin
+
+cat << test 
+    ecrit dans une un heredoc et arrete l'ecriture lorsque la chaine de caractere passee en parametre (test) est renseignee
