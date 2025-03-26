@@ -2,9 +2,10 @@
 # define BASTIEN_H
 
 # include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <errno.h>
+# include <stdio.h>
 
 typedef enum	e_token_type
 {
@@ -20,6 +21,7 @@ typedef struct	s_token
 {
 	char			*value;
 	t_token_type	type;
+	char			quote_type;
 	struct s_token	*next;
 }					t_token;
 
