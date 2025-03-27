@@ -7,12 +7,13 @@ int	env_vars(char *value_token)
 	i = 0;
 	while (value_token[i])
 	{
-		if (value_token[i] == '$')
+		if (value_token[i] == '$' && value_token[i + 1])
 			return (1);
 		i++;
 	}
 	return (0);
 }
+
 char	*add_key_value(char *val_tok, int *read_pos, char *new_tok, t_env *env)
 {
 	int		i;
@@ -26,8 +27,7 @@ char	*add_key_value(char *val_tok, int *read_pos, char *new_tok, t_env *env)
 	env_key = ft_strndup(&val_tok[*read_pos], i);
 	while (env)
 	{
-		if (ft_strcmp(env->env_keyname, env_key) == 0
-			&& env->env_keyname == '\0')							//env->env_keyname == '\0') pour s'assurer  que env->env_keyname 
+		if (ft_strcmp(env->env_keyname, env_key) == 0)
 		{
 			new_tok = ft_strjoin_free(new_tok, env->value);
 			break ;
@@ -70,11 +70,8 @@ void	expand_token_values(t_token *tokens, t_env *env)
 		if (tokens->type == TOKEN_WORD && tokens->quote_type != '\'')
 		{
 			if (env_vars(tokens->value))
-			{
 				tokens->value = fill_value_env(tokens->value, env);
-			}
 		}
 		tokens = tokens->next;
 	}
-
 }
