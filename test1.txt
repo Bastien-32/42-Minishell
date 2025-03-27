@@ -9,3 +9,13 @@ echo "hello" >> test.txt
 
 cat << test 
     ecrit dans une un heredoc et arrete l'ecriture lorsque la chaine de caractere passee en parametre (test) est renseignee
+
+
+
+
+VAR="keyword"
+cat << EOF | grep "$VAR" | sort > result.txt >> "final_$VAR.txt" | echo 'Fichier final : '"$HOME/final_$VAR.txt"
+line1
+line2
+$VAR line3
+EOF

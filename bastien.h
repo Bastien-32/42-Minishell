@@ -7,6 +7,8 @@
 # include <errno.h>
 # include <stdio.h>
 
+# include "libft.h"
+
 typedef enum	e_token_type
 {
 	TOKEN_WORD,			// ex: ls, hello, input.txt
@@ -24,5 +26,12 @@ typedef struct	s_token
 	char			quote_type;
 	struct s_token	*next;
 }					t_token;
+
+typedef struct s_env
+{
+	char			*env_keyname;
+	char			*value;
+	struct s_env	*next;
+}					t_env;
 
 # endif

@@ -72,7 +72,7 @@ int get_word_length(const char *line, int start)
 	i = start;
 	while (line[i] && !is_space(line[i]) && !is_operator_char(line[i]))
 	{
-		if (line[i] == '"' || line[i] == '\'')
+		if (line[i] == '\"' || line[i] == '\'')
 		{
 			quote = line[i++];
 			while (line[i] && line[i] != quote)
@@ -90,6 +90,7 @@ int get_word_length(const char *line, int start)
 	}
 	return (i - start);
 }
+
 char *clean_quotes(const char *str)
 {
 	char	*string_cleaned;
@@ -97,7 +98,7 @@ char *clean_quotes(const char *str)
 	int		j;
 	char	quote;
 
-	string_cleaned = malloc(strlen(str) + 1);
+	string_cleaned = malloc(ft_strlen(str) + 1);
 	i = 0;
 	j = 0;
 	quote = 0;
@@ -134,7 +135,7 @@ int handle_word(const char *line, int i, t_token **tokens)
 	len = get_word_length(line, i);
 	if (len < 0)
 		return (-1);
-	string_before_cleaning = strndup(&line[i], len);
+	string_before_cleaning = ft_strndup(&line[i], len);
 	quote_type = fill_quote_type(string_before_cleaning);
 	string_cleaned = clean_quotes(string_before_cleaning);
 	add_token(tokens, new_token(string_cleaned, TOKEN_WORD, quote_type));
@@ -143,7 +144,7 @@ int handle_word(const char *line, int i, t_token **tokens)
 	return (i + len);
 }
 
-t_token *tokenize(const char *line)
+t_token	*tokenize(const char *line, t_env *env)
 {
 	int		i;
 	t_token	*tokens;
@@ -157,7 +158,41 @@ t_token *tokenize(const char *line)
 		if (is_operator_char(line[i]))
 			i = handle_operator(line, i, &tokens);
 		else
+		{
 			i = handle_word(line, i, &tokens);
+			if (i < 0)
+				return (NULL);
+		}
 	}
+	expand_token_values(tokens, env);
 	return (tokens);
+}
+
+int main(void)
+{
+	const char *input = "echo \"salut les gars $USER $USER\" | cat > out.txt";
+	const char *input = "echo   salut les gars $USER $USER   | cat > out.txt";
+	const char *input = "echo \'salut les gars $USER $USER\' | cat > out.txt";
+	t_token *tokens;
+	t_token *tmp;
+	char quote;
+	t_env *env;
+
+	env = init_env(&env);
+	tokens = tokenize(input, &env);
+	tmp = tokens;
+	while (tmp)
+	{
+		if (tmp->quote_type)
+			quote = tmp->quote_type;
+		else
+			quote = ' ';
+		printf("type: %d | quote: %c | value: \"%s\"\n",
+			tmp->type,
+			quote,
+			tmp->value);
+		tmp = tmp->next;
+	}
+
+	return (0);
 }
