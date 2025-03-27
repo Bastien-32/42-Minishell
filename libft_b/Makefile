@@ -6,7 +6,7 @@ LIBC = ft_atoi.c ft_bzero.c ft_calloc.c ft_isalnum.c \
 		ft_strrchr.c ft_tolower.c ft_toupper.c ft_substr.c \
 		ft_strtrim.c ft_split.c ft_strjoin.c ft_itoa.c \
 		ft_strmapi.c ft_striteri.c ft_putstr_fd.c ft_putendl_fd.c \
-		ft_putnbr_fd.c ft_putchar_fd.c \
+		ft_putnbr_fd.c ft_putchar_fd.c ft_strndup.c ft_strcmp.c\
 		get_next_line_bonus.c get_next_line_utils_bonus.c \
 		ft_printf.c ft_strlen_pf.c\
 		ft_putnbr_addr_ptr_pf.c ft_address_pf.c ft_putnbr_base_pf.c\

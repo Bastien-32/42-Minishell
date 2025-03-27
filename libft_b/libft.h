@@ -6,7 +6,7 @@
 /*   By: badal-la <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 10:22:07 by badal-la          #+#    #+#             */
-/*   Updated: 2025/03/26 16:04:43 by badal-la         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:34:09 by badal-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,8 @@ char	*ft_strchr(const char *s, int c);
 				return ((char *)&s[i]);
 			return (NULL) */
 
+int		ft_strcmp(const char *s1, const char *s2);
+			
 char	*ft_strdup(const char *s);
 /* alloue suffisamment de mémoire pour copier la chaîne
 	source s, y compris le caractère nul de fin (\0). 
@@ -189,6 +191,8 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 				return (0);
 	/!\ ((unsigned char *)s1)[i]  
 	/!\ ((unsigned char *)s2)[i]*/
+
+char	*ft_strndup(const char *s, size_t n);
 
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 /* recherche la première occurrence de little dans les len premiers
