@@ -37,6 +37,8 @@ char	*add_key_value(char *val_tok, int *read_pos, char *old_tok, t_env *env)
 		}
 		temp_env = temp_env->next;
 	}
+	if (!temp_env)
+		new_tok = ft_strjoin_free_s1(old_tok, "");
 	*read_pos += i;
 	return (new_tok);
 }
@@ -55,13 +57,14 @@ char	*fill_value_env(char *value_token, t_env *env)
 		i = 0;
 		while(value_token[read_pos + i] && value_token[read_pos + i] != '$')
 			i++;
-		temp = ft_strndup(&value_token[read_pos], i);
-		new_token = ft_strjoin_free_all(new_token, temp);
-		read_pos += i;
-		if (value_token[read_pos] == '$')
+		if (i > 0)
 		{
-			new_token = add_key_value(value_token, &read_pos, new_token, env);
+			temp = ft_strndup(&value_token[read_pos], i);
+			new_token = ft_strjoin_free_all(new_token, temp);
+			read_pos += i;
 		}
+		if (value_token[read_pos] == '$')
+			new_token = add_key_value(value_token, &read_pos, new_token, env);
 	}
 	return (new_token);
 }

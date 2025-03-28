@@ -17,7 +17,7 @@ t_token	*new_token(const char *value, t_token_type type, char quote_type)
 void	free_tokens_error(t_token *token, int need_exit)
 {
 	free_token_list(token);
-	write(2, "Malloc node token failed", 25);
+	write(2, "Malloc node token failed\n", 26);
 	if (need_exit)
 		exit(1);
 }
@@ -109,7 +109,12 @@ int	get_word_length(const char *line, int start, t_token *tokens, t_env *env)
 			while (line[i] && line[i] != quote)
 				i++;
 			if (!line[i])
-				clean_all_and_exit(env, tokens);
+			{
+				write(2, "wrong close of \'\' or \"\"\n", 25); //voir s'il fat gerer comme dans le vrais terminal
+				free_token_list(tokens);
+				free_env_list(env);
+				exit(1);
+			}
 			i++;
 		}
 		else
@@ -178,6 +183,7 @@ t_token	*tokenize(const char *line, t_env *env)
 
 	i = 0;
 	tokens = NULL;
+	printf("line = %s\n", line);
 	while (line[i])
 	{
 		if (is_space(line[i]))
