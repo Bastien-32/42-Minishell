@@ -34,6 +34,23 @@ typedef struct s_env
 	struct s_env	*next;
 }					t_env;
 
+typedef struct s_ast
+{
+	t_token_type		type;
+
+	// Si c’est une commande
+	char			**cmd;			// ex: ["echo", "salut", NULL]
+
+	// Pour les redirections
+	char			*filename;		// utilisé si type == REDIR_xx
+	int				fd;				// facultatif pour la redirection
+
+	// Pointeurs vers les sous-nœuds (sous-arbres)
+	struct s_ast	*left;
+	struct s_ast	*right;
+}	t_ast;
+
+
 /* ****************************************************************************
 									env.c
 **************************************************************************** */
