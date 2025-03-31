@@ -183,7 +183,7 @@ t_token	*tokenize(const char *line, t_env *env)
 
 	i = 0;
 	tokens = NULL;
-	printf("line = %s\n", line);
+	printf("line = %s\n", line);												//a supprimer pour rendu final
 	while (line[i])
 	{
 		if (is_space(line[i]))
