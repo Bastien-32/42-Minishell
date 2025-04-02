@@ -1,8 +1,10 @@
 #include "bastien.h"
 
-t_token	*new_token(const char *value, t_token_type type, char quote_type)
+t_token	*new_token(const char *value, t_type type, char quote_type)
 {
-	t_token *token = malloc(sizeof(t_token));
+	t_token *token;
+
+	token = malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
 	token->value = ft_strdup(value);
@@ -11,15 +13,17 @@ t_token	*new_token(const char *value, t_token_type type, char quote_type)
 	token->type = type;
 	token->quote_type = quote_type;
 	token->next = NULL;
-	return token;
+	return (token);
 }
 
 void	free_tokens_error(t_token *token, int need_exit)
 {
 	free_token_list(token);
-	write(2, "Malloc node token failed\n", 26);
 	if (need_exit)
+	{
+		write(2, "Malloc node token failed\n", 26);
 		exit(1);
+	}
 }
 
 void	free_token_list(t_token *token)
@@ -71,7 +75,7 @@ int	is_operator_char(char c)
 int	handle_operator(const char *line, int i, t_token **tokens, t_env *env)
 {
 	if (line[i] == '|')
-		add_token(tokens, new_token("|", TOKEN_PIPE, 0), env);
+		add_token(tokens, new_token("|", PIPE, 0), env);
 	else if (line[i] == '<')
 	{
 		if (line[i + 1] == '<')
@@ -80,17 +84,17 @@ int	handle_operator(const char *line, int i, t_token **tokens, t_env *env)
 			i++;
 		}
 		else
-			add_token(tokens, new_token("<", TOKEN_REDIR_IN, 0), env);
+			add_token(tokens, new_token("<", REDIR_IN, 0), env);
 	}
 	else if (line[i] == '>')
 	{
 		if (line[i + 1] == '>')
 		{
-			add_token(tokens, new_token(">>", TOKEN_APPEND, 0), env);
+			add_token(tokens, new_token(">>", APPEND, 0), env);
 			i++;
 		}
 		else
-			add_token(tokens, new_token(">", TOKEN_REDIR_OUT, 0), env);
+			add_token(tokens, new_token(">", REDIR_OUT, 0), env);
 	}
 	return (i + 1);
 }
@@ -170,7 +174,7 @@ int	handle_word(const char *line, int i, t_token **tokens, t_env *env)
 	string_before_cleaning = ft_strndup(&line[i], len);
 	quote_type = fill_quote_type(string_before_cleaning);
 	string_cleaned = clean_quotes(string_before_cleaning, *tokens, env);
-	add_token(tokens, new_token(string_cleaned, TOKEN_WORD, quote_type), env);
+	add_token(tokens, new_token(string_cleaned, COMMAND, quote_type), env);
 	free(string_before_cleaning);
 	free(string_cleaned);
 	return (i + len);

@@ -11,18 +11,19 @@
 
 typedef enum	e_token_type
 {
-	TOKEN_WORD,			// ex: ls, hello, input.txt
-	TOKEN_PIPE,			// |
-	TOKEN_REDIR_IN,		// <
-	TOKEN_REDIR_OUT,	// >
-	TOKEN_APPEND,		// >>
+	COMMAND,			// ex: ls, hello, input.txt
+	PIPE,			// |
+	REDIR_IN,		// <
+	REDIR_OUT,	// >
+	APPEND,		// >>
 	TOKEN_HEREDOC		// <<
-}	t_token_type;
+}	t_type;
+
 
 typedef struct	s_token
 {
 	char			*value;
-	t_token_type	type;
+	t_type			type;
 	char			quote_type;
 	struct s_token	*next;
 }					t_token;
@@ -36,16 +37,10 @@ typedef struct s_env
 
 typedef struct s_ast
 {
-	t_token_type		type;
-
-	// Si c’est une commande
+	t_type			type;
 	char			**cmd;			// ex: ["echo", "salut", NULL]
-
-	// Pour les redirections
 	char			*filename;		// utilisé si type == REDIR_xx
 	int				fd;				// facultatif pour la redirection
-
-	// Pointeurs vers les sous-nœuds (sous-arbres)
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
@@ -179,7 +174,7 @@ int		handle_word(const char *line, int i, t_token **tokens, t_env *env);
  * @param quote_type The type of quote used ('\'', '"', or 0).
  * @return A pointer to the new token or NULL on failure.
  */
-t_token	*new_token(const char *value, t_token_type type, char quote_type);
+t_token	*new_token(const char *value, t_type type, char quote_type);
 
 /**
  * @brief Frees a token and exits optionally.

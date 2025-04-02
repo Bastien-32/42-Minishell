@@ -73,7 +73,7 @@ void	expand_token_values(t_token *tokens, t_env *env)
 {
 	while (tokens)
 	{
-		if (tokens->type == TOKEN_WORD && tokens->quote_type != '\'')
+		if (tokens->type == COMMAND && tokens->quote_type != '\'')
 		{
 			if (env_vars(tokens->value))
 				tokens->value = fill_value_env(tokens->value, env);
