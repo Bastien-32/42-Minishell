@@ -5,7 +5,7 @@
 NAME		= minishell
 CC			= gcc
 CFLAGS		= -g -Wall -Wextra -Werror -I. -I./libft
-
+LDFLAGS     = -lreadline
 SRCS		= $(wildcard *.c)
 OBJS		= $(SRCS:.c=.o)
 LIBFT_DIR	= libft
@@ -18,7 +18,7 @@ $(LIBFT_A):
 	@echo ✅ "libft compiled"
 
 $(NAME): $(LIBFT_A) $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft $(LDFLAGS) -o $(NAME)
 	@echo ✅ "Minishell compiled"
 
 %.o: %.c

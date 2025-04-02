@@ -40,39 +40,39 @@ type de ligne de commande a entrer :
 
 pour le moment mettre \ devant $ des VE sinon le shell les transforme avant le traitement
 */
-#include "bastien.h"
+// #include "bastien.h"
 
-int	main(int argc, char **argv, char **envp)
-{
-	t_env	*env;
-	t_token	*tokens;
-	t_token	*tmp;
-	char	quote;
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	t_env	*env;
+// 	t_token	*tokens;
+// 	t_token	*tmp;
+// 	char	quote;
 
-	if (argc != 2)
-	{
-		printf("Usage: ./minishell \"<your command line>\"\n");
-		return (1);
-	}
+// 	if (argc != 2)
+// 	{
+// 		printf("Usage: ./minishell \"<your command line>\"\n");
+// 		return (1);
+// 	}
 
-	env = init_env(envp);
-	tokens = tokenize(argv[1], env);
-	tmp = tokens;
+// 	env = init_env(envp);
+// 	tokens = tokenize(argv[1], env);
+// 	tmp = tokens;
 
-	while (tmp)
-	{
-		if (tmp->quote_type)
-			quote = tmp->quote_type;
-		else
-			quote = ' ';
-		printf("type: %d | quote: %c | value: \"%s\"\n",
-			tmp->type,
-			quote,
-			tmp->value);
-		tmp = tmp->next;
-	}
+// 	while (tmp)
+// 	{
+// 		if (tmp->quote_type)
+// 			quote = tmp->quote_type;
+// 		else
+// 			quote = ' ';
+// 		printf("type: %d | quote: %c | value: \"%s\"\n",
+// 			tmp->type,
+// 			quote,
+// 			tmp->value);
+// 		tmp = tmp->next;
+// 	}
 
-	free_token_list(tokens);
-	free_env_list(env);
-	return (0);
-}
+// 	free_token_list(tokens);
+// 	free_env_list(env);
+// 	return (0);
+// }
