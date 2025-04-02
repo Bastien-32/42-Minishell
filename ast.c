@@ -7,7 +7,7 @@ t_ast	*new_ast_node(const char **value, t_type type)
 	ast = malloc(sizeof(t_ast));
 	if (!ast)
 		return (NULL);
-	ast->cmd = value;
+	ast->cmd = (char **)value;
 	ast->type = type;
 	ast->left = NULL;
 	ast->right = NULL;
@@ -50,7 +50,7 @@ void	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 	t_ast	*tmp;
 
 	if (!new)
-		clean_ast_and_exit(env, token, ast);
+		clean_ast_and_exit(*ast, env, token);
 	if(!*ast)
 	{
 		*ast = new;
@@ -66,14 +66,15 @@ void	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 	}
 }
 
-t_ast	*parse_commands_in_block(t_ast *ast, t_token **tokens)
+t_ast	*parse_commands_in_block(t_token **tokens)
 {
 	t_token	*tmp;
 	int		count;
 	char	**cmd;
 	int		i;
 
-	tmp = tokens;
+	count = 0;
+	tmp = *tokens;
 	while (tmp && tmp->type == COMMAND)
 	{
 		count++;
@@ -89,29 +90,5 @@ t_ast	*parse_commands_in_block(t_ast *ast, t_token **tokens)
 		*tokens = (*tokens)->next;
 	}
 	cmd[i] = NULL;
-	return (new_ast_node(cmd, COMMAND)); 
-}
-
-/* Abstract Syntax Tree */
-t_ast	*parse_ast(t_ast *ast, t_token *tokens, t_env *env)
-{
-	t_ast *ast;
-	t_ast *new_node;
-
-	ast = NULL;
-	while (tokens)
-	{
-		if (tokens->type == COMMAND)
-			new_node = parse_commands_in_block(ast, tokens);
-		else
-		{
-			new_node = new_ast_node(NULL, tokens->type);
-			tokens = tokens->next;
-		}
-		if (!new_node)
-			clean_and_exit(ast, tokens);
-		add_back_ast(&ast, new_node, env, tokens);
-	}
-	
-	return (ast);
+	return (new_ast_node((const char **)cmd, COMMAND)); 
 }
