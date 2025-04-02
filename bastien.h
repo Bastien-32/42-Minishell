@@ -12,18 +12,19 @@
 
 typedef enum	e_token_type
 {
-	TOKEN_WORD,			// ex: ls, hello, input.txt
-	TOKEN_PIPE,			// |
-	TOKEN_REDIR_IN,		// <
-	TOKEN_REDIR_OUT,	// >
-	TOKEN_APPEND,		// >>
-	TOKEN_HEREDOC		// <<
-}	t_token_type;
+	COMMAND,			// ex: ls, hello, input.txt
+	PIPE,			// |
+	REDIR_IN,		// <
+	REDIR_OUT,	// >
+	APPEND,		// >>
+	HEREDOC		// <<
+}	t_type;
+
 
 typedef struct	s_token
 {
 	char			*value;
-	t_token_type	type;
+	t_type			type;
 	char			quote_type;
 	struct s_token	*next;
 }					t_token;
@@ -34,6 +35,46 @@ typedef struct s_env
 	char			*value;
 	struct s_env	*next;
 }					t_env;
+
+typedef struct s_ast
+{
+	t_type			type;
+	char			**cmd;			// ex: ["echo", "salut", NULL]
+	char			*filename;		// utilisé si type == REDIR_xx
+	int				fd;				// facultatif pour la redirection
+	struct s_ast	*left;
+	struct s_ast	*right;
+}	t_ast;
+
+/* ****************************************************************************
+									ast.c
+**************************************************************************** */
+
+t_ast	*new_ast_node(char **value, t_type type);
+void	free_ast_error(t_ast *ast, int need_exit);
+void	clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens);
+void	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
+t_ast	*parse_commands_in_block(t_token **tokens);
+
+/* ****************************************************************************
+									build_tree.c
+**************************************************************************** */
+
+t_ast	*build_tree(const char *line, t_env *env);
+t_token	*tokenize(const char *line, t_env *env);
+
+/**
+ * @brief Expands environment variables for each token in the list.
+ *
+ * Iterates through the list of tokens and expands any environment variable
+ * references found within their values.
+ *
+ * @param tokens The list of tokens to process.
+ * @param env The environment used to resolve variable values.
+ */
+void	expand_token_values(t_token *tokens, t_env *env);
+/* Abstract Syntax Tree */
+t_ast	*parse_ast(t_token *tokens, t_env *env);
 
 /* ****************************************************************************
 									env.c
@@ -108,7 +149,6 @@ void	free_env_list(t_env *env);
  */
 int		env_vars(char *value_token);
 
-
 /**
  * @brief Appends an environment variable's value to a string being expanded.
  *
@@ -123,7 +163,6 @@ int		env_vars(char *value_token);
  */
 char	*add_key_value(char *val_tok, int *read_pos, char *new_tok, t_env *env);
 
-
 /**
  * @brief Expands all environment variables in a given token value.
  *
@@ -136,22 +175,9 @@ char	*add_key_value(char *val_tok, int *read_pos, char *new_tok, t_env *env);
  */
 char	*fill_value_env(char *value_token, t_env *env);
 
-/**
- * @brief Expands environment variables for each token in the list.
- *
- * Iterates through the list of tokens and expands any environment variable
- * references found within their values.
- *
- * @param tokens The list of tokens to process.
- * @param env The environment used to resolve variable values.
- */
-void	expand_token_values(t_token *tokens, t_env *env);
-
 /* ****************************************************************************
-							expand_token_values_b.c
+							list_and_exit_tokenize.c
 **************************************************************************** */
-
-int		handle_word(const char *line, int i, t_token **tokens, t_env *env);
 
 /**
  * @brief Creates a new token.
@@ -163,7 +189,7 @@ int		handle_word(const char *line, int i, t_token **tokens, t_env *env);
  * @param quote_type The type of quote used ('\'', '"', or 0).
  * @return A pointer to the new token or NULL on failure.
  */
-t_token	*new_token(const char *value, t_token_type type, char quote_type);
+t_token	*new_token(const char *value, t_type type, char quote_type);
 
 /**
  * @brief Frees a token and exits optionally.
@@ -204,49 +230,11 @@ void	clean_all_and_exit(t_env *env, t_token *tokens);
  * @param new The new token to add.
  * @param env Pointer to the environment (used for cleanup on failure).
  */
-void	add_token(t_token **token, t_token *new, t_env *env);
+void	add_token_back(t_token **token, t_token *new, t_env *env);
 
-/**
- * @brief Checks if a character is a whitespace character.
- *
- * Recognizes standard whitespace characters commonly used in shell parsing:
- * 
- * - `'\t'` (horizontal tab)
- * 
- * - `'\\n'` (newline)
- * 
- * - `'\v'` (vertical tab)
- * 
- * - `'\f'` (form feed)
- * 
- * - `'\r'` (carriage return)
- * 
- * - `' '` (space)
- * 
- * @param c The character to check.
- * @return 1 if the character is a space or tab, 0 otherwise.
- */
-int		is_space(char c);
-
-/**
- * @brief Checks if a character is a valid shell operator.
- *
- * Recognized operator characters:
- *
- * - `'|'`  (pipe)
- * 
- * - `'<'`  (input redirection)
- * 
- * - `'>'`  (output redirection)
- *
- * - `'<<'` (heredoc)
- * 
- * - `'>>'` (append)
- *
- * @param c The character to check.
- * @return 1 if the character is part of a valid operator, 0 otherwise.
- */
-int		is_operator_char(char c);
+/* ****************************************************************************
+								tokenize.c
+**************************************************************************** */
 
 /**
  * @brief Identifies an operator in the input and adds it to the token list.
@@ -313,17 +301,6 @@ char	fill_quote_type(const char *str);
  */
 int		handle_word(const char *line, int i, t_token **tokens, t_env *env);
 
-/**
- * @brief Splits a line into tokens, expanding variables.
- *
- * Parses the input line into tokens, using the environment for expansions.
- *
- * @param line The input string to tokenize.
- * @param env The environment used for variable expansion.
- * @return A pointer to the first token, or NULL on failure.
- */
-t_token	*tokenize(const char *line, t_env *env);
-
 /* ****************************************************************************
 									utils.c
 **************************************************************************** */
@@ -348,5 +325,47 @@ char	*ft_strjoin_free_all(char *s1, char *s2);
  * @return New string or NULL on failure.
  */
 char	*ft_strjoin_free_s1(char *s1, char *s2);
+
+/**
+ * @brief Checks if a character is a whitespace character.
+ *
+ * Recognizes standard whitespace characters commonly used in shell parsing:
+ * 
+ * - `'\t'` (horizontal tab)
+ * 
+ * - `'\\n'` (newline)
+ * 
+ * - `'\v'` (vertical tab)
+ * 
+ * - `'\f'` (form feed)
+ * 
+ * - `'\r'` (carriage return)
+ * 
+ * - `' '` (space)
+ * 
+ * @param c The character to check.
+ * @return 1 if the character is a space or tab, 0 otherwise.
+ */
+int		is_space(char c);
+
+/**
+ * @brief Checks if a character is a valid shell operator.
+ *
+ * Recognized operator characters:
+ *
+ * - `'|'`  (pipe)
+ * 
+ * - `'<'`  (input redirection)
+ * 
+ * - `'>'`  (output redirection)
+ *
+ * - `'<<'` (heredoc)
+ * 
+ * - `'>>'` (append)
+ *
+ * @param c The character to check.
+ * @return 1 if the character is part of a valid operator, 0 otherwise.
+ */
+int		is_operator_char(char c);
 
 # endif

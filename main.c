@@ -42,12 +42,10 @@ pour le moment mettre \ devant $ des VE sinon le shell les transforme avant le t
 */
 // #include "bastien.h"
 
-// int	main(int argc, char **argv, char **envp)
-// {
-// 	t_env	*env;
-// 	t_token	*tokens;
-// 	t_token	*tmp;
-// 	char	quote;
+int	main(int argc, char **argv, char **envp)
+{
+	t_env	*env;
+	t_ast	*ast;
 
 // 	if (argc != 2)
 // 	{
@@ -55,24 +53,11 @@ pour le moment mettre \ devant $ des VE sinon le shell les transforme avant le t
 // 		return (1);
 // 	}
 
-// 	env = init_env(envp);
-// 	tokens = tokenize(argv[1], env);
-// 	tmp = tokens;
 
-// 	while (tmp)
-// 	{
-// 		if (tmp->quote_type)
-// 			quote = tmp->quote_type;
-// 		else
-// 			quote = ' ';
-// 		printf("type: %d | quote: %c | value: \"%s\"\n",
-// 			tmp->type,
-// 			quote,
-// 			tmp->value);
-// 		tmp = tmp->next;
-// 	}
+	env = init_env(envp);
+	ast = build_tree(argv[1], env);
+	free_ast_error(ast, 0);
+	free_env_list(env);
+	return (0);
+}
 
-// 	free_token_list(tokens);
-// 	free_env_list(env);
-// 	return (0);
-// }

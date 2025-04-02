@@ -61,9 +61,11 @@ t_env	*init_env(char **envp)
 void	free_env_error(t_env *env, int need_exit)
 {
 	free_env_list(env);
-	write(2, "Malloc node env failed\n", 24);
 	if (need_exit)
+	{
+		write(2, "Malloc node env failed\n", 24);
 		exit(1);
+	}
 }
 
 void	free_env_list(t_env *env)

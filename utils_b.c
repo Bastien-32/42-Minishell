@@ -52,3 +52,13 @@ char	*ft_strjoin_free_s1(char *s1, char *s2)
 	free(s1);
 	return (dest);
 }
+
+int	is_space(char c)
+{
+	return ((c >= 9 && c <= 13) || c == ' ');
+}
+
+int	is_operator_char(char c)
+{
+	return (c == '|' || c == '<' || c == '>');
+}
