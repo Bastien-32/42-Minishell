@@ -7,7 +7,7 @@
 # include <errno.h>
 # include <stdio.h>
 # include <readline/readline.h>
-
+# include <readline/history.h>
 # include "libft.h"
 
 typedef enum	e_token_type
