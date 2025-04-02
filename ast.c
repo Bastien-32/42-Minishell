@@ -1,13 +1,13 @@
 #include "bastien.h"
 
-t_ast	*new_ast_node(const char **value, t_type type)
+t_ast	*new_ast_node(char **value, t_type type)
 {
 	t_ast *ast;
 
 	ast = malloc(sizeof(t_ast));
 	if (!ast)
 		return (NULL);
-	ast->cmd = (char **)value;
+	ast->cmd = value;
 	ast->type = type;
 	ast->left = NULL;
 	ast->right = NULL;
@@ -90,5 +90,5 @@ t_ast	*parse_commands_in_block(t_token **tokens)
 		*tokens = (*tokens)->next;
 	}
 	cmd[i] = NULL;
-	return (new_ast_node((const char **)cmd, COMMAND)); 
+	return (new_ast_node(cmd, COMMAND)); 
 }

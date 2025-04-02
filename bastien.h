@@ -49,7 +49,7 @@ typedef struct s_ast
 									ast.c
 **************************************************************************** */
 
-t_ast	*new_ast_node(const char **value, t_type type);
+t_ast	*new_ast_node(char **value, t_type type);
 void	free_ast_error(t_ast *ast, int need_exit);
 void	clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens);
 void	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
