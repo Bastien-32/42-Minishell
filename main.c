@@ -42,7 +42,7 @@ pour le moment mettre \ devant $ des VE sinon le shell les transforme avant le t
 */
 // #include "bastien.h"
 
-int	main(int argc, char **argv, char **envp)
+/* int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
 	t_ast	*ast;
@@ -59,5 +59,34 @@ int	main(int argc, char **argv, char **envp)
 	free_ast_error(ast, 0);
 	free_env_list(env);
 	return (0);
-}
+} */
 
+int	main(int argc, char **argv, char **envp)
+{
+	t_env	*env;
+	t_ast	*ast;
+	char	*line;
+
+	(void)argc;
+	(void)argv;
+
+	env = init_env(envp);
+
+	while (1)
+	{
+		line = readline("minishell> ");
+		if (!line)
+			break;
+		if (*line)
+			add_history(line);
+
+		ast = build_tree(line, env);
+
+		// Tu pourras ici appeler la fonction d'exécution plus tard
+
+		free(line);
+		free_ast_error(ast, 0); // ou free_ast(ast); si t'as renommé
+	}
+	free_env_list(env);
+	return (0);
+}

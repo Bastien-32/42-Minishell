@@ -31,7 +31,7 @@ void execute_command(char **args)
 }
 
 // Fonction principale du mini-shell
-int main() {
+/* int main() {
 	char *buffer = NULL;
 	size_t buf_size = 1024;
 	char *args[128];
@@ -100,3 +100,4 @@ int main() {
 
     return EXIT_SUCCESS;
 }
+ */
