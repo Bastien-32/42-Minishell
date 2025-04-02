@@ -40,18 +40,19 @@ type de ligne de commande a entrer :
 
 pour le moment mettre \ devant $ des VE sinon le shell les transforme avant le traitement
 */
-#include "bastien.h"
+// #include "bastien.h"
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
 	t_ast	*ast;
 
-	if (argc != 2)
-	{
-		printf("Usage: ./minishell \"<your command line>\"\n");
-		return (1);
-	}
+// 	if (argc != 2)
+// 	{
+// 		printf("Usage: ./minishell \"<your command line>\"\n");
+// 		return (1);
+// 	}
+
 
 	env = init_env(envp);
 	ast = build_tree(argv[1], env);
@@ -59,3 +60,4 @@ int	main(int argc, char **argv, char **envp)
 	free_env_list(env);
 	return (0);
 }
+
