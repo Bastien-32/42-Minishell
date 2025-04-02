@@ -45,9 +45,7 @@ pour le moment mettre \ devant $ des VE sinon le shell les transforme avant le t
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
-	t_token	*tokens;
-	t_token	*tmp;
-	char	quote;
+	t_ast	*ast;
 
 	if (argc != 2)
 	{
@@ -56,23 +54,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 
 	env = init_env(envp);
-	tokens = tokenize(argv[1], env);
-	tmp = tokens;
-
-	while (tmp)
-	{
-		if (tmp->quote_type)
-			quote = tmp->quote_type;
-		else
-			quote = ' ';
-		printf("type: %d | quote: %c | value: \"%s\"\n",
-			tmp->type,
-			quote,
-			tmp->value);
-		tmp = tmp->next;
-	}
-
-	free_token_list(tokens);
+	ast = build_tree(argv[1], env);
+	free_ast_error(ast, 0);
 	free_env_list(env);
 	return (0);
 }
