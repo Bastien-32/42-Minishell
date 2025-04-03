@@ -24,3 +24,13 @@ int	echo_builtin(char **args)
 	return (0);
 }
 
+void	execute_ast_command(t_ast *ast)
+{
+	if (ast && ast->type == COMMAND)
+	{
+		if (strcmp(ast->cmd[0], "echo") == 0)
+		{
+			echo_builtin(ast->cmd);
+		}
+	}
+}
