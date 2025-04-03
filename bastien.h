@@ -369,6 +369,8 @@
 	int		is_operator_char(char c);
 	
 	int		echo_builtin(char **args);
+	int		cd_builtin(char **args);
+
 	void	execute_ast_command(t_ast *ast);
 
 

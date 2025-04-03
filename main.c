@@ -82,8 +82,11 @@ int	main(int argc, char **argv, char **envp)
 
 		ast = build_tree(line, env);
 
-		// Tu pourras ici appeler la fonction d'exécution plus tard
 		execute_ast_command(ast);
+		// if (node_builtin(ast->cmd[0]))
+		// 	execute_builtin(ast);
+		// else
+		// 	execute_external_comand(ast, env);
 		free(line);
 		free_ast_error(ast, 0); // ou free_ast(ast); si t'as renommé
 	}
