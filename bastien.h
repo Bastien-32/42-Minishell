@@ -8,13 +8,17 @@
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <signal.h>
+
 # include "libft.h"
+
+extern sig_atomic_t	g_exit_status;
 
 typedef enum	e_token_type
 {
-	COMMAND,			// ex: ls, hello, input.txt
-	PIPE,			// |
-	REDIR_IN,		// <
+	COMMAND,	// ex: ls, hello, input.txt
+	PIPE,		// |
+	REDIR_IN,	// <
 	REDIR_OUT,	// >
 	APPEND,		// >>
 	HEREDOC		// <<
@@ -45,6 +49,31 @@ typedef struct s_ast
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
+
+/* ****************************************************************************
+									execute_ast.c
+**************************************************************************** */
+
+int	execute_command(t_ast *ast, t_env *env);
+int	execute_ast(t_ast *ast, t_env *env);
+
+/* ****************************************************************************
+							execute_command_builtin.c
+**************************************************************************** */
+
+int		echo_builtin(char **args);
+int		node_builtin(char *name_cmd);
+int		execute_builtin(t_ast *ast);
+
+/* ****************************************************************************
+							execute_command_external.c
+**************************************************************************** */
+
+char	**parse_path(t_env *env, char *key);
+char	*find_path(char *cmd, t_env *env);
+char	**env_to_array(t_env *env);
+void	free_array_envp(char **envp);
+int		execute_external(t_ast *ast, t_env *env);
 
 /* ****************************************************************************
 									ast.c

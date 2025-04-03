@@ -6,6 +6,7 @@ int	execute_command(t_ast *ast, t_env *env)
 		execute_builtin(ast);
 	else
 		execute_external(ast, env);
+	return (g_exit_status);
 }
 
 int	execute_ast(t_ast *ast, t_env *env)
@@ -14,12 +15,13 @@ int	execute_ast(t_ast *ast, t_env *env)
 	{
 		if (ast->type == COMMAND)
 			execute_command(ast, env);
-		else if (ast->type == PIPE)
+		/* else if (ast->type == PIPE)
 			execute_pipe(ast, env);
-		else if (ast->type == REDIR_IN || ast->type == REDIR_OUT || ast->type == APPEND)
+		else if (ast->type == REDIR_IN || ast->type == REDIR_OUT
+			|| ast->type == APPEND)
 			execute_redirection(ast, env);
 		else if (ast->type == HEREDOC)
-			execute_heredoc(ast, env);
+			execute_heredoc(ast, env); */
 		ast = ast->right;
 	}
 	return (0);
