@@ -24,7 +24,6 @@ typedef enum	e_token_type
 	HEREDOC		// <<
 }	t_type;
 
-
 typedef struct	s_token
 {
 	char			*value;
@@ -37,6 +36,7 @@ typedef struct s_env
 {
 	char			*env_keyname;
 	char			*value;
+	int				nb_env;
 	struct s_env	*next;
 }					t_env;
 
@@ -51,14 +51,14 @@ typedef struct s_ast
 }	t_ast;
 
 /* ****************************************************************************
-									execute_ast.c
+								 execute_ast.c
 **************************************************************************** */
 
 int	execute_command(t_ast *ast, t_env *env);
 int	execute_ast(t_ast *ast, t_env *env);
 
 /* ****************************************************************************
-							execute_command_builtin.c
+						  execute_command_builtin.c
 **************************************************************************** */
 
 int		echo_builtin(char **args);
@@ -66,7 +66,7 @@ int		node_builtin(char *name_cmd);
 int		execute_builtin(t_ast *ast);
 
 /* ****************************************************************************
-							execute_command_external.c
+						  execute_command_external.c
 **************************************************************************** */
 
 char	**parse_path(t_env *env, char *key);
@@ -86,7 +86,7 @@ void	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
 t_ast	*parse_commands_in_block(t_token **tokens);
 
 /* ****************************************************************************
-									build_tree.c
+								 build_tree.c
 **************************************************************************** */
 
 t_ast	*build_tree(const char *line, t_env *env);
@@ -205,7 +205,7 @@ char	*add_key_value(char *val_tok, int *read_pos, char *new_tok, t_env *env);
 char	*fill_value_env(char *value_token, t_env *env);
 
 /* ****************************************************************************
-							list_and_exit_tokenize.c
+						   list_and_exit_tokenize.c
 **************************************************************************** */
 
 /**
@@ -262,7 +262,7 @@ void	clean_all_and_exit(t_env *env, t_token *tokens);
 void	add_token_back(t_token **token, t_token *new, t_env *env);
 
 /* ****************************************************************************
-								tokenize.c
+								  tokenize.c
 **************************************************************************** */
 
 /**

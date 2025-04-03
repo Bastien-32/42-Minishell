@@ -49,35 +49,6 @@ char	*find_path(char *cmd, t_env *env)
 	return (0);
 }
 
-char	**env_to_array(t_env *env)
-{
-	char	**envp;
-	int		i;
-	t_env	*temp_env;
-
-	i = 0;
-	temp_env = env;
-	while (temp_env)
-	{
-		i++;
-		temp_env = temp_env->next;
-	}
-	envp = malloc(sizeof(char *) * (i + 1));
-	if (!envp)
-		return (NULL);
-	i = 0;
-	temp_env = env;
-	while (temp_env)
-	{
-		envp[i] = ft_strjoin(temp_env->env_keyname, "=");
-		envp[i] = ft_strjoin_free_s1(envp[i], temp_env->value);
-		i++;
-		temp_env = temp_env->next;
-	}
-	envp[i] = NULL;
-	return (envp);
-}
-
 void	free_array_envp(char **envp)
 {
 	int	i;
@@ -89,6 +60,31 @@ void	free_array_envp(char **envp)
 		i++;
 	}
 	free(envp);
+}
+
+char	**env_to_array(t_env *env)
+{
+	char	**envp;
+	int		i;
+
+	i = env->nb_env;
+	envp = malloc(sizeof(char *) * (i + 1));
+	if (!envp)
+		return (NULL);
+	i = 0;
+	while (env)
+	{
+		envp[i] = ft_strjoin(env->env_keyname, "=");
+		if (!envp[i])
+			return (free_array_envp(envp), NULL);
+		envp[i] = ft_strjoin_free_s1(envp[i], env->value);
+		if (!envp[i])
+			return (free_array_envp(envp), NULL);
+		i++;
+		env = env->next;
+	}
+	envp[i] = NULL;
+	return (envp);
 }
 
 int	execute_external(t_ast *ast, t_env *env)
