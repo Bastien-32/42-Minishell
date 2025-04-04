@@ -36,5 +36,9 @@ void	execute_ast_command(t_ast *ast)
 		{
 			cd_builtin(ast->cmd);
 		}
+		else if (strcmp(ast->cmd[0], "pwd") == 0)
+		{
+			pwd_builtin();
+		}
 	}
 }

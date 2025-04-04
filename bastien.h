@@ -370,6 +370,7 @@
 	
 	int		echo_builtin(char **args);
 	int		cd_builtin(char **args);
+	int		pwd_builtin(void);
 
 	void	execute_ast_command(t_ast *ast);
 
