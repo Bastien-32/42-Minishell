@@ -7,23 +7,25 @@
 #include <readline/readline.h>
 
 # include "bastien.h"
-// Fonction pour exécuter une commande externe
+
 void execute_command(char **args) 
 {
-	pid_t pid = fork(); // Création d'un processus enfant
+	pid_t pid = fork();
 	if (pid == -1)
 	{
 		perror("Erreur lors du fork");
 		return;
 	}
 
-	if (pid == 0) { // Processus enfant
-		// Exemple avec execv (remplacer par le chemin approprié)
+	if (pid == 0) 
+    {
 		char *path = "/bin/echo"; // Chemin complet requis
 		execv(path, args);
 		perror("Erreur lors de l'exécution de la commande");
 		exit(EXIT_FAILURE);
-	} else { // Processus parent
+	} 
+    else 
+    { // Processus parent
 		int status;
 		waitpid(pid, &status, 0); // Attente de la fin du processus enfant
 		printf("Commande terminée avec le statut : %d\n", WEXITSTATUS(status));
