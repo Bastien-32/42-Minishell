@@ -1,5 +1,7 @@
 #include "bastien.h"
 
+sig_atomic_t g_exit_status = 0;
+
 /* int main(void)
 {
 	//const char *input = "\"salut les gars $USER$HOME\"";
@@ -69,9 +71,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-
 	env = init_env(envp);
-
 	while (1)
 	{
 		line = readline("minishell> ");
@@ -79,16 +79,13 @@ int	main(int argc, char **argv, char **envp)
 			break;
 		if (*line)
 			add_history(line);
-
 		ast = build_tree(line, env);
 
-		execute_ast_command(ast);
-		// if (node_builtin(ast->cmd[0]))
-		// 	execute_builtin(ast);
-		// else
-		// 	execute_external_comand(ast, env);
+  	if (ast)
+			execute_ast(ast, env);
+		free_ast_error(ast, 0);
+    
 		free(line);
-		free_ast_error(ast, 0); // ou free_ast(ast); si t'as renommé
 	}
 	free_env_list(env);
 	return (0);
