@@ -3,7 +3,7 @@
 int	execute_command(t_ast *ast, t_env *env)
 {
 	if (node_builtin(ast->cmd[0]))
-		execute_builtin(ast);
+		execute_builtin(ast, env);
 	else
 		execute_external(ast, env);
 	return (g_exit_status);

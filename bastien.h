@@ -63,7 +63,7 @@ int	execute_ast(t_ast *ast, t_env *env);
 **************************************************************************** */
 
 int		node_builtin(char *name_cmd);
-int		execute_builtin(t_ast *ast);
+int		execute_builtin(t_ast *ast, t_env *env);
 
 /* ****************************************************************************
 						  execute_command_external.c
@@ -398,7 +398,7 @@ int		is_space(char c);
 int		is_operator_char(char c);
 
 int		echo_builtin(char **args);
-int		cd_builtin(char **args);
+int		cd_builtin(char **args, t_env *env);
 int		pwd_builtin(void);
 
 # endif
