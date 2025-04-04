@@ -396,5 +396,10 @@ int		is_space(char c);
  * @return 1 if the character is part of a valid operator, 0 otherwise.
  */
 int		is_operator_char(char c);
+int		echo_builtin(char **args);
+int		cd_builtin(char **args);
+int		pwd_builtin(void);
+
+	void	execute_ast_command(t_ast *ast);
 
 # endif

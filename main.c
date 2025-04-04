@@ -80,9 +80,11 @@ int	main(int argc, char **argv, char **envp)
 		if (*line)
 			add_history(line);
 		ast = build_tree(line, env);
-		if (ast)
+
+  	if (ast)
 			execute_ast(ast, env);
 		free_ast_error(ast, 0);
+    
 		free(line);
 	}
 	free_env_list(env);
