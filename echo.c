@@ -23,22 +23,3 @@ int	echo_builtin(char **args)
 		ft_printf("\n");
 	return (0);
 }
-
-void	execute_ast_command(t_ast *ast)
-{
-	if (ast && ast->type == COMMAND)
-	{
-		if (strcmp(ast->cmd[0], "echo") == 0)
-		{
-			echo_builtin(ast->cmd);
-		}
-		else if(strcmp(ast->cmd[0], "cd") == 0)
-		{
-			cd_builtin(ast->cmd);
-		}
-		else if (strcmp(ast->cmd[0], "pwd") == 0)
-		{
-			pwd_builtin();
-		}
-	}
-}

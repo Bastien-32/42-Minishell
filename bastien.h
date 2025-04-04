@@ -9,6 +9,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
+# include <sys/wait.h>
 
 # include "libft.h"
 
@@ -61,7 +62,6 @@ int	execute_ast(t_ast *ast, t_env *env);
 						  execute_command_builtin.c
 **************************************************************************** */
 
-int		echo_builtin(char **args);
 int		node_builtin(char *name_cmd);
 int		execute_builtin(t_ast *ast);
 
@@ -396,10 +396,9 @@ int		is_space(char c);
  * @return 1 if the character is part of a valid operator, 0 otherwise.
  */
 int		is_operator_char(char c);
+
 int		echo_builtin(char **args);
 int		cd_builtin(char **args);
 int		pwd_builtin(void);
-
-	void	execute_ast_command(t_ast *ast);
 
 # endif
