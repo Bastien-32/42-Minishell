@@ -8,7 +8,7 @@
 
 # include "bastien.h"
 // Fonction pour exécuter une commande externe
-void execute_command(char **args) 
+/* void execute_command(char **args) 
 {
 	pid_t pid = fork(); // Création d'un processus enfant
 	if (pid == -1)
@@ -28,7 +28,7 @@ void execute_command(char **args)
 		waitpid(pid, &status, 0); // Attente de la fin du processus enfant
 		printf("Commande terminée avec le statut : %d\n", WEXITSTATUS(status));
 	}
-}
+} */
 
 // Fonction principale du mini-shell
 /* int main() {

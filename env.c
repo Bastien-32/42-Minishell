@@ -55,6 +55,7 @@ t_env	*init_env(char **envp)
 		}
 		i++;
 	}
+	env->nb_env = i;
 	return (env);
 }
 

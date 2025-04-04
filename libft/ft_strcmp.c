@@ -6,17 +6,18 @@
 /*   By: badal-la <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 10:21:17 by badal-la          #+#    #+#             */
-/*   Updated: 2025/03/27 17:32:46 by badal-la         ###   ########.fr       */
+/*   Updated: 2025/04/03 09:54:47 by badal-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 /**
- * @brief Compare two strings .
- * @param s1 (const char *) First string.
- * @param s2 (const char *) Second string.
- * @return (int) Difference between the first differing characters,
+ * @brief Compare two strings.
+ *
+ * @param s1 First string.
+ * @param s2 Second string.
+ * @return Difference between the first differing characters,
  * or 0 if they are equal.
  */
 int	ft_strcmp(const char *s1, const char *s2)

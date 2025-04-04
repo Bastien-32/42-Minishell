@@ -38,11 +38,11 @@ t_ast	*build_tree(const char *line, t_env *env)
 
 	tokens = NULL;
 
-	printf("line = %s\n", line);												//a supprimer pour rendu final
+	//printf("line = %s\n", line);												//a supprimer pour rendu final
 
 	tokens = tokenize(line, env);
 	expand_token_values(tokens, env);
-
+/* 
 	t_token	*tmp;																//a supprimer de là ...
 	char	quote;
 	tmp = tokens;
@@ -58,10 +58,10 @@ t_ast	*build_tree(const char *line, t_env *env)
 			tmp->value);
 		tmp = tmp->next;
 	}																			// ... à là
-
+ */
 	ast = parse_ast(tokens, env);
 
-	print_ast(ast);															// A supprimer
+	//print_ast(ast);															// A supprimer
 
 	return (ast);
 }
@@ -69,7 +69,7 @@ t_ast	*build_tree(const char *line, t_env *env)
 t_token	*tokenize(const char *line, t_env *env)
 {
 	int		i;
-	t_token *tokens;
+	t_token	*tokens;
 
 	i = 0;
 	tokens = NULL;
