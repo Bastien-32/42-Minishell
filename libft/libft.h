@@ -6,7 +6,7 @@
 /*   By: badal-la <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 10:22:07 by badal-la          #+#    #+#             */
-/*   Updated: 2025/03/27 18:46:40 by badal-la         ###   ########.fr       */
+/*   Updated: 2025/04/05 11:10:38 by badal-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ typedef struct s_list
 
 int		ft_atoi(const char *str);
 
+long	ft_atol(const char *str);
+
 void	*ft_bzero(void *s, size_t n);
 /* Assigne a une chaine de caractere s n fois le caractere 0 
 	(pas '0') et retourne s.
@@ -34,7 +36,7 @@ void	*ft_bzero(void *s, size_t n);
 
 void	*ft_calloc(size_t nmemb, size_t size);
 /* malloc un tableau de nmemb de taille size et assigne 0
-	(pas 0) a chaque octet cree. utilise bzero apres 
+	(pas '0') a chaque octet cree. utilise bzero apres 
 	avoir malloc */
 
 int		ft_isalnum(int c);
