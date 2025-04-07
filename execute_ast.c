@@ -1,14 +1,14 @@
 #include "bastien.h"
 
 //fonction a supprimer
-void	print_env(t_env *env)
+/* void	print_env(t_env *env)
 {
 	while (env)
 	{
 		printf("env: %s=%s\n", env->env_keyname, env->value);
 		env = env->next;
 	}
-}
+} */
 
 //lignes a supprimer dans fonction
 int	execute_command(t_ast *ast, t_env **env)
@@ -17,7 +17,7 @@ int	execute_command(t_ast *ast, t_env **env)
 		execute_builtin(ast, env);
 	else
 		execute_external(ast, *env);
-	print_env(*env);										//a supprimer apres ainsi que la fonction
+	//print_env(*env);										//a supprimer apres ainsi que la fonction
 	return (g_exit_status);
 }
 

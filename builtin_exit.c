@@ -35,7 +35,7 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 	}
 	if (!ft_is_numeric(args[1]))
 	{
-		ft_putstr_fd("zsh: bad math expression: ", 2);
+		ft_putstr_fd("Bad math expression: ", 2);
 		ft_putstr_fd("numeric operator is expected\n", 2);
 		free_env_and_ast_in_builtin_exit(env, ast);
 		exit(2);

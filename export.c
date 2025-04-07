@@ -68,7 +68,7 @@ int	export_builtin(char **args, t_env **env)
 	{
 		if (validate_and_split_env_var(args[i], &env_keyname, &value))
 		{
-			if (!update_or_add_env_var(env, env_keyname, value))
+			if (!update_or_add_env_var(*env, env_keyname, value))
 			{
 				add_new_env_var(env, env_keyname, value);
 			}

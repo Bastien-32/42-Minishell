@@ -18,7 +18,7 @@ int	execute_builtin(t_ast *ast, t_env **env)
 	if (ft_strcmp(ast->cmd[0], "echo") == 0)
 		return (echo_builtin(ast->cmd));
 	 else if (ft_strcmp(ast->cmd[0], "cd") == 0)
-		return (cd_builtin(ast->cmd, env));
+		return (cd_builtin(ast->cmd, *env));
 	else if (ft_strcmp(ast->cmd[0], "pwd") == 0)
 		return (pwd_builtin());
 	else if (ft_strcmp(ast->cmd[0], "export") == 0)
