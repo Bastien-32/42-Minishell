@@ -29,7 +29,7 @@ int	ft_redir_out(t_ast *ast)
 
 	fd = open(ast->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-	return(perror_message("Error opening file REDIR_OUT"));
+		return(perror_message("Error opening file REDIR_OUT"));
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
 		close(fd);
@@ -55,10 +55,36 @@ int	ft_append(t_ast *ast)
 	return (0);
 }
 
-int	execute_redirection(t_ast *ast, t_env **env)
+int ft_heredoc(t_ast *ast)
 {
-	int	fd;
+	int		fd_tmp;
+	char	*line;
 
+	while (1)
+	{
+		line = readline("heredoc> ");
+		if (!line)
+			break;
+		if (ft_strcmp(line, ast->filename) == 0)
+		{
+			free(line);
+			break;
+		}
+		fd_tmp = open("heredoc_tmp", O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (fd_tmp < 0)
+		{
+			free(line);
+			return(perror_message("Error opening heredoc file"));
+		}
+
+		close(fd_tmp);
+		free(line);
+	}
+	return (0);
+}
+
+int	execute_redirection(t_ast *ast)
+{
 	if (ast->type == REDIR_IN)
 		return (ft_redir_in(ast));
 	else if (ast->type == REDIR_OUT)
@@ -67,6 +93,6 @@ int	execute_redirection(t_ast *ast, t_env **env)
 		return (ft_append(ast));
 	else if (ast->type == HEREDOC)
 		return (ft_heredoc(ast));
-	/* else
-		return (1); */
+	else
+		return (1);
 }

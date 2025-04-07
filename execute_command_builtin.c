@@ -28,7 +28,7 @@ int	execute_builtin(t_ast *ast, t_env **env)
 	else
 		return (exit_builtin(ast->cmd, *env, ast));
 	/*else if (ft_strcmp(ast->cmd[0], "export") == 0)
-		return (export_builtin(ast->cmd));
+		return (export_builtin(ast->cmd, env));
 	 */
 	return (1);
 }
