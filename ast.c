@@ -82,7 +82,7 @@ t_ast	*parse_commands_in_block(t_token **tokens)
 	}
 	cmd = malloc (sizeof(char *) * (count + 1));
 	if(!cmd)
-		return (NULL);
+		return (write(2, "Malloc cmd failed\n", 18), NULL);
 	i = 0;
 	while (i < count && *tokens && (*tokens)->type == COMMAND)
 	{
@@ -90,5 +90,5 @@ t_ast	*parse_commands_in_block(t_token **tokens)
 		*tokens = (*tokens)->next;
 	}
 	cmd[i] = NULL;
-	return (new_ast_node(cmd, COMMAND)); 
+	return (new_ast_node(cmd, COMMAND));
 }

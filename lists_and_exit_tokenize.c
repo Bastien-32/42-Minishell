@@ -2,7 +2,7 @@
 
 t_token	*new_token(const char *value, t_type type, char quote_type)
 {
-	t_token *token;
+	t_token	*token;
 
 	token = malloc(sizeof(t_token));
 	if (!token)
@@ -47,7 +47,7 @@ void	clean_all_and_exit(t_env *env, t_token *tokens)
 
 void	add_token_back(t_token **token, t_token *new, t_env *env)
 {
-	t_token *tmp;
+	t_token	*tmp;
 
 	if (!new)
 		clean_all_and_exit(env, *token);

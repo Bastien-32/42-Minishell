@@ -1,6 +1,7 @@
 #include "bastien.h"
 
-void	print_ast(t_ast *ast)									//fonction a supprimer
+//fonction a supprimer
+void	print_ast(t_ast *ast)
 {
 	printf("abstract syntax tree :\n");
 	while (ast)
@@ -31,6 +32,7 @@ void	print_ast(t_ast *ast)									//fonction a supprimer
 	}
 }
 
+//lignes a supprimer dans fonction
 t_ast	*build_tree(const char *line, t_env *env)
 {
 	t_token	*tokens;
@@ -41,6 +43,11 @@ t_ast	*build_tree(const char *line, t_env *env)
 	//printf("line = %s\n", line);												//a supprimer pour rendu final
 
 	tokens = tokenize(line, env);
+	if (!tokens)
+	{
+		g_exit_status = 2;
+		return (NULL);
+	}
 	expand_token_values(tokens, env);
 /* 
 	t_token	*tmp;																//a supprimer de là ...
@@ -60,6 +67,11 @@ t_ast	*build_tree(const char *line, t_env *env)
 	}																			// ... à là
  */
 	ast = parse_ast(tokens, env);
+	if (!ast)
+	{
+		free_ast_error(ast, 0);
+		return (NULL);
+	}
 
 	//print_ast(ast);															// A supprimer
 
@@ -80,7 +92,14 @@ t_token	*tokenize(const char *line, t_env *env)
 		if (is_operator_char(line[i]))
 			i = handle_operator(line, i, &tokens, env);
 		else
+		{
 			i = handle_word(line, i, &tokens, env);
+			if (i == -1)
+			{
+				free_token_list(tokens);
+				return (NULL);
+			}
+		}
 	}
 	return (tokens);
 }
@@ -98,6 +117,17 @@ void	expand_token_values(t_token *tokens, t_env *env)
 	}
 }
 
+void	fill_name_file(t_ast *ast, t_token **tokens)
+{
+	if (ast->type == REDIR_IN || ast->type == REDIR_OUT
+		|| ast->type == APPEND || ast->type == HEREDOC)
+	{
+		if (tokens && (*tokens)->type == COMMAND)
+			ast->filename = ft_strdup((*tokens)->value);
+	}
+	*tokens = (*tokens)->next;
+}
+
 t_ast	*parse_ast(t_token *tokens, t_env *env)
 {
 	t_ast *ast;
@@ -111,7 +141,10 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 		else
 		{
 			new_node = new_ast_node(NULL, tokens->type);
+			if(!new_node)
+				return (free_token_list(tokens), NULL);
 			tokens = tokens->next;
+			fill_name_file(new_node, &tokens);
 		}
 		add_back_ast(&ast, new_node, env, tokens);
 	}

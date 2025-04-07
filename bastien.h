@@ -10,6 +10,7 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <sys/wait.h>
+# include <fcntl.h>
 
 # include "libft.h"
 
@@ -55,15 +56,15 @@ typedef struct s_ast
 								 execute_ast.c
 **************************************************************************** */
 
-int	execute_command(t_ast *ast, t_env *env);
-int	execute_ast(t_ast *ast, t_env *env);
+int	execute_command(t_ast *ast, t_env **env);
+int	execute_ast(t_ast *ast, t_env **env);
 
 /* ****************************************************************************
 						  execute_command_builtin.c
 **************************************************************************** */
 
 int		node_builtin(char *name_cmd);
-int		execute_builtin(t_ast *ast, t_env *env);
+int		execute_builtin(t_ast *ast, t_env **env);
 
 /* ****************************************************************************
 						  execute_command_external.c
@@ -74,6 +75,12 @@ char	*find_path(char *cmd, t_env *env);
 char	**env_to_array(t_env *env);
 void	free_array_envp(char **envp);
 int		execute_external(t_ast *ast, t_env *env);
+
+/* ****************************************************************************
+						  execute_command_external.c
+**************************************************************************** */
+
+int	execute_redirection(t_ast *ast);
 
 /* ****************************************************************************
 									ast.c
@@ -291,7 +298,7 @@ int		handle_operator(const char *line, int i, t_token **tokens, t_env *env);
  * @param env Pointer to the environment.
  * @return The length of the word.
  */
-int		get_word_length(const char *line, int start, t_token *tokens, t_env *env);
+int		get_word_length(const char *line, int start);
 
 /**
  * @brief Removes quotes from a string.
@@ -396,6 +403,14 @@ int		is_space(char c);
  * @return 1 if the character is part of a valid operator, 0 otherwise.
  */
 int		is_operator_char(char c);
+
+/* ****************************************************************************
+									builtins
+**************************************************************************** */
+
+int		env_builtin(char **args, t_env *env);
+int		unset_builtin(char **args, t_env **env);
+int		exit_builtin(char **args, t_env *env, t_ast *ast);
 
 int		echo_builtin(char **args);
 int		cd_builtin(char **args, t_env *env);

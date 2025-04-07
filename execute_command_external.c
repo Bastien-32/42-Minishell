@@ -87,6 +87,7 @@ char	**env_to_array(t_env *env)
 	return (envp);
 }
 
+//il faut reduire / decouper cette fonction
 int	execute_external(t_ast *ast, t_env *env)
 {
 	char	*cmd_path;
