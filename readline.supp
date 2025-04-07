@@ -1,0 +1,10 @@
+{
+   readline-suppression
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:xmalloc
+   fun:rl_initialize
+   obj:/lib/x86_64-linux-gnu/libreadline.so.*
+   obj:/lib/x86_64-linux-gnu/libhistory.so.*
+}

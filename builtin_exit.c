@@ -18,7 +18,9 @@ static int	ft_is_numeric(const char *str)
 static void	free_env_and_ast_in_builtin_exit(t_env *env, t_ast *ast)
 {
 	free_env_list(env);
-	free_ast_error(ast, 0);
+	printf("Avant free dans exit\n");
+	print_ast(ast);
+	free_ast_error(ast);
 }
 
 int	exit_builtin(char **args, t_env *env, t_ast *ast)

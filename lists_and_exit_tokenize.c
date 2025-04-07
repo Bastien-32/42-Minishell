@@ -1,6 +1,6 @@
 #include "bastien.h"
 
-t_token	*new_token(const char *value, t_type type, char quote_type)
+t_token	*new_token(char *value, t_type type, char quote_type)
 {
 	t_token	*token;
 
@@ -8,6 +8,7 @@ t_token	*new_token(const char *value, t_type type, char quote_type)
 	if (!token)
 		return (NULL);
 	token->value = ft_strdup(value);
+//	free (value);
 	if (!token->value)
 		return (NULL);
 	token->type = type;

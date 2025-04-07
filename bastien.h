@@ -87,17 +87,17 @@ int	execute_redirection(t_ast *ast);
 **************************************************************************** */
 
 t_ast	*new_ast_node(char **value, t_type type);
-void	free_ast_error(t_ast *ast, int need_exit);
-void	clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens);
-void	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
+void	free_ast_error(t_ast *ast);
+int		clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens);
+int		add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
 t_ast	*parse_commands_in_block(t_token **tokens);
 
 /* ****************************************************************************
 								 build_tree.c
 **************************************************************************** */
 
-t_ast	*build_tree(const char *line, t_env *env);
-t_token	*tokenize(const char *line, t_env *env);
+t_ast	*build_tree(char *line, t_env *env);
+t_token	*tokenize(char *line, t_env *env);
 
 /**
  * @brief Expands environment variables for each token in the list.
@@ -225,7 +225,7 @@ char	*fill_value_env(char *value_token, t_env *env);
  * @param quote_type The type of quote used ('\'', '"', or 0).
  * @return A pointer to the new token or NULL on failure.
  */
-t_token	*new_token(const char *value, t_type type, char quote_type);
+t_token	*new_token(char *value, t_type type, char quote_type);
 
 /**
  * @brief Frees a token and exits optionally.
@@ -335,7 +335,7 @@ char	fill_quote_type(const char *str);
  * @param env Pointer to the environment (for cleanup on failure).
  * @return The updated index after the word.
  */
-int		handle_word(const char *line, int i, t_token **tokens, t_env *env);
+int		handle_word(char *line, int i, t_token **tokens, t_env *env);
 
 /* ****************************************************************************
 									utils.c
@@ -417,5 +417,6 @@ int		cd_builtin(char **args, t_env *env);
 int		pwd_builtin(void);
 int		export_builtin(char **args, t_env **env);
 
+void	print_ast(t_ast *ast);
 
 # endif

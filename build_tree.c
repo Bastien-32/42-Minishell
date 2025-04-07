@@ -33,7 +33,7 @@ void	print_ast(t_ast *ast)
 }
 
 //lignes a supprimer dans fonction
-t_ast	*build_tree(const char *line, t_env *env)
+t_ast	*build_tree(char *line, t_env *env)
 {
 	t_token	*tokens;
 	t_ast	*ast;
@@ -48,6 +48,7 @@ t_ast	*build_tree(const char *line, t_env *env)
 		g_exit_status = 2;
 		return (NULL);
 	}
+	free (line);
 	expand_token_values(tokens, env);
 /* 
 	t_token	*tmp;																//a supprimer de là ...
@@ -67,18 +68,19 @@ t_ast	*build_tree(const char *line, t_env *env)
 	}																			// ... à là
  */
 	ast = parse_ast(tokens, env);
+
 	if (!ast)
 	{
-		free_ast_error(ast, 0);
+		free_ast_error(ast);
 		return (NULL);
 	}
-
+	free_token_list(tokens);
 	//print_ast(ast);															// A supprimer
 
 	return (ast);
 }
 
-t_token	*tokenize(const char *line, t_env *env)
+t_token	*tokenize(char *line, t_env *env)
 {
 	int		i;
 	t_token	*tokens;
@@ -137,7 +139,11 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 	while (tokens)
 	{
 		if (tokens->type == COMMAND)
+		{
 			new_node = parse_commands_in_block(&tokens);
+			if(!new_node)
+				return (free_token_list(tokens), NULL);
+		}
 		else
 		{
 			new_node = new_ast_node(NULL, tokens->type);
@@ -146,8 +152,9 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 			tokens = tokens->next;
 			fill_name_file(new_node, &tokens);
 		}
-		add_back_ast(&ast, new_node, env, tokens);
+		if (!add_back_ast(&ast, new_node, env, tokens))
+			return (NULL);
 	}
-	free_token_list(tokens);
+	//free_token_list(tokens);
 	return (ast);
 }

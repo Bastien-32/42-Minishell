@@ -89,7 +89,7 @@ char	fill_quote_type(const char *str)
 	return (0);
 }
 
-int	handle_word(const char *line, int i, t_token **tokens, t_env *env)
+int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 {
 	int		len;
 	char	*string_before_cleaning;

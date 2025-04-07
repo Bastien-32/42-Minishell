@@ -22,9 +22,9 @@ int	main(int argc, char **argv, char **envp)
 		if (ast)
 		{
 			execute_ast(ast, &env);
-			free_ast_error(ast, 0);
+			free_ast_error(ast);
 		}
-		free(line);
+		//free(line);
 	}
 	free_env_list(env);
 	return (0);
