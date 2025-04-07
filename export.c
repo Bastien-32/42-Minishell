@@ -52,7 +52,7 @@ void	add_new_env_var(t_env **env, char *env_keyname, char *value)
 	add_env_back(env, new_env);
 }
 
-int	export_builtin(char **args, t_env *env)
+int	export_builtin(char **args, t_env **env)
 {
 	int		i;
 	char	*env_keyname;
@@ -60,7 +60,7 @@ int	export_builtin(char **args, t_env *env)
 
 	if (args[1] == NULL)
 	{
-		print_env(env);
+		print_env(*env);
 		return (0);
 	}
 	i = 1;
@@ -70,7 +70,7 @@ int	export_builtin(char **args, t_env *env)
 		{
 			if (!update_or_add_env_var(env, env_keyname, value))
 			{
-				add_new_env_var(&env, env_keyname, value);
+				add_new_env_var(env, env_keyname, value);
 			}
 		}
 		i++;
