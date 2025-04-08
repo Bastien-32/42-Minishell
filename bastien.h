@@ -416,6 +416,8 @@ int		echo_builtin(char **args);
 int		cd_builtin(char **args, t_env *env);
 int		pwd_builtin(void);
 int		export_builtin(char **args, t_env **env);
+void	execute_pipe(t_ast *ast, t_env **env);
+
 
 void	print_ast(t_ast *ast);
 

@@ -32,8 +32,8 @@ int	execute_ast(t_ast *ast, t_env **env)
 		else if (ast->type == REDIR_IN || ast->type == REDIR_OUT
 			|| ast->type == APPEND || ast->type == HEREDOC)
 			execute_redirection(ast);
-		/* else if (ast->type == PIPE)
-			execute_pipe(ast, env); */
+		else if (ast->type == PIPE)
+			execute_pipe(ast, env);
 		ast = ast->right;
 	}
 	return (1);
