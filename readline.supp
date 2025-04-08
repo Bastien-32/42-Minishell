@@ -1,10 +1,54 @@
 {
-   readline-suppression
+   my_leak_suppression
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:xmalloc
-   fun:rl_initialize
-   obj:/lib/x86_64-linux-gnu/libreadline.so.*
-   obj:/lib/x86_64-linux-gnu/libhistory.so.*
+   ...
+   obj:*/libreadline.so.*
+}
+{
+ls_ignore_leaks
+Memcheck:Leak
+...
+obj:*/ls
+}
+{
+    cat_ignore_leaks
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/cat
+}
+{
+    grep_ignore_leaks
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/grep
+}
+{
+    chmod_ignore_leaks
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/chmod
+}
+{
+    cp_ignore_leaks
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/cp
+}
+{
+    mv_ignore_leaks
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/mv
+}
+{
+   clear_command_memory_leaks
+   Memcheck:Leak
+   ...
+   obj:/usr/bin/clear
+}
+{
+    sort_command_memory_leaks
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/sort
 }
