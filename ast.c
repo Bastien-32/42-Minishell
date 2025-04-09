@@ -12,22 +12,32 @@ t_ast	*new_ast_node(char **value, t_type type)
 	ast->left = NULL;
 	ast->right = NULL;
 	ast->filename = NULL;
+	ast->visited = 0;
 	return (ast);
 }
 
 void	free_ast_error(t_ast *ast)
 {
+	int	i;
+
 	if (ast == NULL)
+		return ;
+	if (ast->visited)
+		return ;
+	ast->visited = 1;
+	if (ast->left == ast || ast->right == ast)
 		return ;
 	free_ast_error(ast->left);
 	free_ast_error(ast->right);
 	if (ast->cmd)
 	{
-		int i = 0;
+		i = 0;
 		while (ast->cmd[i])
 			free(ast->cmd[i++]);
 		free(ast->cmd);
 	}
+	if (ast->filename)
+		free(ast->filename);
 	free(ast);
 }
 
@@ -58,11 +68,16 @@ int	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 	else
 	{
 		tmp = *ast;
+		if (tmp == new)
+			return (0);
 		while (tmp->right)
-			tmp = tmp->right;
-		new->left = tmp;
-		new->right = NULL;
+		{
+		/*if (tmp == new || tmp->right == new)
+			return (0);*/
+		tmp = tmp->right;
+	}
 		tmp->right = new;
+		new->left = tmp;
 	}
 	return (1);
 }

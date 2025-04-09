@@ -75,7 +75,7 @@ t_ast	*build_tree(char *line, t_env *env)
 		return (NULL);
 	}
 	free_token_list(tokens);
-	print_ast(ast);															// A supprimer
+	//print_ast(ast);															// A supprimer
 
 	return (ast);
 }

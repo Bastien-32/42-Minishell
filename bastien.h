@@ -50,6 +50,7 @@ typedef struct s_ast
 	int				fd;				// facultatif pour la redirection
 	struct s_ast	*left;
 	struct s_ast	*right;
+	int				visited;
 }	t_ast;
 
 /* ****************************************************************************

@@ -121,6 +121,7 @@ int	execute_external(t_ast *ast, t_env *env)
 	}
 	else if (pid == 0)
 	{
+		//printf("→ execve(%s)\n", cmd_path);
 		execve(cmd_path, ast->cmd, envp);
 		perror("execve");
 		exit(127);		// ← Code de sortie pour "command not found"

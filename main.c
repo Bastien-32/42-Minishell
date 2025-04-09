@@ -23,6 +23,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			execute_ast(ast, &env);
 			free_ast_error(ast);
+			//printf("[main loop] back to prompt\n");							//a supprimer
 		}
 		//free(line);
 	}
