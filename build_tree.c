@@ -17,15 +17,15 @@ void	print_ast(t_ast *ast)
 			}
 		}
 		else if (ast->type == PIPE)
-		printf("PIPE |\n");
+			ft_printf("PIPE |\n");
 		else if (ast->type == REDIR_IN)
-			printf("REDIR_IN <\n");
+			ft_printf("REDIR_IN <\n	FILENAME : %s\n", ast->filename);
 		else if (ast->type == REDIR_OUT)
-			printf("REDIR_OUT >\n");
+			ft_printf("REDIR_OUT >\n	FILENAME : %s\n", ast->filename);
 		else if (ast->type == APPEND)
-			printf("APPEND >>\n");
+			ft_printf("APPEND >>\n	FILENAME : %s\n", ast->filename);
 		else if (ast->type == HEREDOC)
-			printf("HEREDOC <<\n");
+			ft_printf("HEREDOC <<\n	DELIMITER : %s\n", ast->filename);
 		else
 			printf("UNKNOWN\n");
 		ast = ast->right;
@@ -75,7 +75,7 @@ t_ast	*build_tree(char *line, t_env *env)
 		return (NULL);
 	}
 	free_token_list(tokens);
-	//print_ast(ast);															// A supprimer
+	print_ast(ast);															// A supprimer
 
 	return (ast);
 }

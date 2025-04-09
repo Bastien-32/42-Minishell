@@ -11,6 +11,7 @@ t_ast	*new_ast_node(char **value, t_type type)
 	ast->type = type;
 	ast->left = NULL;
 	ast->right = NULL;
+	ast->filename = NULL;
 	return (ast);
 }
 
@@ -60,6 +61,7 @@ int	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 		while (tmp->right)
 			tmp = tmp->right;
 		new->left = tmp;
+		new->right = NULL;
 		tmp->right = new;
 	}
 	return (1);

@@ -13,10 +13,13 @@
 //lignes a supprimer dans fonction
 int	execute_command(t_ast *ast, t_env **env)
 {
+	//printf("FD stdout: %d\n", STDOUT_FILENO);
+	if (!ast || !ast->cmd || !ast->cmd[0])
+		return (1);
 	if (node_builtin(ast->cmd[0]))
-		execute_builtin(ast, env);
+		return(execute_builtin(ast, env));
 	else
-		execute_external(ast, *env);
+		return(execute_external(ast, *env));
 	//print_env(*env);										//a supprimer apres ainsi que la fonction
 	return (g_exit_status);
 }
@@ -39,48 +42,57 @@ int	execute_command(t_ast *ast, t_env **env)
 	return (0);
 }*/
 
-int	is_redirection_type(int type)
-{
-	return (type == REDIR_IN || type == REDIR_OUT
-		|| type == APPEND || type == HEREDOC);
-}
-
 int	execute_ast(t_ast *ast, t_env **env)
 {
 	t_ast	*redir;
-	t_ast	*next;
 
 	while (ast)
 	{
+		// Traitement des redirections liées à la commande
 		if (ast->type == COMMAND)
 		{
-			// Exécute les redirections juste après la commande
 			redir = ast->right;
-			while (redir && is_redirection_type(redir->type))
+
+			while (redir && (redir->type == REDIR_IN || redir->type == HEREDOC
+					|| redir->type == APPEND || redir->type == REDIR_OUT))
 			{
-				execute_redirection(redir);
+				if (redir == ast || redir->right == redir)
+				{
+					write(2, "⚠️ Redirection circulaire détectée\n", 35);
+					return (1);
+				}
+				if (execute_redirection(redir) != 0)
+					return (1);
+				if (redir->right == NULL)
+					printf("-> End of redirections\n");
+				else if (redir->right == redir)
+				{
+					write(2, "❗redirection right pointe sur elle-même (boucle)\n", 50);
+					break;
+				}
+
 				redir = redir->right;
 			}
 
 			execute_command(ast, env);
 
-			// On saute la commande + les redirections qu'on vient de traiter
-			next = ast->right;
-			while (next && is_redirection_type(next->type))
-				next = next->right;
-			ast = next;
+			if (!redir)
+				break;
+			if (redir == NULL)
+				printf("-> Next node is NULL\n");
+			else
+				printf("-> Next node is of type %d\n", redir->type);
+
+			ast = redir;
 		}
 		else
 		{
-			// Si on tombe sur une redirection orpheline, on la traite seule
-			if (is_redirection_type(ast->type))
-				execute_redirection(ast);
+			// Si ce n’est pas une commande, on saute
 			ast = ast->right;
 		}
 	}
 	return (0);
 }
-
 
 // Il faudra à la fin exécuter cette fonction  dans ce sens-là.
 //La fonction au-dessus permet juste de tester dans le sens où on crée les fonctions.

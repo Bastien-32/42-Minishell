@@ -76,7 +76,6 @@ int ft_heredoc(t_ast *ast)
 			free(line);
 			return(perror_message("Error opening heredoc file"));
 		}
-
 		close(fd_tmp);
 		free(line);
 	}
@@ -85,6 +84,9 @@ int ft_heredoc(t_ast *ast)
 
 int	execute_redirection(t_ast *ast)
 {
+	if (!ast || !ast->filename)
+		return (perror_message("Redirection: filename missing or invalid"));
+	printf(" [executing redirection] type = %d, file = %s\n", ast->type, ast->filename);
 	if (ast->type == REDIR_IN)
 		return (ft_redir_in(ast));
 	else if (ast->type == REDIR_OUT)
