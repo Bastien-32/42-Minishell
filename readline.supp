@@ -1,54 +1,54 @@
 {
-   my_leak_suppression
-   Memcheck:Leak
-   ...
-   obj:*/libreadline.so.*
+	my_leak_suppression
+	Memcheck:Leak
+	...
+	obj:*/libreadline.so.*
 }
 {
-ls_ignore_leaks
-Memcheck:Leak
-...
-obj:*/ls
+	ls_ignore_leaks
+	Memcheck:Leak
+	...
+	obj:*/ls
 }
 {
-    cat_ignore_leaks
-    Memcheck:Leak
-    ...
-    obj:/usr/bin/cat
+	cat_ignore_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/cat
 }
 {
-    grep_ignore_leaks
-    Memcheck:Leak
-    ...
-    obj:/usr/bin/grep
+	grep_ignore_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/grep
 }
 {
-    chmod_ignore_leaks
-    Memcheck:Leak
-    ...
-    obj:/usr/bin/chmod
+	chmod_ignore_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/chmod
 }
 {
-    cp_ignore_leaks
-    Memcheck:Leak
-    ...
-    obj:/usr/bin/cp
+	cp_ignore_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/cp
 }
 {
-    mv_ignore_leaks
-    Memcheck:Leak
-    ...
-    obj:/usr/bin/mv
+	mv_ignore_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/mv
 }
 {
-   clear_command_memory_leaks
-   Memcheck:Leak
-   ...
-   obj:/usr/bin/clear
+	clear_command_memory_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/clear
 }
 {
-    sort_command_memory_leaks
-    Memcheck:Leak
-    ...
-    obj:/usr/bin/sort
+	sort_command_memory_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/sort
 }

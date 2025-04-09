@@ -23,21 +23,64 @@ int	execute_command(t_ast *ast, t_env **env)
 
 // une fois toutes les redirections codées, il faudra les ordonner 
 // comme la fonction en commentaire après celle-là.
-int	execute_ast(t_ast *ast, t_env **env)
+/*int	execute_ast(t_ast *ast, t_env **env)
 {
 	while (ast)
 	{
-		if (ast->type == COMMAND)
-			execute_command(ast, env);
-		else if (ast->type == REDIR_IN || ast->type == REDIR_OUT
+		if (ast->type == REDIR_IN || ast->type == REDIR_OUT
 			|| ast->type == APPEND || ast->type == HEREDOC)
 			execute_redirection(ast);
-		/* else if (ast->type == PIPE)
-			execute_pipe(ast, env); */
+		if (ast->type == COMMAND)
+			execute_command(ast, env);
+		else if (ast->type == PIPE)
+			execute_pipe(ast, env);
 		ast = ast->right;
 	}
-	return (1);
+	return (0);
+}*/
+
+int	is_redirection_type(int type)
+{
+	return (type == REDIR_IN || type == REDIR_OUT
+		|| type == APPEND || type == HEREDOC);
 }
+
+int	execute_ast(t_ast *ast, t_env **env)
+{
+	t_ast	*redir;
+	t_ast	*next;
+
+	while (ast)
+	{
+		if (ast->type == COMMAND)
+		{
+			// Exécute les redirections juste après la commande
+			redir = ast->right;
+			while (redir && is_redirection_type(redir->type))
+			{
+				execute_redirection(redir);
+				redir = redir->right;
+			}
+
+			execute_command(ast, env);
+
+			// On saute la commande + les redirections qu'on vient de traiter
+			next = ast->right;
+			while (next && is_redirection_type(next->type))
+				next = next->right;
+			ast = next;
+		}
+		else
+		{
+			// Si on tombe sur une redirection orpheline, on la traite seule
+			if (is_redirection_type(ast->type))
+				execute_redirection(ast);
+			ast = ast->right;
+		}
+	}
+	return (0);
+}
+
 
 // Il faudra à la fin exécuter cette fonction  dans ce sens-là.
 //La fonction au-dessus permet juste de tester dans le sens où on crée les fonctions.
