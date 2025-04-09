@@ -11,6 +11,7 @@ t_ast	*new_ast_node(char **value, t_type type)
 	ast->type = type;
 	ast->left = NULL;
 	ast->right = NULL;
+	ast->filename = NULL;
 	return (ast);
 }
 
