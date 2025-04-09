@@ -37,12 +37,12 @@ char	*find_path(char *cmd, t_env *env)
 	{
 		folder = ft_strjoin(path_array[i], "/");
 		if (!folder)
-			return (NULL);
+			return (free_array_envp(path_array), NULL);
 		cmd_path = ft_strjoin_free_s1(folder, cmd);
 		if (!cmd_path)
-			return (NULL);
+			return (free_array_envp(path_array), NULL);
 		if (access(cmd_path, X_OK) == 0)
-			return (cmd_path);
+			return (free_array_envp(path_array), cmd_path);
 		free(cmd_path);
 		i++;
 	}
