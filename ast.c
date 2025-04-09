@@ -14,7 +14,6 @@ t_ast	*new_ast_node(char **value, t_type type)
 	return (ast);
 }
 
-//free ast
 void	free_ast_error(t_ast *ast)
 {
 	if (ast == NULL)
