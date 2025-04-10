@@ -130,7 +130,7 @@ void	fill_name_file(t_ast *ast, t_token **tokens)
 	*tokens = (*tokens)->next;
 }
 
-t_ast	*parse_ast(t_token *tokens, t_env *env)
+/* t_ast	*parse_ast(t_token *tokens, t_env *env)
 {
 	t_ast	*ast;
 	t_ast	*new_node;
@@ -156,5 +156,73 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 			return (NULL);
 	}
 	//free_token_list(tokens);
+	return (ast);
+} */
+//mettre le else if dans une fonction parse_redirs_in_block
+t_ast	*parse_cmds_and_redirs_in_block(t_token **tokens)
+{
+	t_ast *ast = NULL;
+	t_ast *last_node = NULL;
+	t_ast *new_node = NULL;
+
+	while (*tokens)
+	{
+		if ((*tokens)->type == COMMAND)
+		{
+			if (!ast)
+			{
+				// Première commande rencontrée = racine du bloc
+				ast = parse_commands_in_block(tokens);
+				last_node = ast;
+			}
+			else
+			{
+				// Commande supplémentaire (imprévu, sécurité)
+				break;
+			}
+		}
+		else if ((*tokens)->type == REDIR_IN || (*tokens)->type == REDIR_OUT
+			|| (*tokens)->type == APPEND || (*tokens)->type == HEREDOC)
+		{
+			new_node = new_ast_node(NULL, (*tokens)->type);
+			*tokens = (*tokens)->next;
+			fill_name_file(new_node, tokens);
+			
+			if (!last_node)
+			{
+				// redirection sans commande → erreur
+				free_ast_error(new_node);
+				return (NULL);
+			}
+			last_node->right = new_node;
+			new_node->left = last_node;
+			last_node = new_node;
+		}
+		else
+			break;
+	}
+	return (ast);
+}
+
+t_ast *parse_ast(t_token *tokens, t_env *env)
+{
+	t_ast *ast;
+	t_ast *pipe_node;
+	t_ast *next_block;
+
+	if (!tokens)
+		return (NULL);
+	ast = parse_cmds_and_redirs_in_block(&tokens);
+	while (tokens && tokens->type == PIPE)
+	{
+		tokens = tokens->next;
+		next_block = parse_cmds_and_redirs_in_block(&tokens);
+		if (!next_block)
+			return (free_ast_error(ast), NULL);
+		pipe_node = new_ast_node(NULL, PIPE);
+		pipe_node->left = ast;
+		pipe_node->right = next_block;
+		ast = pipe_node;
+	}
 	return (ast);
 }

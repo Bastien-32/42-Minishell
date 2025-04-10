@@ -2,7 +2,7 @@
 
 t_ast	*new_ast_node(char **value, t_type type)
 {
-	t_ast *ast;
+	t_ast	*ast;
 
 	ast = malloc(sizeof(t_ast));
 	if (!ast)
@@ -71,11 +71,7 @@ int	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 		if (tmp == new)
 			return (0);
 		while (tmp->right)
-		{
-			/*if (tmp == new || tmp->right == new)
-				return (0);*/
 			tmp = tmp->right;
-		}
 		tmp->right = new;
 		new->left = tmp;
 	}
@@ -102,15 +98,7 @@ t_ast	*parse_commands_in_block(t_token **tokens)
 	i = 0;
 	while (i < count && *tokens && (*tokens)->type == COMMAND)
 	{
-		cmd[i] = ft_strdup((*tokens)->value);
-		if (!cmd[i]) // 5. Gestion d'erreur si strdup échoue
-		{
-			while (--i >= 0) // 6. Libérer les précédentes allocations
-				free(cmd[i]);
-			free(cmd);
-			return (write(2, "ft_strdup failed\n", 17), NULL);
-		}
-		i++;
+		cmd[i++] = ft_strdup((*tokens)->value);
 		*tokens = (*tokens)->next;
 	}
 	cmd[i] = NULL;
