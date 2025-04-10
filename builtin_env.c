@@ -2,7 +2,8 @@
 
 int	env_builtin(char **args, t_env *env)
 {
-	t_env *tmp_env;
+	t_env	*tmp_env;
+
 	tmp_env = env;
 	if (args[1])
 	{

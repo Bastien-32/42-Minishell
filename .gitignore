@@ -1,0 +1,2 @@
+echo "*.o" >> .gitignore
+echo "minishell" >> .gitignore
