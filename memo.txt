@@ -9,6 +9,7 @@ export :
 tri alphabetique + "declare x" devant et affichage variable meme sans valeur (thomas le saulter)
 
 cd : 
+
 mettre a jour les VE PWD  et OLDPWD pour qu;'elles pointes sur le bon fichier
 gerer aussi la suppresion du dossier dans leaquel on se trouve sans qu'il se perde (thomas le saulter)
 
