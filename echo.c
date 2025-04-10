@@ -21,5 +21,6 @@ int	echo_builtin(char **args)
 	}
 	if (!n_flag)
 		ft_printf("\n");
+	g_exit_status = 0;
 	return (0);
 }

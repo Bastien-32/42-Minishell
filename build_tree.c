@@ -132,8 +132,8 @@ void	fill_name_file(t_ast *ast, t_token **tokens)
 
 t_ast	*parse_ast(t_token *tokens, t_env *env)
 {
-	t_ast *ast;
-	t_ast *new_node;
+	t_ast	*ast;
+	t_ast	*new_node;
 
 	ast = NULL;
 	while (tokens)
@@ -141,13 +141,13 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 		if (tokens->type == COMMAND)
 		{
 			new_node = parse_commands_in_block(&tokens);
-			if(!new_node)
+			if (!new_node)
 				return (free_token_list(tokens), NULL);
 		}
 		else
 		{
 			new_node = new_ast_node(NULL, tokens->type);
-			if(!new_node)
+			if (!new_node)
 				return (free_token_list(tokens), NULL);
 			tokens = tokens->next;
 			fill_name_file(new_node, &tokens);

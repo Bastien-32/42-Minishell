@@ -17,9 +17,9 @@ int	execute_command(t_ast *ast, t_env **env)
 	if (!ast || !ast->cmd || !ast->cmd[0])
 		return (1);
 	if (node_builtin(ast->cmd[0]))
-		return(execute_builtin(ast, env));
+		g_exit_status = execute_builtin(ast, env);
 	else
-		return(execute_external(ast, *env));
+		g_exit_status = execute_external(ast, *env);
 	//print_env(*env);										//a supprimer apres ainsi que la fonction
 	return (g_exit_status);
 }

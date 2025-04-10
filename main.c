@@ -1,6 +1,6 @@
 #include "bastien.h"
 
-sig_atomic_t g_exit_status = 0;
+sig_atomic_t	g_exit_status = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -15,7 +15,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		line = readline("minishell> ");
 		if (!line)
-			break;
+			break ;
 		if (*line)
 			add_history(line);
 		ast = build_tree(line, env);

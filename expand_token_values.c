@@ -24,7 +24,7 @@ char	*add_key_value(char *val_tok, int *read_pos, char *old_tok, t_env *env)
 	(*read_pos)++;
 	i = 0;
 	while (val_tok[*read_pos + i] && (ft_isalnum(val_tok[*read_pos + i])
-		|| val_tok[*read_pos + i] == '_'))
+			|| val_tok[*read_pos + i] == '_'))
 		i++;
 	env_key = ft_strndup(&val_tok[*read_pos], i);
 	temp_env = env;
@@ -52,10 +52,10 @@ char	*fill_value_env(char *value_token, t_env *env)
 
 	read_pos = 0;
 	new_token = ft_calloc(1, 1);
-	while(value_token[read_pos])
+	while (value_token[read_pos])
 	{
 		i = 0;
-		while(value_token[read_pos + i] && value_token[read_pos + i] != '$')
+		while (value_token[read_pos + i] && value_token[read_pos + i] != '$')
 			i++;
 		if (i > 0)
 		{
@@ -68,4 +68,3 @@ char	*fill_value_env(char *value_token, t_env *env)
 	}
 	return (new_token);
 }
-

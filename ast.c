@@ -60,7 +60,7 @@ int	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 		free_ast_error(*ast);
 		return (0);
 	}
-	if(!*ast)
+	if (!*ast)
 	{
 		*ast = new;
 		return (1);
@@ -72,10 +72,10 @@ int	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
 			return (0);
 		while (tmp->right)
 		{
-		/*if (tmp == new || tmp->right == new)
-			return (0);*/
-		tmp = tmp->right;
-	}
+			/*if (tmp == new || tmp->right == new)
+				return (0);*/
+			tmp = tmp->right;
+		}
 		tmp->right = new;
 		new->left = tmp;
 	}
@@ -97,7 +97,7 @@ t_ast	*parse_commands_in_block(t_token **tokens)
 		tmp = tmp->next;
 	}
 	cmd = malloc (sizeof(char *) * (count + 1));
-	if(!cmd)
+	if (!cmd)
 		return (write(2, "Malloc cmd failed\n", 18), NULL);
 	i = 0;
 	while (i < count && *tokens && (*tokens)->type == COMMAND)

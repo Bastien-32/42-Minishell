@@ -31,8 +31,7 @@ void	remove_node_env(t_env **env, char **args, int i)
 
 int	unset_builtin(char **args, t_env **env)
 {
-
-	int		i;
+	int	i;
 
 	if (!args[1])
 	{

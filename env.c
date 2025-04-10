@@ -17,7 +17,7 @@ void	add_env_back(t_env **env, t_env *new)
 {
 	t_env	*tmp;
 
-	if(!new)
+	if (!new)
 		free_env_error(*env, 1);
 	if (!*env)
 		*env = new;
@@ -71,7 +71,7 @@ void	free_env_error(t_env *env, int need_exit)
 
 void	free_env_list(t_env *env)
 {
-	t_env *tmp;
+	t_env	*tmp;
 
 	while (env)
 	{

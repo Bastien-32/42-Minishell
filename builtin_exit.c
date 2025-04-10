@@ -2,8 +2,9 @@
 
 static int	ft_is_numeric(const char *str)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	if (str[0] == '-' || str[0] == '+')
 		i++;
 	while (str[i])
@@ -46,4 +47,3 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 	free_env_and_ast_in_builtin_exit(env, ast);
 	exit(code);
 }
-
