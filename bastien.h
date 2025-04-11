@@ -53,6 +53,18 @@ typedef struct s_ast
 	int				visited;
 }	t_ast;
 
+typedef struct s_ast
+{
+	char			**cmd;			// Tableau de la commande + arguments (ex: {"grep", "bonjour", NULL})
+	char			*redir_in;		// Fichier pour < ou <<
+	char			*redir_out;		// Fichier pour > ou >> 
+	t_type			type_in;		// type de l'entree (REDIR_IN ou HEREDOC)
+	t_type			type_out;		// type de la sortie (REDIR_OUT ou  APPEND)
+	int				pipe_out;		// true si un pipe | suit cette commande
+	struct s_ast	*next;			// Commande suivante (chaînée)
+}	t_ast;
+
+
 /* ****************************************************************************
 								 execute_ast.c
 **************************************************************************** */
