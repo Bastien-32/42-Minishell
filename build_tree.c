@@ -165,7 +165,7 @@ void	expand_token_values(t_token *tokens, t_env *env)
 	return (ast);
 } */
 
-int	count_command_tokens(t_token *tokens)
+int	count_cmd_tokens(t_token *tokens)
 {
 	int	count;
 
@@ -185,29 +185,51 @@ void	free_cmd_args(char **args, int count)
 	free(args);
 }
 
-int	handle_command(t_token **tokens, t_ast **cmd, t_ast **ast, t_env *env)
+char	**dup_cmd_tokens(t_token **tokens, int count)
 {
 	char	**args;
-	int		count;
 	int		i;
 
-	count = count_command_tokens(*tokens);
 	args = malloc(sizeof(char *) * (count + 1));
 	if (!args)
-		return (write(2, "Malloc failed\n", 14), 0);
+		return (NULL);
 	i = -1;
 	while (++i < count && *tokens && (*tokens)->type == COMMAND)
 	{
 		args[i] = ft_strdup((*tokens)->value);
 		if (!args[i])
-			return (free_cmd_args(args, i), 0);
+		{
+			while (--i >= 0)
+				free(args[i]);
+			free(args);
+			return (NULL);
+		}
 		*tokens = (*tokens)->next;
 	}
 	args[i] = NULL;
-	*cmd = new_ast_node(args, COMMAND);
-	if (!*cmd)
-		return (free_cmd_args(args, i), 0);
-	return (add_back_ast(ast, *cmd, env, *tokens));
+	return (args);
+}
+
+int	handle_command(t_token **tokens, t_ast **current_cmd,
+	t_ast **ast, t_env *env)
+{
+	char	**args;
+	int		count;
+
+	count = count_cmd_tokens(*tokens);
+	args = dup_cmd_tokens(tokens, count);
+	if (!args)
+		return (write(2, "Dup command failed\n", 20), 0);
+	if (!*current_cmd)
+	{
+		*current_cmd = new_ast_node(args, COMMAND);
+		if (!*current_cmd)
+			return (free_cmd_args(args, count), 0);
+		add_back_ast(ast, *current_cmd, env, *tokens);
+	}
+	else
+		(*current_cmd)->cmd = args;
+	return (1);
 }
 
 void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
@@ -226,7 +248,8 @@ void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
 	}
 }
 
-int	handle_redirection(t_token **tokens, t_ast **cmd, t_ast **ast, t_env *env)
+int	handle_redirection(t_token **tokens, t_ast **current_cmd,
+	t_ast **ast, t_env *env)
 {
 	t_token	*redir;
 
@@ -234,37 +257,38 @@ int	handle_redirection(t_token **tokens, t_ast **cmd, t_ast **ast, t_env *env)
 	*tokens = (*tokens)->next;
 	if (!*tokens || (*tokens)->type != COMMAND)
 		return (0);
-	if (!*cmd)
+	if (!*current_cmd)
 	{
-		*cmd = new_ast_node(NULL, COMMAND);
-		if (!*cmd)
+		*current_cmd = new_ast_node(NULL, COMMAND);
+		if (!*current_cmd)
 			return (0);
-		add_back_ast(ast, *cmd, env, *tokens);
+		add_back_ast(ast, *current_cmd, env, *tokens);
 	}
-	fill_redirection(*cmd, redir, (*tokens)->value);
+	fill_redirection(*current_cmd, redir, (*tokens)->value);
 	*tokens = (*tokens)->next;
 	return (1);
 }
 
-int	parse_token_for_ast(t_token **tokens, t_ast **cmd, t_ast **ast, t_env *env)
+int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd,
+	t_ast **ast, t_env *env)
 {
-	if ((*tokens)->type == COMMAND && !*cmd)
+	if ((*tokens)->type == COMMAND)
 	{
-		if (!handle_command(tokens, cmd, ast, env))
+		if (!handle_command(tokens, current_cmd, ast, env))
 			return (0);
 	}
 	else if ((*tokens)->type == REDIR_IN || (*tokens)->type == REDIR_OUT
 		|| (*tokens)->type == APPEND || (*tokens)->type == HEREDOC)
 	{
-		if (!handle_redirection(tokens, cmd, ast, env))
+		if (!handle_redirection(tokens, current_cmd, ast, env))
 			return (0);
 	}
 	else if ((*tokens)->type == PIPE)
 	{
-		if (cmd)
-			(*cmd)->pipe_out = 1;
+		if (current_cmd)
+			(*current_cmd)->pipe_out = 1;
 		*tokens = (*tokens)->next;
-		*cmd = NULL;
+		*current_cmd = NULL;
 	}
 	else
 		*tokens = (*tokens)->next;
