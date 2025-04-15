@@ -1,0 +1,14 @@
+
+compiler avec : 
+valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell 
+
+gestion d'erreurs
+
+export : 
+tri alphabetique + "declare x" devant et affichage variable meme sans valeur (thomas le saulter)
+
+cd : 
+mettre a jour les VE PWD  et OLDPWD pour qu;'elles pointes sur le bon fichier
+gerer aussi la suppresion du dossier dans leaquel on se trouve sans qu'il se perde (thomas le saulter)
+
+test de commandes : cat file.txt | grep hello | wc -l

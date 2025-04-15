@@ -1,6 +1,6 @@
 #include "bastien.h"
 
-t_ast	*new_ast_node(char **value, t_type type)
+t_ast	*new_ast_node(char **value)
 {
 	t_ast	*ast;
 
@@ -94,17 +94,9 @@ t_ast	*parse_commands_in_block(t_token **tokens)
 	i = 0;
 	while (i < count && *tokens && (*tokens)->type == COMMAND)
 	{
-		cmd[i] = ft_strdup((*tokens)->value);
-		if (!cmd[i]) // 5. Gestion d'erreur si strdup échoue
-		{
-			while (--i >= 0) // 6. Libérer les précédentes allocations
-				free(cmd[i]);
-			free(cmd);
-			return (write(2, "ft_strdup failed\n", 17), NULL);
-		}
-		i++;
+		cmd[i++] = ft_strdup((*tokens)->value);
 		*tokens = (*tokens)->next;
 	}
 	cmd[i] = NULL;
-	return (new_ast_node(cmd, COMMAND));
+	return (new_ast_node(cmd));
 }

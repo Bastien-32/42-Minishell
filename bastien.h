@@ -42,7 +42,7 @@ typedef struct s_env
 	struct s_env	*next;
 }					t_env;
 
-typedef struct s_ast
+/* typedef struct s_ast
 {
 	t_type			type;
 	char			**cmd;			// ex: ["echo", "salut", NULL]
@@ -51,7 +51,7 @@ typedef struct s_ast
 	struct s_ast	*left;
 	struct s_ast	*right;
 	int				visited;
-}	t_ast;
+}	t_ast; */
 
 typedef struct s_ast
 {
@@ -69,8 +69,17 @@ typedef struct s_ast
 								 execute_ast.c
 **************************************************************************** */
 
-int	execute_command(t_ast *ast, t_env **env);
-int	execute_ast(t_ast *ast, t_env **env);
+
+int		is_valid_command(char **cmd);
+int		execute_command(t_ast *ast, t_env **env);
+int		execute_single(t_ast *ast, t_env **env);
+void	execute_command_child(t_ast *ast, t_env *env);
+int		pipe_child_process(t_ast *ast, t_env *env, int fd_in, int fd_out);
+int		execute_pipe(t_ast *ast, t_env **env, int *fd_in);
+void	restore_std_fds(int stdin_tmp, int stdout_tmp);
+void	wait_all_children(void);
+int		return_error_restore_fds(int stdin_tmp, int stdout_tmp);
+int		execute_ast(t_ast *ast, t_env **env);
 
 /* ****************************************************************************
 						  execute_command_builtin.c
@@ -93,13 +102,14 @@ int		execute_external(t_ast *ast, t_env *env);
 						  execute_command_external.c
 **************************************************************************** */
 
-int	execute_redirection(t_ast *ast);
+int		perror_message(char *str);
+int		execute_redirection(t_ast *ast);
 
 /* ****************************************************************************
 									ast.c
 **************************************************************************** */
 
-t_ast	*new_ast_node(char **value, t_type type);
+t_ast	*new_ast_node(char **value);
 void	free_ast_error(t_ast *ast);
 int		clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens);
 int		add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
@@ -124,6 +134,26 @@ t_token	*tokenize(char *line, t_env *env);
 void	expand_token_values(t_token *tokens, t_env *env);
 /* Abstract Syntax Tree */
 t_ast	*parse_ast(t_token *tokens, t_env *env);
+
+int	count_cmd_tokens(t_token *tokens);
+
+void	free_cmd_args(char **args, int count);
+
+char	**dup_cmd_tokens(t_token **tokens, int count);
+
+int	handle_command(t_token **tokens, t_ast **current_cmd,
+	t_ast **ast, t_env *env);
+
+void	fill_redirection(t_ast *ast, t_token *redir, char *filename);
+
+int	handle_redirection(t_token **tokens, t_ast **current_cmd,
+	t_ast **ast, t_env *env);
+
+int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd,
+	t_ast **ast, t_env *env);
+
+t_ast	*parse_ast(t_token *tokens, t_env *env);
+
 
 /* ****************************************************************************
 									env.c

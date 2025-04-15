@@ -192,18 +192,15 @@ char	**dup_cmd_tokens(t_token **tokens, int count)
 
 	args = malloc(sizeof(char *) * (count + 1));
 	if (!args)
+	{
+		perror("Malloc failed");
+		g_exit_status = 1;
 		return (NULL);
+	}
 	i = -1;
 	while (++i < count && *tokens && (*tokens)->type == COMMAND)
 	{
 		args[i] = ft_strdup((*tokens)->value);
-		if (!args[i])
-		{
-			while (--i >= 0)
-				free(args[i]);
-			free(args);
-			return (NULL);
-		}
 		*tokens = (*tokens)->next;
 	}
 	args[i] = NULL;
@@ -219,12 +216,12 @@ int	handle_command(t_token **tokens, t_ast **current_cmd,
 	count = count_cmd_tokens(*tokens);
 	args = dup_cmd_tokens(tokens, count);
 	if (!args)
-		return (write(2, "Dup command failed\n", 20), 0);
+		return (0);
 	if (!*current_cmd)
 	{
-		*current_cmd = new_ast_node(args, COMMAND);
+		*current_cmd = new_ast_node(args);
 		if (!*current_cmd)
-			return (free_cmd_args(args, count), 0);
+			return (0);
 		add_back_ast(ast, *current_cmd, env, *tokens);
 	}
 	else
@@ -259,7 +256,7 @@ int	handle_redirection(t_token **tokens, t_ast **current_cmd,
 		return (0);
 	if (!*current_cmd)
 	{
-		*current_cmd = new_ast_node(NULL, COMMAND);
+		*current_cmd = new_ast_node(NULL);
 		if (!*current_cmd)
 			return (0);
 		add_back_ast(ast, *current_cmd, env, *tokens);
@@ -307,5 +304,14 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 		if (!parse_token_for_ast(&tokens, &current_cmd, &ast, env))
 			return (NULL);
 	}
+	// 🔽 DEBUG ICI
+	t_ast *tmp = ast;
+	while (tmp)
+	{
+		printf("DEBUG AST → cmd: %s | pipe_out: %d\n",
+			tmp->cmd ? tmp->cmd[0] : "(null)", tmp->pipe_out);
+		tmp = tmp->next;
+	}
+	// 🔼 FIN DEBUG
 	return (ast);
 }

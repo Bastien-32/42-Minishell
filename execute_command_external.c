@@ -121,7 +121,14 @@ int	execute_external(t_ast *ast, t_env *env)
 	}
 	else if (pid == 0)
 	{
-		//printf("→ execve(%s)\n", cmd_path);
+		printf("[child] launching execve: %s\n", cmd_path);
+		int i = 0;
+		while (ast->cmd[i])
+		{
+			printf("cmd[%d] = %s\n", i, ast->cmd[i]);
+			i++;
+		}
+		printf("execve path = %s\n", cmd_path);
 		execve(cmd_path, ast->cmd, envp);
 		perror("execve");
 		exit(127);		// ← Code de sortie pour "command not found"
@@ -129,6 +136,7 @@ int	execute_external(t_ast *ast, t_env *env)
 	else
 	{
 		waitpid(pid, &status, 0);	// ← Attend que le fils meure
+		printf("[parent] waitpid passed\n");
 		if (WIFEXITED(status))
 			g_exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
@@ -136,5 +144,6 @@ int	execute_external(t_ast *ast, t_env *env)
 	}
 	free(cmd_path);
 	free_array_envp(envp);
+	printf("end execute_external\n");
 	return (g_exit_status);
 }
