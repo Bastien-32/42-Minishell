@@ -20,23 +20,39 @@ int	is_valid_command(char **cmd)
 
 int	execute_command(t_ast *ast, t_env **env)
 {
+	int	status;
+
+	if (!ast || !ast->cmd || !ast->cmd[0])
+		return (1);
 	if (!is_valid_command(ast->cmd))
 		return (0);
 	if (node_builtin(ast->cmd[0]))
-		g_exit_status = execute_builtin(ast, env);
+		status = execute_builtin(ast, env);
 	else
-		g_exit_status = execute_external(ast, *env);
+		status = execute_external(ast, *env);
+	if (status != 0)
+		return (0);
 	return (1);
+}
+
+void	restore_std_fds(int stdin_tmp, int stdout_tmp)
+{
+	dup2(stdin_tmp, STDIN_FILENO);
+	dup2(stdout_tmp, STDOUT_FILENO);
+	close(stdin_tmp);
+	close(stdout_tmp);
 }
 
 int	execute_single(t_ast *ast, t_env **env)
 {
-
+	printf("on entre dans execute single \n");
 	if (ast->redir_in || ast->redir_out)
 	{
 		if (!execute_redirection(ast))
 			return (0);
 	}
+	if (!ast->cmd || !ast->cmd[0])
+		return (1);
 	if (!execute_command(ast, env))
 		return (0);
 	return (1);
@@ -91,12 +107,13 @@ int	execute_pipe(t_ast *ast, t_env **env, int *fd_in)
 
 	printf("[PIPE] lancement pipe: %s\n", ast->cmd[0]);
 	if (pipe(pipe_fd) == -1)
-		return (perror_message("pipe failed"));
+		return (perror_message("create pipe failed"));
 	pid = fork();
 	if (pid == -1)
-		return (perror_message("fork failed"));
+		return (perror_message("create fork pipe failed"));
 	if (pid == 0)
 	{
+		printf("on entre dans le process enfant\n");
 		if (!pipe_child_process(ast, *env, *fd_in, pipe_fd[1]))
 			exit(g_exit_status);
 	}
@@ -107,12 +124,15 @@ int	execute_pipe(t_ast *ast, t_env **env, int *fd_in)
 	return (1);
 }
 
-void	restore_std_fds(int stdin_tmp, int stdout_tmp)
+int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
 {
-	dup2(stdin_tmp, STDIN_FILENO);
-	dup2(stdout_tmp, STDOUT_FILENO);
+	if (dup2(stdin_tmp, STDIN_FILENO) == -1)
+		perror("restore stdin");
+	if (dup2(stdout_tmp, STDOUT_FILENO) == -1)
+		perror("restore stdout");
 	close(stdin_tmp);
 	close(stdout_tmp);
+	return (1);
 }
 
 void	wait_all_children(void)
@@ -129,17 +149,6 @@ void	wait_all_children(void)
 	}
 }
 
-int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
-{
-	if (dup2(stdin_tmp, STDIN_FILENO) == -1)
-		perror("restore stdin");
-	if (dup2(stdout_tmp, STDOUT_FILENO) == -1)
-		perror("restore stdout");
-	close(stdin_tmp);
-	close(stdout_tmp);
-	return (1);
-}
-
 int	execute_ast(t_ast *ast, t_env **env)
 {
 	int	fd_in;
@@ -151,7 +160,7 @@ int	execute_ast(t_ast *ast, t_env **env)
 	tmp_stdout = dup(STDOUT_FILENO);
 	while (ast)
 	{
-		printf("[EXEC] cmd: %s | pipe_out: %d\n", ast->cmd[0], ast->pipe_out);
+		printf("[EXEC] cmd: %s | pipe_out: %d\n", ast->cmd ? ast->cmd[0] : "(null)", ast->pipe_out);
 		if (ast->pipe_out == 0)
 		{
 			if (!execute_single(ast, env))
@@ -164,7 +173,6 @@ int	execute_ast(t_ast *ast, t_env **env)
 		}
 		ast = ast->next;
 	}
-	printf("ok out\n");
 	restore_std_fds(tmp_stdin, tmp_stdout);
 	wait_all_children();
 	return (0);

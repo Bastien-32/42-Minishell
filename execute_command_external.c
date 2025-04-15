@@ -87,29 +87,61 @@ char	**env_to_array(t_env *env)
 	return (envp);
 }
 
-//il faut reduire / decouper cette fonction
+int	prepare_env_and_path(t_ast *ast, t_env *env, char **cmd_path, char ***envp)
+{
+	*cmd_path = find_path(ast->cmd[0], env);
+	if (!*cmd_path)
+	{
+		perror(ast->cmd[0]);
+		g_exit_status = 127;
+		return (0);
+	}
+	*envp = env_to_array(env);
+	if (!*envp)
+	{
+		perror("env_to_array");
+		free(*cmd_path);
+		g_exit_status = 1;
+		return (0);
+	}
+	return (1);
+}
+
+void	exec_child_process(char *cmd_path, t_ast *ast, char **envp)
+{
+	/*int	i;
+
+	i = 0;
+ 	printf("[child] launching execve: %s\n", cmd_path);
+	while (ast->cmd[i])
+	{
+		printf("cmd[%d] = %s\n", i, ast->cmd[i]);
+		i++;
+	} */
+	execve(cmd_path, ast->cmd, envp);
+	perror("execve");
+	exit(127);
+}
+
+void	wait_child_status(int pid)
+{
+	int	status;
+
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		g_exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		g_exit_status = 128 + WTERMSIG(status);
+}
+
 int	execute_external(t_ast *ast, t_env *env)
 {
 	char	*cmd_path;
 	char	**envp;
 	pid_t	pid;
-	int		status;
 
-	cmd_path = find_path(ast->cmd[0], env);
-	if (!cmd_path)
-	{
-		perror(ast->cmd[0]);
-		g_exit_status = 127;
-		return (127);
-	}
-	envp = env_to_array(env);
-	if(!envp)
-	{
-		perror("env_to_array");
-		free(cmd_path);
-		g_exit_status = 1;
+	if (!prepare_env_and_path(ast, env, &cmd_path, &envp))
 		return (1);
-	}
 	pid = fork();
 	if (pid == -1)
 	{
@@ -119,31 +151,11 @@ int	execute_external(t_ast *ast, t_env *env)
 		g_exit_status = 1;
 		return (1);
 	}
-	else if (pid == 0)
-	{
-		printf("[child] launching execve: %s\n", cmd_path);
-		int i = 0;
-		while (ast->cmd[i])
-		{
-			printf("cmd[%d] = %s\n", i, ast->cmd[i]);
-			i++;
-		}
-		printf("execve path = %s\n", cmd_path);
-		execve(cmd_path, ast->cmd, envp);
-		perror("execve");
-		exit(127);		// ← Code de sortie pour "command not found"
-	}
-	else
-	{
-		waitpid(pid, &status, 0);	// ← Attend que le fils meure
-		printf("[parent] waitpid passed\n");
-		if (WIFEXITED(status))
-			g_exit_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			g_exit_status = 128 + WTERMSIG(status);
-	}
+	if (pid == 0)
+		exec_child_process(cmd_path, ast, envp);
+	wait_child_status(pid);
 	free(cmd_path);
 	free_array_envp(envp);
 	printf("end execute_external\n");
-	return (g_exit_status);
+	return (0);
 }

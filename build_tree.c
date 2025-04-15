@@ -253,7 +253,10 @@ int	handle_redirection(t_token **tokens, t_ast **current_cmd,
 	redir = *tokens;
 	*tokens = (*tokens)->next;
 	if (!*tokens || (*tokens)->type != COMMAND)
-		return (0);
+	{
+		g_exit_status = 0;
+		return (1);
+	}
 	if (!*current_cmd)
 	{
 		*current_cmd = new_ast_node(NULL);

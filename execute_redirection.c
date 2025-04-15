@@ -4,12 +4,14 @@ int	perror_message(char *str)
 {
 	g_exit_status = 1;
 	perror(str);
-	return (1);
+	return (0);
 }
 
 int	ft_redir_in(t_ast *ast)
 {
 	int	fd;
+
+	printf("[REDIR_IN] read from: %s\n", ast->redir_out);
 
 	fd = open(ast->redir_in, O_RDONLY);
 	if (fd < 0)
@@ -20,12 +22,14 @@ int	ft_redir_in(t_ast *ast)
 		return (perror_message("Error dup2 REDIR_IN"));
 	}
 	close(fd);
-	return (0);
+	return (1);
 }
 
 int	ft_redir_out(t_ast *ast)
 {
 	int	fd;
+
+	printf("[REDIR_OUT] redirecting to: %s\n", ast->redir_out);
 
 	fd = open(ast->redir_out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
@@ -36,13 +40,14 @@ int	ft_redir_out(t_ast *ast)
 		return (perror_message("Error dup2 REDIR_OUT"));
 	}
 	close(fd);
-	return (0);
+	return (1);
 }
 
 int	ft_append(t_ast *ast)
 {
 	int	fd;
 
+	printf("[APPEND] redirecting to: %s\n", ast->redir_out);
 	fd = open(ast->redir_out, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 		return (perror_message("Error opening file APPEND"));
@@ -52,7 +57,7 @@ int	ft_append(t_ast *ast)
 		return (perror_message("Error dup2 APPEND"));
 	}
 	close(fd);
-	return (0);
+	return (1);
 }
 
 int	ft_heredoc(t_ast *ast)
@@ -79,27 +84,33 @@ int	ft_heredoc(t_ast *ast)
 		close(fd_tmp);
 		free(line);
 	}
-	return (0);
+	return (1);
 }
 
 int	execute_redirection(t_ast *ast)
 {
+	int	status;
+
 	if (!ast)
 		return (perror_message("Redirection: filename missing or invalid"));
-	//printf(" [executing redirection] type = %d, file = %s\n", ast->type, ast->filename);
+	status = 1;
 	if (ast->redir_in)
 	{
+		printf("execute REDIR_IN\n");
 		if (ast->type_in == REDIR_IN)
-			return (ft_redir_in(ast));
+			status = ft_redir_in(ast);
 		else if (ast->type_in == HEREDOC)
-			return (ft_heredoc(ast));
+			status = ft_heredoc(ast);
 	}
 	if (ast->redir_out)
 	{
+		printf("execute REDIR_OUT\n");
 		if (ast->type_out == REDIR_OUT)
-			return (ft_redir_out(ast));
+			status = ft_redir_out(ast);
 		else if (ast->type_out == APPEND)
-			return (ft_append(ast));
+			status = ft_append(ast);
 	}
+	if (status != 1)
+		return (0);
 	return (1);
 }

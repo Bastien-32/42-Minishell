@@ -96,6 +96,9 @@ char	**parse_path(t_env *env, char *key);
 char	*find_path(char *cmd, t_env *env);
 char	**env_to_array(t_env *env);
 void	free_array_envp(char **envp);
+int		prepare_env_and_path(t_ast *ast, t_env *env, char **cmd_path, char ***envp);
+void	exec_child_process(char *cmd_path, t_ast *ast, char **envp);
+void	wait_child_status(int pid);
 int		execute_external(t_ast *ast, t_env *env);
 
 /* ****************************************************************************
