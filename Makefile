@@ -4,8 +4,18 @@
 
 NAME		= minishell
 CC			= gcc
-CFLAGS		= -g -Wall -Wextra -Werror -I. -I./libft
-LDFLAGS     = -lreadline
+
+UNAME		:= $(shell uname)
+ifeq ($(UNAME), Darwin)
+	READLINE_FLAGS	= -I/opt/homebrew/opt/readline/include
+	READLINE_LDFLAGS = -L/opt/homebrew/opt/readline/lib -lreadline
+else
+	READLINE_FLAGS	=
+	READLINE_LDFLAGS = -lreadline
+endif
+
+CFLAGS		= -g -Wall -Wextra -Werror -I. -I./libft $(READLINE_FLAGS)
+LDFLAGS		= $(READLINE_LDFLAGS)
 SRCS		= $(wildcard *.c)
 OBJS		= $(SRCS:.c=.o)
 LIBFT_DIR	= libft

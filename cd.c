@@ -21,6 +21,7 @@ int	cd_builtin(char **args, t_env *env)
 		if (dir == NULL)
 		{
 			ft_printf ("cd: HOME not set\n");
+			g_exit_status = 1;
 			return (1);
 		}
 	}
@@ -29,7 +30,9 @@ int	cd_builtin(char **args, t_env *env)
 	if (chdir(dir) != 0)
 	{
 		perror ("cd");
+		g_exit_status = 1;
 		return (1);
 	}
+	g_exit_status = 0;
 	return (0);
 }
