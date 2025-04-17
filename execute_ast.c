@@ -100,7 +100,7 @@ int	pipe_child_process(t_ast *ast, t_env *env, int fd_in, int fd_out)
 	exit(g_exit_status);
 }
 
-int	execute_pipe(t_ast *ast, t_env **env, int *fd_in)
+/* int	execute_pipe(t_ast *ast, t_env **env, int *fd_in)
 {
 	int			pipe_fd[2];
 	pid_t		pid;
@@ -122,61 +122,7 @@ int	execute_pipe(t_ast *ast, t_env **env, int *fd_in)
 		close(*fd_in);
 	*fd_in = pipe_fd[0];
 	return (1);
-}
-
-int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
-{
-	if (dup2(stdin_tmp, STDIN_FILENO) == -1)
-		perror("restore stdin");
-	if (dup2(stdout_tmp, STDOUT_FILENO) == -1)
-		perror("restore stdout");
-	close(stdin_tmp);
-	close(stdout_tmp);
-	return (1);
-}
-
-void	wait_all_children(void)
-{
-	int	status;
-	pid_t	pid;
-
-	while ((pid = wait(&status)) > 0)
-	{
-		if (WIFEXITED(status))
-			g_exit_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			g_exit_status = 128 + WTERMSIG(status);
-	}
-}
-
-int	execute_ast(t_ast *ast, t_env **env)
-{
-	int	fd_in;
-	int	tmp_stdin;
-	int	tmp_stdout;
-
-	fd_in = 0;
-	tmp_stdin = dup(STDIN_FILENO);
-	tmp_stdout = dup(STDOUT_FILENO);
-	while (ast)
-	{
-		printf("[EXEC] cmd: %s | pipe_out: %d\n", ast->cmd ? ast->cmd[0] : "(null)", ast->pipe_out);
-		if (ast->pipe_out == 0)
-		{
-			if (!execute_single(ast, env))
-				return (return_error_restore_fds(tmp_stdin, tmp_stdout));
-		}
-		else
-		{
-			if (!execute_pipe(ast, env, &fd_in))
-				return (return_error_restore_fds(tmp_stdin, tmp_stdout));
-		}
-		ast = ast->next;
-	}
-	restore_std_fds(tmp_stdin, tmp_stdout);
-	wait_all_children();
-	return (0);
-}
+} */
 
 
 int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
@@ -203,11 +149,10 @@ void	wait_all_children(void)
 			g_exit_status = 128 + WTERMSIG(status);
 	}
 }
-
 int	execute_ast(t_ast *ast, t_env **env)
 {
 	int	fd_in;
-	int	tmp_stdin;
+	int	tmp_stdin; 
 	int	tmp_stdout;
 
 	fd_in = 0;
@@ -223,7 +168,7 @@ int	execute_ast(t_ast *ast, t_env **env)
 		}
 		else
 		{
-			if (!execute_pipe(ast, env, &fd_in))
+			if (!execute_pipe(&ast, env, &fd_in))
 				return (return_error_restore_fds(tmp_stdin, tmp_stdout));
 		}
 		ast = ast->next;
