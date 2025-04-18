@@ -14,7 +14,7 @@ int	env_vars(char *value_token)
 	return (0);
 }
 
-char	*add_key_value(char *val_tok, int *read_pos, char *old_tok, t_env *env)
+/* char	*add_key_value(char *val_tok, int *read_pos, char *old_tok, t_env *env)
 {
 	int		i;
 	char	*env_key;
@@ -39,6 +39,46 @@ char	*add_key_value(char *val_tok, int *read_pos, char *old_tok, t_env *env)
 	}
 	if (!temp_env)
 		new_tok = ft_strjoin_free_s1(old_tok, "");
+	*read_pos += i;
+	return (new_tok);
+} */
+
+char	*replace_env_key(char *env_key, char *str_before_env, t_env *env)
+{
+	t_env	*temp_env;
+
+	temp_env = env;
+	while (temp_env)
+	{
+		if (ft_strcmp(temp_env->env_keyname, env_key) == 0)
+			return (ft_strjoin_free_s1(str_before_env, temp_env->value));
+		temp_env = temp_env->next;
+	}
+	return (ft_strjoin_free_s1(str_before_env, ""));
+}
+
+char	*add_key_value(char *val_tok, int *read_pos,
+	char *str_before_env, t_env *env)
+{
+	int		i;
+	char	*env_key;
+	char	*new_tok;
+
+	(*read_pos)++;
+	if ( val_tok[*read_pos] == '?')
+	{
+		new_tok = ft_strjoin_free_s1(str_before_env, ft_itoa(g_exit_status));
+		(*read_pos)++;
+		return (new_tok);
+	}
+	i = 0;
+	while (val_tok[*read_pos + i] && (ft_isalnum(val_tok[*read_pos + i])
+			|| val_tok[*read_pos + i] == '_'))
+		i++;
+	env_key = ft_strndup(&val_tok[*read_pos], i);
+
+	new_tok = replace_env_key(env_key, str_before_env, env);
+	free(env_key);
 	*read_pos += i;
 	return (new_tok);
 }

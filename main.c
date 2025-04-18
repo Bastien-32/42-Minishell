@@ -15,7 +15,11 @@ int	main(int argc, char **argv, char **envp)
 	{
 		line = readline("minishell> ");
 		if (!line)
-			break ;
+		{
+			write(1, "exit\n", 5);
+			g_exit_status = 0;
+			break;
+		}
 		if (*line)
 			add_history(line);
 		ast = build_tree(line, env);

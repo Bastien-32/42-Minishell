@@ -4,6 +4,9 @@ valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --
 
 gestion d'erreurs
 
+mauvaise commande qui devrait rien retourner si ce n'est 1 losrqu"on lance  echo $? apres. la elle boucle a l'infini : 
+ echo hello | grep bonjour
+
 parsing : gerer les espace tout seuls ne pas les comptabiliser comme des commandes
 
 export : 
