@@ -156,6 +156,6 @@ int	execute_external(t_ast *ast, t_env *env)
 	wait_child_status(pid);
 	free(cmd_path);
 	free_array_envp(envp);
-	printf("end execute_external\n");
+	//printf("end execute_external\n");
 	return (0);
 }

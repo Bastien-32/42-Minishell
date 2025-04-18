@@ -45,7 +45,7 @@ void	restore_std_fds(int stdin_tmp, int stdout_tmp)
 
 int	execute_single(t_ast *ast, t_env **env)
 {
-	printf("on entre dans execute single \n");
+	//printf("on entre dans execute single \n");
 	if (ast->redir_in || ast->redir_out)
 	{
 		if (!execute_redirection(ast))
@@ -160,7 +160,7 @@ int	execute_ast(t_ast *ast, t_env **env)
 	tmp_stdout = dup(STDOUT_FILENO);
 	while (ast)
 	{
-		printf("[EXEC] cmd: %s | pipe_out: %d\n", ast->cmd ? ast->cmd[0] : "(null)", ast->pipe_out);
+		//printf("[EXEC] cmd: %s | pipe_out: %d\n", ast->cmd ? ast->cmd[0] : "(null)", ast->pipe_out);
 		if (ast->pipe_out == 0)
 		{
 			if (!execute_single(ast, env))

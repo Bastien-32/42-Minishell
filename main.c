@@ -15,7 +15,14 @@ int	main(int argc, char **argv, char **envp)
 	{
 		line = readline("minishell> ");
 		if (!line)
+		{
+			write(1, "\033[1A", 4);
+			write(1, "\033[2K", 4);
+			write(1, "minishell> ", 12);
+			ft_printf("exit\n");
+			g_exit_status = 0;
 			break ;
+		}
 		if (*line)
 			add_history(line);
 		ast = build_tree(line, env);

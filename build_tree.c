@@ -45,9 +45,6 @@ t_ast	*build_tree(char *line, t_env *env)
 	t_ast	*ast;
 
 	tokens = NULL;
-
-	//printf("line = %s\n", line);												//a supprimer pour rendu final
-
 	tokens = tokenize(line, env);
 	if (!tokens)
 	{
@@ -56,32 +53,14 @@ t_ast	*build_tree(char *line, t_env *env)
 	}
 	free (line);
 	expand_token_values(tokens, env);
-/* 
-	t_token	*tmp;																//a supprimer de là ...
-	char	quote;
-	tmp = tokens;
-	while (tmp)
-	{
-		if (tmp->quote_type)
-			quote = tmp->quote_type;
-		else
-			quote = ' ';
-		printf("type: %d | quote: %c | value: \"%s\"\n",
-			tmp->type,
-			quote,
-			tmp->value);
-		tmp = tmp->next;
-	}																			// ... à là
- */
 	ast = parse_ast(tokens, env);
-
 	if (!ast)
 	{
 		free_ast_error(ast);
 		return (NULL);
 	}
 	free_token_list(tokens);
-	print_ast(ast);															// A supprimer
+	//print_ast(ast);															// A supprimer
 
 	return (ast);
 }
@@ -308,13 +287,13 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 			return (NULL);
 	}
 	// 🔽 DEBUG ICI
-	t_ast *tmp = ast;
+	/* t_ast *tmp = ast;
 	while (tmp)
 	{
 		printf("DEBUG AST → cmd: %s | pipe_out: %d\n",
 			tmp->cmd ? tmp->cmd[0] : "(null)", tmp->pipe_out);
 		tmp = tmp->next;
-	}
+	} */
 	// 🔼 FIN DEBUG
 	return (ast);
 }
