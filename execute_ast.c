@@ -204,7 +204,8 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 				exit(perror_message("dup2 pipe write failed"));
 			close(pipe_fd[0]);
 			close(pipe_fd[1]);
-			if (!execute_redirection(node))
+			if ((node->redir_in || node->redir_out)
+				&& !execute_redirection(node))
 				exit(1);
 			execute_command_child(node, *env);
 			exit(g_exit_status);
