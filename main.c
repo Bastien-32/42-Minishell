@@ -32,6 +32,8 @@ int	main(int argc, char **argv, char **envp)
 			free_ast_error(ast);
 			//printf("[main loop] back to prompt\n");							//a supprimer
 		}
+		else
+			g_exit_status = 0;
 		//free(line);
 	}
 	free_env_list(env);

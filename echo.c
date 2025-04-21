@@ -14,13 +14,13 @@ int	echo_builtin(char **args)
 	}
 	while (args[i])
 	{
-		ft_printf("%s", args[i]);
+		write(1, args[i], strlen(args[i]));
 		if (args[i + 1])
-			ft_printf(" ");
+			write(1, " ", 1);
 		i++;
 	}
 	if (!n_flag)
-		ft_printf("\n");
+		write(1, "\n", 1);
 	g_exit_status = 0;
 	return (0);
 }

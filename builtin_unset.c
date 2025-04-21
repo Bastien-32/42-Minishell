@@ -34,11 +34,7 @@ int	unset_builtin(char **args, t_env **env)
 	int	i;
 
 	if (!args[1])
-	{
-		write(2, "unset: not enough arguments\n", 28);
-		g_exit_status = 2;
-		return (2);
-	}
+		return (0);
 	i = 1;
 	remove_node_env(env, args, i);
 	g_exit_status = 0;

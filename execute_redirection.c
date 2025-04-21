@@ -180,10 +180,7 @@ int	execute_redirection(t_ast *ast)
 		if (ast->type_in == REDIR_IN)
 			status = ft_redir_in(ast);
 		else if (ast->type_in == HEREDOC)
-		{
 			status = ft_heredoc(ast);
-			//printf("on sort de ft_herdoc \n");
-		}
 	}
 	if (ast->redir_out)
 	{
