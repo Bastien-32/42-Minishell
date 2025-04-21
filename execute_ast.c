@@ -43,23 +43,73 @@ void	restore_std_fds(int stdin_tmp, int stdout_tmp)
 	close(stdout_tmp);
 }
 
-int	execute_single(t_ast *ast, t_env **env)
+// int	execute_single(t_ast *ast, t_env **env)
+// {
+// 	printf("on entre dans execute single \n");
+// 	if (ast->redir_in || ast->redir_out)
+// 	{
+// 		if (!execute_redirection(ast))
+// 			return (0);
+// 	}
+// 	if (!ast->cmd || !ast->cmd[0])
+// 		return (1);
+// 	if (!execute_command(ast, env))
+// 		return (0);
+// 	return (1);
+// }
+
+int execute_single(t_ast *ast, t_env **env)
 {
-	printf("on entre dans execute single \n");
 	if (ast->redir_in || ast->redir_out)
 	{
 		if (!execute_redirection(ast))
 			return (0);
 	}
 	if (!ast->cmd || !ast->cmd[0])
+	{
 		return (1);
-	if (!execute_command(ast, env))
+	}
+	// Cas BUILTIN sans fork (pas dans un pipe)
+	if (node_builtin(ast->cmd[0]))
+	{
+		// exit, cd, export... doivent être dans le shell lui-même
+		g_exit_status = execute_builtin(ast, env);
+		return (1);
+	}
+	pid_t pid = fork(); // Création du processus enfant
+	if (pid == -1)
+	{
+		perror("fork failed");
 		return (0);
+	}
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);  // Rétablir le comportement par défaut des signaux
+		signal(SIGQUIT, SIG_DFL);
+		setpgid(0, 0);
+		tcsetpgrp(STDIN_FILENO, getpid());
+		if (!execute_command(ast, env))
+			exit(1);
+		exit(g_exit_status);
+	}
+	else
+	{
+		setpgid(pid, pid);
+		tcsetpgrp(STDIN_FILENO, pid);
+		int status;
+		waitpid(pid, &status, 0);
+		tcsetpgrp(STDIN_FILENO, getpgrp());
+		if (WIFEXITED(status))
+			g_exit_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			g_exit_status = 128 + WTERMSIG(status);
+	}
 	return (1);
 }
 
 void	execute_command_child(t_ast *ast, t_env *env)
 {
+	setup_signals_child();
 	if (!is_valid_command(ast->cmd))
 		exit(0);
 	if (node_builtin(ast->cmd[0]))
@@ -124,7 +174,6 @@ int	pipe_child_process(t_ast *ast, t_env *env, int fd_in, int fd_out)
 	return (1);
 } */
 
-
 int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
 {
 	if (dup2(stdin_tmp, STDIN_FILENO) == -1)
@@ -136,7 +185,21 @@ int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
 	return (1);
 }
 
-void	wait_all_children(void)
+// void	wait_all_children(void)
+// {
+// 	int		status;
+// 	pid_t	pid;
+
+// 	while ((pid = wait(&status)) > 0)
+// 	{
+// 		if (WIFEXITED(status))
+// 			g_exit_status = WEXITSTATUS(status);
+// 		else if (WIFSIGNALED(status))
+// 			g_exit_status = 128 + WTERMSIG(status);
+// 	}
+// }
+
+void wait_all_children(void)
 {
 	int	status;
 	pid_t	pid;
@@ -146,9 +209,17 @@ void	wait_all_children(void)
 		if (WIFEXITED(status))
 			g_exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-			g_exit_status = 128 + WTERMSIG(status);
+		{
+			int sig = WTERMSIG(status);
+			if (sig == SIGQUIT)
+				write(2, "Quit (core dumped)\n", 20);
+			else if (sig == SIGINT)
+				write(2, "\n", 1);
+			g_exit_status = 128 + sig;
+		}
 	}
 }
+
 int	execute_ast(t_ast *ast, t_env **env)
 {
 	int	fd_in;
@@ -178,6 +249,12 @@ int	execute_ast(t_ast *ast, t_env **env)
 	return (0);
 }
 
+void give_terminal_to(pid_t pgid)
+{
+	if (tcsetpgrp(STDIN_FILENO, pgid) == -1)
+		perror("tcsetpgrp failed");
+}
+
 int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 {
 	int		pipe_fd[2];
@@ -194,6 +271,9 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 			return (perror_message("fork failed"));
 		if (pid == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+
 			if (*fd_in != STDIN_FILENO)
 			{
 				if (dup2(*fd_in, STDIN_FILENO) == -1)
@@ -210,12 +290,14 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 			execute_command_child(node, *env);
 			exit(g_exit_status);
 		}
+		give_terminal_to(pid);
 		close(pipe_fd[1]);
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
 		*fd_in = pipe_fd[0];
 		node = node->next;
 	}
+
 	// Dernier nœud du bloc de pipes
 	if (node)
 	{
@@ -224,6 +306,9 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 			return (perror_message("fork failed"));
 		if (pid == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+
 			if (*fd_in != STDIN_FILENO)
 			{
 				if (dup2(*fd_in, STDIN_FILENO) == -1)
