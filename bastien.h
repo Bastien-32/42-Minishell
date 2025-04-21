@@ -75,9 +75,9 @@ int		execute_command(t_ast *ast, t_env **env);
 int		execute_single(t_ast *ast, t_env **env);
 void	execute_command_child(t_ast *ast, t_env *env);
 int		pipe_child_process(t_ast *ast, t_env *env, int fd_in, int fd_out);
-int		execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in);
-void	restore_std_fds(int stdin_tmp, int stdout_tmp);
-void	wait_all_children(void);
+int		execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in, pid_t *last_pid);
+void	restore_std_and_wait_all_children(pid_t last_pid,
+		int stdin_tmp, int stdout_tmp);
 int		return_error_restore_fds(int stdin_tmp, int stdout_tmp);
 int		execute_ast(t_ast *ast, t_env **env);
 

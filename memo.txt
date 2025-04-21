@@ -4,6 +4,8 @@ valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --
 
 gestion d'erreurs
 
+echo hello | grep bonjour : test pas ok retour echo $? 0 alors que ca devrait etre 1
+
 parsing : gerer les espace tout seuls ne pas les comptabiliser comme des commandes
 
 export : 
