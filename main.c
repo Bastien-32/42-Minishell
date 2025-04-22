@@ -2,6 +2,7 @@
 
 sig_atomic_t	g_exit_status = 0;
 
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
@@ -10,9 +11,11 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+
 	env = init_env(envp);
 	while (1)
 	{
+		setup_signals_main(); // ← pour réactiver les signaux à chaque tour
 		line = readline("minishell> ");
 		if (!line)
 			break ;

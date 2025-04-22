@@ -11,6 +11,7 @@
 # include <signal.h>
 # include <sys/wait.h>
 # include <fcntl.h>
+# include <termios.h>
 
 # include "libft.h"
 
@@ -464,5 +465,12 @@ int		pwd_builtin(void);
 int		export_builtin(char **args, t_env **env);
 
 void	print_ast(t_ast *ast);
+
+void	setup_signals_main(void);
+void	setup_signals_child(void);
+void	handle_sigint(int sig);
+void 	give_terminal_to(pid_t pgid);
+
+
 
 # endif
