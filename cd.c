@@ -20,21 +20,21 @@ char	*actualize_pwd(t_env **tmp_env,char *name_dir_to_reach)
 	count_returns = 0;
 	while (name_dir_to_reach[i])
 	{
-		if (name_dir_to_reach[i] == '.' && name_dir_to_reach[i + 1] == '.' && name_dir_to_reach[i + 2] == '/')
+		if (name_dir_to_reach[i] == '.' && name_dir_to_reach[i + 1] == '.' && (name_dir_to_reach[i + 2] == '/' || name_dir_to_reach[i + 2] == '\0'))
 		{
 			count_returns++;
-			i += 3;
+			i += 3;// vois s'il faut pas differencier si on a \0ou / et faire i += 2 dans ce cas
 		}
 		else
 			i++;
 	}
 	if (count_returns)
 	{
-		//compter depuis la fin le nombre de slash et s'arreter qand on en compte autant que count_returns
-		//ensuite garder le chemin entre le debut de la phrase et ce slash
+		//compter depuis la fin le nombre de / et s'arreter qand on en compte autant que count_returns
+		//ensuite garder le chemin entre le debut de la phrase et ce /
 		// le copier dans un tmp_pwd
 	}
-	//si un nom apres le dernier de la commande cd, rajouter un / apres ce qu'on vient de copier dans tmp_pwd 
+	//si un nom apres le dernier / de la commande cd, rajouter un / apres ce qu'on vient de copier dans tmp_pwd 
 	//copier dans tmp_pwd le nom de ce fichier
 	//verifier si ce chemin existe et se deplacer dedans (ca c'est surement ce que fais la fonction  cd_builtin apres)
 }
