@@ -1,4 +1,4 @@
-/* #include "bastien.h"
+#include "bastien.h"
 
 int	is_valid_command(char **cmd)
 {
@@ -55,6 +55,7 @@ void	execute_command_child(t_ast *ast, t_env *env)
 	char	*cmd_path;
 	char	**envp;
 
+	setup_signals_child();
 	if (ast->redir_in || ast->redir_out)
 	{
 		if (!execute_redirection(ast))
@@ -117,6 +118,7 @@ void	restore_std_and_wait_all_children(pid_t last_pid,
 {
 	int		status;
 	pid_t	pid;
+	int		sig;
 
 	dup2(stdin_tmp, STDIN_FILENO);
 	dup2(stdout_tmp, STDOUT_FILENO);
@@ -129,7 +131,14 @@ void	restore_std_and_wait_all_children(pid_t last_pid,
 			if (WIFEXITED(status))
 				g_exit_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
-				g_exit_status = 128 + WTERMSIG(status);
+			{
+				sig = WTERMSIG(status);
+				if (sig == SIGQUIT)
+					write(2, "Quit (core dumped)\n", 20);
+				else if (sig == SIGINT)
+					write(2, "\n", 1);
+				g_exit_status = 128 + sig;
+			}
 		}
 	}
 }
@@ -165,6 +174,8 @@ int	execute_ast(t_ast *ast, t_env **env)
 
 void	execute_cmd_followed_by_pipe(t_ast *node, t_env **env, int *fd_in, int *pipe_fd)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)
 		exit(perror_message("dup2 fd_in failed"));
 	if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
@@ -182,6 +193,8 @@ void	execute_cmd_followed_by_pipe(t_ast *node, t_env **env, int *fd_in, int *pip
 
 void execute_last_cmd(t_ast *node, t_env **env, int *fd_in)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)
 		exit(perror_message("dup2 last in failed"));
 	if (*fd_in != STDIN_FILENO)
@@ -236,4 +249,3 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in, pid_t *last_pid)
 	*ast_ptr = node;
 	return (1);
 }
- */

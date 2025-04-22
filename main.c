@@ -13,6 +13,7 @@ int	main(int argc, char **argv, char **envp)
 	env = init_env(envp);
 	while (1)
 	{
+		setup_signals_main();
 		line = readline("minishell> ");
 		if (!line)
 		{

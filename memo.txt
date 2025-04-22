@@ -22,3 +22,9 @@ passer une commande collee sur deux lignes par exemple :
 echo first >> out.txt
 echo second >> out.txt
 si on copie colle les deux dans bash ca execute les 2 commandes
+
+=============================================================================
+Sandrine : 
+fichier ctl-c : modif fct interdites dans handle_signal
+
+============================================================================

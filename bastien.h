@@ -465,4 +465,8 @@ int		export_builtin(char **args, t_env **env);
 
 void	print_ast(t_ast *ast);
 
+void	setup_signals_main(void);
+void	setup_signals_child(void);
+void	handle_sigint(int sig);
+
 # endif
