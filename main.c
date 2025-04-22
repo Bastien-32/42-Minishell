@@ -3,15 +3,6 @@
 sig_atomic_t	g_exit_status = 0;
 
 
-void disable_echoctl(void)
-{
-	struct termios term;
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-}
-
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
@@ -20,7 +11,6 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	disable_echoctl();
 
 	env = init_env(envp);
 	while (1)

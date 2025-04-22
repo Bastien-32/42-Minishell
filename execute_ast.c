@@ -58,50 +58,92 @@ void	restore_std_fds(int stdin_tmp, int stdout_tmp)
 // 	return (1);
 // }
 
-int execute_single(t_ast *ast, t_env **env)
+// int execute_single(t_ast *ast, t_env **env)
+// {
+// 	if (ast->redir_in || ast->redir_out)
+// 	{
+// 		if (!execute_redirection(ast))
+// 			return (0);
+// 	}
+// 	if (!ast->cmd || !ast->cmd[0])
+// 	{
+// 		return (1);
+// 	}
+// 	// Cas BUILTIN sans fork (pas dans un pipe)
+// 	if (node_builtin(ast->cmd[0]))
+// 	{
+// 		g_exit_status = execute_builtin(ast, env);
+// 		return (1);
+// 	}
+// 	pid_t pid = fork();
+// 	if (pid == -1)
+// 	{
+// 		perror("fork failed");
+// 		return (0);
+// 	}
+// 	if (pid == 0)
+// 	{
+// 		signal(SIGINT, SIG_DFL);
+// 		signal(SIGQUIT, SIG_DFL);
+// 		//printf("child running\n");
+// 		if (!execute_command(ast, env))
+// 			exit(1);
+// 		exit(g_exit_status);
+// 	}
+// 	else
+// 	{
+// 		int status;
+// 		waitpid(pid, &status, 0);
+// 		if (WIFSIGNALED(status))
+// 		{
+// 			int sig = WTERMSIG(status);
+// 			g_exit_status = 128 + sig;
+// 		}
+// 	}
+// 	return (1);
+// }
+
+static int	execute_external_cmd(t_ast *ast, t_env **env)
 {
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return (perror("fork failed"), 0);
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		if (!execute_command(ast, env))
+			exit(1);
+		exit(g_exit_status);
+	}
+	return (pid);
+}
+
+int	execute_single(t_ast *ast, t_env **env)
+{
+	int		status;
+	pid_t	pid;
+
 	if (ast->redir_in || ast->redir_out)
 	{
 		if (!execute_redirection(ast))
 			return (0);
 	}
 	if (!ast->cmd || !ast->cmd[0])
-	{
 		return (1);
-	}
-	// Cas BUILTIN sans fork (pas dans un pipe)
 	if (node_builtin(ast->cmd[0]))
 	{
 		g_exit_status = execute_builtin(ast, env);
 		return (1);
 	}
-	pid_t pid = fork(); // Création du processus enfant
-	if (pid == -1)
-	{
-		perror("fork failed");
+	pid = execute_external_cmd(ast, env);
+	if (!pid)
 		return (0);
-	}
-	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);  // Rétablir le comportement par défaut des signaux
-		signal(SIGQUIT, SIG_DFL);
-		//printf("child running\n");
-		if (!execute_command(ast, env))
-			exit(1);
-		exit(g_exit_status);
-	}
-	else
-	{
-		int status;
-		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status))
-		{
-			int sig = WTERMSIG(status);
-			//if (sig == SIGINT)
-        	//	write(STDOUT_FILENO, "\n", 1);
-			g_exit_status = 128 + sig;
-		}
-	}
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status))
+		g_exit_status = 128 + WTERMSIG(status);
 	return (1);
 }
 
