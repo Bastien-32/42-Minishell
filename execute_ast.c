@@ -72,7 +72,6 @@ int execute_single(t_ast *ast, t_env **env)
 	// Cas BUILTIN sans fork (pas dans un pipe)
 	if (node_builtin(ast->cmd[0]))
 	{
-		// exit, cd, export... doivent être dans le shell lui-même
 		g_exit_status = execute_builtin(ast, env);
 		return (1);
 	}
@@ -86,7 +85,7 @@ int execute_single(t_ast *ast, t_env **env)
 	{
 		signal(SIGINT, SIG_DFL);  // Rétablir le comportement par défaut des signaux
 		signal(SIGQUIT, SIG_DFL);
-		printf("child running\n");
+		//printf("child running\n");
 		if (!execute_command(ast, env))
 			exit(1);
 		exit(g_exit_status);
@@ -95,21 +94,13 @@ int execute_single(t_ast *ast, t_env **env)
 	{
 		int status;
 		waitpid(pid, &status, 0);
-		// if (WIFEXITED(status))
-		// 	g_exit_status = WEXITSTATUS(status);
-		// else if (WIFSIGNALED(status))
-		// 	g_exit_status = 128 + WTERMSIG(status);
 		if (WIFSIGNALED(status))
 		{
 			int sig = WTERMSIG(status);
-			dprintf(2, "Signal reçu : %d\n", sig); // DEBUG
-			if (sig == SIGQUIT)
-				write(2, "Quit (core dumped)\n", 20);
-			else if (sig == SIGINT)
-				write(2, "\n", 1);
+			//if (sig == SIGINT)
+        	//	write(STDOUT_FILENO, "\n", 1);
 			g_exit_status = 128 + sig;
 		}
-
 	}
 	return (1);
 }
@@ -206,9 +197,9 @@ int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
 // 	}
 // }
 
-void wait_all_children(void)
+void	wait_all_children(void)
 {
-	int	status;
+	int		status;
 	pid_t	pid;
 
 	while ((pid = wait(&status)) > 0)
