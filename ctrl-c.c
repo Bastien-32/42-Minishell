@@ -21,12 +21,19 @@ void	handle_sigquit(int sig)
 void	setup_signals_main(void)
 {
 	struct sigaction sa;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
+	// sigemptyset(&sa.sa_mask);
+	// sa.sa_flags = 0;
+	// sa.sa_handler = handle_sigint;
+	// sigaction(SIGINT, &sa, NULL);
+	// sa.sa_handler = SIG_IGN;
+	// sigaction(SIGQUIT, &sa, NULL);
 	sa.sa_handler = handle_sigint;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
-	sa.sa_handler = SIG_IGN;
-	//sigaction(SIGQUIT, &sa, NULL);
+
+	// Le shell ignore SIGQUIT
+	//signal(SIGQUIT, SIG_IGN);
 }
 
 void	setup_signals_child(void)

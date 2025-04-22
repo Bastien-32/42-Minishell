@@ -86,23 +86,30 @@ int execute_single(t_ast *ast, t_env **env)
 	{
 		signal(SIGINT, SIG_DFL);  // Rétablir le comportement par défaut des signaux
 		signal(SIGQUIT, SIG_DFL);
-		setpgid(0, 0);
-		tcsetpgrp(STDIN_FILENO, getpid());
+		printf("child running\n");
 		if (!execute_command(ast, env))
 			exit(1);
 		exit(g_exit_status);
 	}
 	else
 	{
-		setpgid(pid, pid);
-		tcsetpgrp(STDIN_FILENO, pid);
 		int status;
 		waitpid(pid, &status, 0);
-		tcsetpgrp(STDIN_FILENO, getpgrp());
-		if (WIFEXITED(status))
-			g_exit_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			g_exit_status = 128 + WTERMSIG(status);
+		// if (WIFEXITED(status))
+		// 	g_exit_status = WEXITSTATUS(status);
+		// else if (WIFSIGNALED(status))
+		// 	g_exit_status = 128 + WTERMSIG(status);
+		if (WIFSIGNALED(status))
+		{
+			int sig = WTERMSIG(status);
+			dprintf(2, "Signal reçu : %d\n", sig); // DEBUG
+			if (sig == SIGQUIT)
+				write(2, "Quit (core dumped)\n", 20);
+			else if (sig == SIGINT)
+				write(2, "\n", 1);
+			g_exit_status = 128 + sig;
+		}
+
 	}
 	return (1);
 }
@@ -249,12 +256,6 @@ int	execute_ast(t_ast *ast, t_env **env)
 	return (0);
 }
 
-void give_terminal_to(pid_t pgid)
-{
-	if (tcsetpgrp(STDIN_FILENO, pgid) == -1)
-		perror("tcsetpgrp failed");
-}
-
 int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 {
 	int		pipe_fd[2];
@@ -273,7 +274,6 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 		{
 			signal(SIGINT, SIG_DFL);
 			signal(SIGQUIT, SIG_DFL);
-
 			if (*fd_in != STDIN_FILENO)
 			{
 				if (dup2(*fd_in, STDIN_FILENO) == -1)
@@ -290,7 +290,6 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 			execute_command_child(node, *env);
 			exit(g_exit_status);
 		}
-		give_terminal_to(pid);
 		close(pipe_fd[1]);
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
@@ -322,9 +321,11 @@ int	execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in)
 		}
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
+	
 	}
-
 	*ast_ptr = node;
+	wait_all_children();
+
 	return (1);
 }
 
