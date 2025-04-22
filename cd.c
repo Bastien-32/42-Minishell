@@ -11,6 +11,35 @@ char	*get_env_value(t_env *env, const char *key)
 	return (NULL);
 }
 
+char	*actualize_pwd(t_env **tmp_env,char *name_dir_to_reach)
+{
+	
+}
+
+char	*change_dir(t_env *env, char *name_dir_to_reach)
+{
+	char	*actual_path_dir_value;
+	char	*new_path_dir;
+	t_env	*tmp_env;
+
+	actual_path_dir_value = get_env_value(env, "PWD");
+	tmp_env = env;
+	while (tmp_env)
+	{
+		if (ft_strcmp(tmp_env->env_keyname, "PWD"))
+		{
+			tmp_env->value = actualise_pwd(&tmp_env, name_dir_to_reach);
+		}
+		if (ft_strcmp(tmp_env->env_keyname, "OLDPWD"))
+		{
+			tmp_env->value = actual_path_dir_value;
+			break ;
+		}
+		tmp_env = tmp_env->next;
+	}
+	return (name_dir_to_reach);
+}
+
 int	cd_builtin(char **args, t_env *env)
 {
 	char	*dir;
