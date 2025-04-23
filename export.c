@@ -131,5 +131,5 @@ int	export_sorted(t_env *env)
 	env_var = malloc(sizeof(char) * (count));
 	if (!env_var)
 		return (0);
-	
+	return (0);
 }
