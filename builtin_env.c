@@ -12,7 +12,7 @@ int	env_builtin(char **args, t_env *env)
 	}
 	while (tmp_env)
 	{
-		printf("%s=%s\n", tmp_env->env_keyname, tmp_env->value);
+		ft_printf("%s=%s\n", tmp_env->env_keyname, tmp_env->value);
 		tmp_env = tmp_env->next;
 	}
 	return (0);

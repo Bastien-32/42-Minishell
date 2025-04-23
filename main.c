@@ -7,6 +7,7 @@ int	main(int argc, char **argv, char **envp)
 	t_env	*env;
 	t_ast	*ast;
 	char	*line;
+	char	*tmp_line;
 
 	(void)argc;
 	(void)argv;
@@ -14,8 +15,26 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		setup_signals_main();
-		line = readline("minishell> ");
-		if (!line)
+		if (isatty(STDIN_FILENO))
+			line = readline("minishell> ");
+		else
+		{
+			tmp_line = get_next_line(fileno(stdin));
+			if (tmp_line)
+			{
+				line = ft_strtrim(tmp_line, "\n");
+				//ft_putnbr_fd(ft_strlen(line), 1);
+				free(tmp_line);
+			}
+			else
+				line = NULL;
+		}
+		if (!line && !isatty(STDIN_FILENO))
+		{
+			g_exit_status = 0;
+			break;
+		}
+		else if (!line && isatty(STDIN_FILENO))
 		{
 			write(1, "\033[1A", 4);
 			write(1, "\033[2K", 4);
@@ -24,7 +43,7 @@ int	main(int argc, char **argv, char **envp)
 			g_exit_status = 0;
 			break ;
 		}
-		if (*line)
+		if (*line && isatty(STDIN_FILENO))
 			add_history(line);
 		ast = build_tree(line, env);
 		if (ast)
