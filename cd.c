@@ -11,78 +11,100 @@ char	*get_env_value(t_env *env, const char *key)
 	return (NULL);
 }
 
-char	*actualize_pwd(t_env **tmp_env,char *name_dir_to_reach)
+int	update_env_var(t_env *env, const char *key, char *new_value)
 {
-	int	i;
-	int	count_returns;
+	t_env	*tmp;
 
-	i =0;
-	count_returns = 0;
-	while (name_dir_to_reach[i])
+	tmp = env;
+	while (tmp)
 	{
-		if (name_dir_to_reach[i] == '.' && name_dir_to_reach[i + 1] == '.' && (name_dir_to_reach[i + 2] == '/' || name_dir_to_reach[i + 2] == '\0'))
+		if (ft_strcmp(tmp->env_keyname, key) == 0)
 		{
-			count_returns++;
-			i += 3;// vois s'il faut pas differencier si on a \0ou / et faire i += 2 dans ce cas
-		}
-		else
-			i++;
-	}
-	if (count_returns)
-	{
-		//compter depuis la fin le nombre de / et s'arreter qand on en compte autant que count_returns
-		//ensuite garder le chemin entre le debut de la phrase et ce /
-		// le copier dans un tmp_pwd
-	}
-	//si un nom apres le dernier / de la commande cd, rajouter un / apres ce qu'on vient de copier dans tmp_pwd 
-	//copier dans tmp_pwd le nom de ce fichier
-	//verifier si ce chemin existe et se deplacer dedans (ca c'est surement ce que fais la fonction  cd_builtin apres)
-}
-
-char	*change_dir(t_env *env, char *name_dir_to_reach)
-{
-	char	*actual_path_dir_value;
-	char	*new_path_dir;
-	t_env	*tmp_env;
-
-	actual_path_dir_value = get_env_value(env, "PWD");
-	tmp_env = env;
-	while (tmp_env)
-	{
-		if (ft_strcmp(tmp_env->env_keyname, "PWD"))
-			tmp_env->value = actualise_pwd(&tmp_env, name_dir_to_reach);
-		if (ft_strcmp(tmp_env->env_keyname, "OLDPWD"))
-		{
-			tmp_env->value = actual_path_dir_value;
-			break ;
-		}
-		tmp_env = tmp_env->next;
-	}
-	return (name_dir_to_reach);
-}
-
-int	cd_builtin(char **args, t_env *env)
-{
-	char	*dir;
-
-	if (args[1] == NULL)
-	{
-		dir = get_env_value(env, "HOME");
-		if (dir == NULL)
-		{
-			ft_printf ("cd: HOME not set\n");
-			g_exit_status = 1;
+			free(tmp->value);
+			tmp->value = ft_strdup(new_value);
+			if (!tmp->value)
+				return (0);
 			return (1);
+		}
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
+int	change_oldpwd(t_env *env)
+{
+	char	*old_pwd;
+
+	old_pwd = get_env_value(env, "PWD");
+	if (!old_pwd)
+	{
+		g_exit_status = 1;
+		return (0);
+	}
+	if (!update_env_var(env, "OLDPWD", old_pwd))
+	{
+		g_exit_status = 1;
+		return (0);
+	}
+	return (1);
+}
+
+int	change_pwd(t_env *env)
+{
+	char	*new_pwd;
+
+	new_pwd = getcwd(NULL, 0);
+	if (!new_pwd)
+	{
+		g_exit_status = 1;
+		return (0);
+	}
+	if (!update_env_var(env, "PWD", new_pwd))
+	{
+		free(new_pwd);
+		g_exit_status = 1;
+		return (0);
+	}
+	free(new_pwd);
+	return (1);
+}
+
+char	*ft_dir_to_reach(t_env *env, char *cmd)
+{
+	char	*target;
+
+	if (!cmd)
+	{
+		target = get_env_value(env, "HOME");
+		if (!target)
+		{
+			write(2, "cd: HOME not set\n", 18);
+			g_exit_status = 1;
+			return (NULL);
 		}
 	}
 	else
-		dir = args[1];
-	if (chdir(dir) != 0)
+		target = cmd;
+	return (target);
+}
+
+int	cd_builtin(char **cmd, t_env *env)
+{
+	char	*dir_to_reach;
+
+	dir_to_reach = ft_dir_to_reach(env, cmd[1]);
+	if(!dir_to_reach)
+		return (1);
+	if(!change_oldpwd(env))
+		return (1);
+	if (chdir(dir_to_reach) != 0)
 	{
-		perror ("cd");
+		perror("cd");
 		g_exit_status = 1;
 		return (1);
 	}
+	if(!change_pwd(env))
+		return (1);
 	g_exit_status = 0;
-	return (0);
+	return (g_exit_status);
 }
