@@ -74,7 +74,7 @@ t_token	*tokenize(char *line, t_env *env)
 	tokens = NULL;
 	while (line[i])
 	{
-		if (is_space(line[i]))
+		while (is_space(line[i]))
 			i++;
 		if (is_operator_char(line[i]))
 			i = handle_operator(line, i, &tokens, env);
