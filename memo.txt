@@ -10,21 +10,16 @@ parsing : gerer les espace tout seuls ne pas les comptabiliser comme des command
 export : 
 tri alphabetique + "declare x" devant et affichage variable meme sans valeur (thomas le saulter)
 
-cd : 
-mettre a jour les VE PWD  et OLDPWD pour qu;'elles pointes sur le bon fichier
+cd :
 gerer aussi la suppresion du dossier dans leaquel on se trouve sans qu'il se perde (thomas le saulter)
 
 test de commandes : cat file.txt | grep hello | wc -l
 
 
-VOIR S"IL FAUT GERER ; 
-passer une commande collee sur deux lignes par exemple : 
-echo first >> out.txt
-echo second >> out.txt
-si on copie colle les deux dans bash ca execute les 2 commandes
+
 
 =============================================================================
 Sandrine : 
-fichier ctl-c : modif fct interdites dans handle_signal
+
 
 ============================================================================
