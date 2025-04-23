@@ -1,2 +1,3 @@
-echo "*.o" >> .gitignore
-echo "minishell" >> .gitignore
+**/*.o
+**/*.a
+minishell
