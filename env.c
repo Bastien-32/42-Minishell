@@ -8,7 +8,10 @@ t_env	*create_env_node(const char *env_keyname, const char *value)
 	if (!node)
 		return (NULL);
 	node->env_keyname = ft_strdup(env_keyname);
-	node->value = ft_strdup(value);
+	if (value != NULL)
+		node->value = ft_strdup(value);
+	else
+		node->next = NULL;
 	node->next = NULL;
 	return (node);
 }
