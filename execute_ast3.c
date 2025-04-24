@@ -110,6 +110,8 @@ int	return_error_restore_fds(int stdin_tmp, int stdout_tmp)
 		perror("restore stdout");
 	close(stdin_tmp);
 	close(stdout_tmp);
+	if (g_exit_status == 0)
+		g_exit_status = 127;
 	return (1);
 }
 

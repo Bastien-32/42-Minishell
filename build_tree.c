@@ -39,7 +39,7 @@ void	print_ast(t_ast *ast)
 }
 
 //lignes a supprimer dans fonction
-t_ast	*build_tree(char *line, t_env *env)
+t_ast	*ft_build_tree(char *line, t_env *env)
 {
 	t_token	*tokens;
 	t_ast	*ast;

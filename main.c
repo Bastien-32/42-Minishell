@@ -45,15 +45,14 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (*line && isatty(STDIN_FILENO))
 			add_history(line);
-		ast = build_tree(line, env);
+		ast = ft_build_tree(line, env);
 		if (ast)
 		{
 			execute_ast(ast, &env);
 			free_ast_error(ast);
-			//printf("[main loop] back to prompt\n");							//a supprimer
 		}
-		else
-			g_exit_status = 0;
+		/* else
+			g_exit_status = 0; */
 		//free(line);
 	}
 	free_env_list(env);

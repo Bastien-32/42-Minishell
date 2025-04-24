@@ -4,19 +4,8 @@ valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --
 
 gestion d'erreurs
 
-
-parsing : gerer les espace tout seuls ne pas les comptabiliser comme des commandes
-
 export : 
 tri alphabetique + "declare x" devant et affichage variable meme sans valeur (thomas le saulter)
-
-cd :
-gerer aussi la suppresion du dossier dans leaquel on se trouve sans qu'il se perde (thomas le saulter)
-
-test de commandes : cat file.txt | grep hello | wc -l
-
-
-
 
 =============================================================================
 Sandrine : 

@@ -8,15 +8,24 @@ static int	ft_is_numeric(const char *str)
 	int	i;
 
 	i = 0;
+	if (str[0] == '\0')
+		return (0);
 	if (str[0] == '-' || str[0] == '+')
 		i++;
 	while (str[i])
 	{
 		if (ft_isdigit(str[i]) == 0)
-			return (0);
+			return (1);
 		i++;
 	}
-	return (1);
+	return (0);
+}
+
+void	print_msg_exit_not_numeric(char *str)
+{
+	ft_putstr_fd("bash: exit: ", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
 }
 
 static void	free_env_and_ast_in_builtin_exit(t_env *env, t_ast *ast)
@@ -32,22 +41,22 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 
 	if (args[1] && args[2])
 	{
-		ft_putstr_fd("Exit : too many arguments\n", 2);
-		exit (1);
+		ft_putstr_fd("exit\n", 1);
+		ft_putstr_fd("bash : exit: too many arguments\n", 2);
+		g_exit_status = 1;
+		return (1);
 	}
-	ft_putstr_fd("exit\n", 2);
+	ft_putstr_fd("exit\n", 1);
 	if (!args[1])
 	{
 		free_env_and_ast_in_builtin_exit(env, ast);
 		exit(0);
 	}
-	if (!ft_is_numeric(args[1]))
+	if (ft_is_numeric(args[1]))
 	{
-		ft_putstr_fd("bash: exit: ", 2);
-		ft_putstr_fd(args[1], 2);
-		ft_putstr_fd(" : numeric operator is expected\n", 2);
+		print_msg_exit_not_numeric(args[1]);
 		free_env_and_ast_in_builtin_exit(env, ast);
-		exit(255);
+		exit(2);
 	}
 	code = (unsigned char)ft_atol(args[1]);
 	free_env_and_ast_in_builtin_exit(env, ast);
