@@ -122,7 +122,7 @@ t_ast	*parse_commands_in_block(t_token **tokens);
 								 build_tree.c
 **************************************************************************** */
 
-t_ast	*build_tree(char *line, t_env *env);
+t_ast	*ft_build_tree(char *line, t_env *env);
 t_token	*tokenize(char *line, t_env *env);
 
 /**
