@@ -18,6 +18,11 @@ testeur :
 1 : voir s'il faut le gerer ou pas
 2 a 6 : ok avec bash le tester deconne
 
+17 18 : ok avec bash le tester deconne
+20 a 24: ok avec bash le tester deconne
+
+19 : a debug exit ""
+25 26 : idem test 1
 =============================================================================
 
 

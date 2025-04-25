@@ -1,1 +1,1 @@
-exit
+bash:   : command not found

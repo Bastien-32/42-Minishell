@@ -15,10 +15,10 @@ static int	ft_is_numeric(const char *str)
 	while (str[i])
 	{
 		if (ft_isdigit(str[i]) == 0)
-			return (1);
+			return (0);
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
 void	print_msg_exit_not_numeric(char *str)
@@ -39,7 +39,7 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 {
 	long	code;
 
-	if (args[1] && args[2])
+	if (ft_is_numeric(args[1]) && args[2])
 	{
 		ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("bash : exit: too many arguments\n", 2);
@@ -52,7 +52,7 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 		free_env_and_ast_in_builtin_exit(env, ast);
 		exit(0);
 	}
-	if (ft_is_numeric(args[1]))
+	if (!ft_is_numeric(args[1]))
 	{
 		print_msg_exit_not_numeric(args[1]);
 		free_env_and_ast_in_builtin_exit(env, ast);
