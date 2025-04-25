@@ -100,13 +100,17 @@ int	ft_append(t_ast *ast)
 	return (1);
 } */
 
-void	handle_ctrl_d(char *line)
+void	handle_ctrl_d(char *line, t_ast *ast)
 {
 	int	fd_tmp;
 
 	write(1, "\033[1A", 4);     // remonter d'une ligne
 	write(1, "\033[2K", 4);     // effacer la ligne
-	write(1, "heredoc> ", 9);   // réafficher l'invite
+	write(1, "heredoc>\n ", 10);   // réafficher l'invite
+	ft_putstr_fd("bash: warning: here-document delimited", 1);
+	ft_putstr_fd("by end-of-file (wanted \'", 1);
+	ft_putstr_fd(ast->redir_in, 1);
+	ft_putstr_fd("\')\n", 1);
 	fd_tmp = open("heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_tmp >= 0)
 		close(fd_tmp);
@@ -148,7 +152,7 @@ int	ft_heredoc(t_ast *ast)
 		line = readline("heredoc> ");
 		if (!line)
 		{
-			handle_ctrl_d(line);
+			handle_ctrl_d(line, ast);
 			break;
 		}
 		if (ft_strcmp(line, ast->redir_in) == 0)

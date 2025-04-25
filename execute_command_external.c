@@ -27,11 +27,11 @@ char	*find_path(char *cmd, t_env *env)
 	char	**path_array;
 	int		i;
 
+	if (access(cmd, X_OK) == 0)
+		return (ft_strdup(cmd));
 	path_array = parse_path(env, "PATH");
 	if (!path_array)
 		return (NULL);
-	if (access(cmd, X_OK) == 0)
-		return (ft_strdup(cmd));
 	i = 0;
 	while (path_array[i])
 	{
