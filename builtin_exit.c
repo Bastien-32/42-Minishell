@@ -39,7 +39,7 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 {
 	long	code;
 
-	if (ft_is_numeric(args[1]) && args[2])
+	if (args[1] && ft_is_numeric(args[1]) && args[2])
 	{
 		ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("bash : exit: too many arguments\n", 2);
@@ -56,7 +56,7 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 	{
 		print_msg_exit_not_numeric(args[1]);
 		free_env_and_ast_in_builtin_exit(env, ast);
-		exit(2);
+		exit(255);
 	}
 	code = (unsigned char)ft_atol(args[1]);
 	free_env_and_ast_in_builtin_exit(env, ast);

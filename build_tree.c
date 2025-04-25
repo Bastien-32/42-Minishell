@@ -38,6 +38,18 @@ void	print_ast(t_ast *ast)
 	}
 }
 
+void	print_tokens(t_token *tokens)
+{
+	int	i = 0;
+
+	while (tokens)
+	{
+		printf("Token[%d]: value = \"%s\", type = %d, quote_type = %c\n", i, tokens->value, tokens->type, tokens->quote_type);
+		tokens = tokens->next;
+		i++;
+	}
+}
+
 //lignes a supprimer dans fonction
 t_ast	*ft_build_tree(char *line, t_env *env)
 {
@@ -53,10 +65,11 @@ t_ast	*ft_build_tree(char *line, t_env *env)
 	}
 	free (line);
 	expand_token_values(tokens, env);
+	//print_tokens(tokens);
 	ast = parse_ast(tokens, env);
 	if (!ast)
 	{
-		free_ast_error(ast);
+		//free_ast_error(ast);
 		return (NULL);
 	}
 	free_token_list(tokens);
@@ -88,6 +101,7 @@ t_token	*tokenize(char *line, t_env *env)
 			}
 		}
 	}
+	//print_tokens(tokens);
 	return (tokens);
 }
 
@@ -274,6 +288,20 @@ int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd,
 	return (1);
 }
 
+int	only_space_in_str(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!is_space(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 t_ast	*parse_ast(t_token *tokens, t_env *env)
 {
 	t_ast	*ast;
@@ -286,6 +314,17 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 		if (!parse_token_for_ast(&tokens, &current_cmd, &ast, env))
 			return (NULL);
 	}
+	if (ast->cmd[0][0] == '\0' || only_space_in_str(ast->cmd[0]))
+	{
+		ft_putstr_fd("bash:", 2);
+		ft_putstr_fd(ast->cmd[0], 2);
+		ft_putstr_fd(" : command not found\n", 2);
+		free_cmd_args(ast->cmd, 0);
+		free(ast);
+		g_exit_status = 127;
+		return (NULL);
+	}
+
 	// 🔽 DEBUG ICI
 	/* t_ast *tmp = ast;
 	while (tmp)

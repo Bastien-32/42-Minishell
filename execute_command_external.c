@@ -46,7 +46,7 @@ char	*find_path(char *cmd, t_env *env)
 		free(cmd_path);
 		i++;
 	}
-	return (0);
+	return (free_array_envp(path_array), NULL);
 }
 
 void	free_array_envp(char **envp)
@@ -92,7 +92,9 @@ int	prepare_env_and_path(t_ast *ast, t_env *env, char **cmd_path, char ***envp)
 	*cmd_path = find_path(ast->cmd[0], env);
 	if (!*cmd_path)
 	{
-		perror(ast->cmd[0]);
+		ft_putstr_fd("bash: ", 2);
+		ft_putstr_fd(ast->cmd[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		g_exit_status = 127;
 		return (0);
 	}
