@@ -13,16 +13,29 @@ Test : cat << EOF | grep test
 
 
 =============================================================================
-testeur : 
+testeur : mstest m co
+
+Attention ! ! Certains de mes tests ne sont pas effectués avec Valgrind!! 
+		Relancer avec mstest vm co
 
 1 : voir s'il faut le gerer ou pas
 2 a 6 : ok avec bash le tester deconne
 
 17 18 : ok avec bash le tester deconne
-20 a 24: ok avec bash le tester deconne
 
-19 : a debug exit ""
-25 26 : idem test 1
+20 21 24: ok avec bash le tester deconne
+
+25 26 : ca passe au tester mais Ça ne reproduit pas le comportement bash
+
+27 : retravailler le message d'erreur et tester le 28 apres Qui affiche pour le moment le bon message d'erreur
+28 : ok avec bash le tester deconne
+
+29 : ok avec bash le tester deconne
+
+35 : ok avec bash le tester deconne
+
+53 : ok avec bash le tester deconne
+
 =============================================================================
 
 

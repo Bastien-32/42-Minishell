@@ -1,5 +1,12 @@
 #include "bastien.h"
 
+int	first_env_char(char c)
+{
+	if (c == '?' || ft_isalnum(c) || c == '_')
+		return (1);
+	return (0);
+}
+
 int	env_vars(char *value_token)
 {
 	int	i;
@@ -7,7 +14,7 @@ int	env_vars(char *value_token)
 	i = 0;
 	while (value_token[i])
 	{
-		if (value_token[i] == '$' && value_token[i + 1])
+		if (value_token[i] == '$' && first_env_char(value_token[i + 1]))
 			return (1);
 		i++;
 	}
@@ -36,7 +43,7 @@ char	*add_key_value(char *val_tok, int *read_pos,
 	char	*new_tok;
 
 	(*read_pos)++;
-	if ( val_tok[*read_pos] == '?')
+	if (val_tok[*read_pos] == '?')
 	{
 		new_tok = ft_strjoin_free_s1(str_before_env, ft_itoa(g_exit_status));
 		(*read_pos)++;
