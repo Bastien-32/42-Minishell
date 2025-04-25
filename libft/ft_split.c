@@ -6,19 +6,12 @@
 /*   By: badal-la <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 15:02:05 by badal-la          #+#    #+#             */
-/*   Updated: 2025/03/21 10:40:27 by badal-la         ###   ########.fr       */
+/*   Updated: 2025/04/25 09:42:00 by badal-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-/**
- * @brief Split a string into an array of substrings using a delimiter.
- * @param s (char const *) The string to split.
- * @param c (char) The delimiter character.
- * @return (char **) Array of newly allocated substrings ending with NULL,
- *         or NULL if allocation fails.
- */
 static int	ft_nwords(const char *s, char c)
 {
 	int	i;
@@ -79,6 +72,13 @@ static char	**ft_free_tab(char **tab, size_t j)
 	return (NULL);
 }
 
+/**
+ * @brief Split a string into an array of substrings using a delimiter.
+ * @param s (char const *) The string to split.
+ * @param c (char) The delimiter character.
+ * @return (char **) Array of newly allocated substrings ending with NULL,
+ *			or NULL if allocation fails.
+ */
 char	**ft_split(char const *s, char c)
 {
 	size_t	i;

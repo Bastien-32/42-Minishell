@@ -23,7 +23,6 @@ int	main(int argc, char **argv, char **envp)
 			if (tmp_line)
 			{
 				line = ft_strtrim(tmp_line, "\n");
-				//ft_putnbr_fd(ft_strlen(line), 1);
 				free(tmp_line);
 			}
 			else

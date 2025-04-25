@@ -41,12 +41,12 @@ int	exit_builtin(char **args, t_env *env, t_ast *ast)
 
 	if (args[1] && args[2])
 	{
-		ft_putstr_fd("exit\n", 1);
+		ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("bash : exit: too many arguments\n", 2);
 		g_exit_status = 1;
 		return (1);
 	}
-	ft_putstr_fd("exit\n", 1);
+	ft_putstr_fd("exit\n", 2);
 	if (!args[1])
 	{
 		free_env_and_ast_in_builtin_exit(env, ast);

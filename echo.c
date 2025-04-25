@@ -25,7 +25,8 @@
 	return (0);
 } */
 
-// tester lignes 35 et 37 ne prendre que le premier -n  : modif premier if en while 
+// tester (lignes 35 et 37) ne prendre que le premier -n  :
+//		 modif premier if en while 
 int	echo_builtin(char **args)
 {
 	int	n_flag;

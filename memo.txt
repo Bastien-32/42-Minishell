@@ -7,6 +7,20 @@ gestion d'erreurs
 export : 
 tri alphabetique + "declare x" devant et affichage variable meme sans valeur (thomas le saulter)
 
+
+heredoc : ne fonctionne pas avec des | 
+Test : cat << EOF | grep test
+
+
+=============================================================================
+testeur : 
+
+1 : voir s'il faut le gerer ou pas
+2 a 6 : ok avec bash le tester deconne
+
+=============================================================================
+
+
 =============================================================================
 Sandrine : 
 
