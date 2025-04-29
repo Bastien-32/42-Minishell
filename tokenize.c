@@ -112,23 +112,27 @@ int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 {
 	int		len;
 	int		read_pos;
-	char	quote_type;
-	int		status;
 
+	read_pos = 0;
+	(*tokens)->value = ft_calloc(1, 1);
 	len = get_word_length(line, i);
 	if (len == -1)
 		return (-1);
 	while (read_pos < len)
 	{
 		if (line[i + read_pos] == '\"' || line[i + read_pos] == '\'')
-			status =fill_msg_between_quotes(line, i, &read_pos, quote_type);
+			fill_tok_between_quotes(line, i, &read_pos, tokens, env);
 		else if (line[i + read_pos] == '$')
-			status = replace_env(line, i + read_pos, quote_type, *tokens, env);
+			read_pos = add_key_value(line, i, read_pos, tokens, env);
 		else
-			status = msg_without_quotes_env(line, i + read_pos, tokens, env);
+		{
+			(*tokens)->value = ft_strjoin_free_s1((*tokens)->value,
+				ft_strndup(line[i + read_pos], 1));
+			read_pos++;
+		}
+		if (read_pos == -1)
+			return (-1);
 	}
-	if (status == -1)
-		return (-1);
 	return (i + len);
 } */
 
