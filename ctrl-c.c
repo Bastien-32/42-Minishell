@@ -6,6 +6,13 @@ void	handle_sigint(int sig)
 	write(STDOUT_FILENO, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
+	rl_redisplay();
+	// if (isatty(STDIN_FILENO))
+	// {
+	// 	rl_replace_line("", 0);
+	// 	rl_on_new_line();
+	// 	rl_redisplay(); // UNIQUEMENT si on est dans readline
+	// }
 	g_exit_status = 130;
 }
 
@@ -28,6 +35,8 @@ void	setup_signals_main(void)
 	sigaction(SIGINT, &sa_int, NULL);
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_handler = handle_sigquit;
+	sa_quit.sa_handler = SIG_IGN;
+
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }

@@ -12,11 +12,24 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	env = init_env(envp);
+	setup_signals_main();
 	while (1)
 	{
-		setup_signals_main();
 		if (isatty(STDIN_FILENO))
+		{
 			line = readline("minishell> ");
+			if (g_exit_status == 130)
+			{
+				if (line[0] == '\0')
+				{
+					rl_on_new_line();
+					rl_redisplay();
+				}
+				g_exit_status = 0;
+				free(line);
+				continue;
+			}
+		}
 		else
 		{
 			tmp_line = get_next_line(fileno(stdin));
