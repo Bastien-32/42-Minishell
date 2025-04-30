@@ -87,7 +87,7 @@ char	**env_to_array(t_env *env)
 	return (envp);
 }
 
-int	prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char **envp)
+int	prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char ***envp)
 {
 	*cmd_path = find_path(node->cmd[0], all->env);
 	if (!*cmd_path)
@@ -140,13 +140,13 @@ void	wait_child_status(t_all *all, int pid)
 		all->exit_status = 128 + WTERMSIG(status);
 }
 
-int	execute_external(t_all *all, t_ast *node)
+int	execute_external( t_ast *node, t_all *all)
 {
 	char	*cmd_path;
 	char	**envp;
 	pid_t	pid;
 
-	if (!prepare_env_and_path(all, node, &cmd_path, envp))
+	if (!prepare_env_and_path(all, node, &cmd_path, &envp))
 		return (1);
 	pid = fork();
 	if (pid == -1)

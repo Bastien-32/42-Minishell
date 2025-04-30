@@ -12,6 +12,5 @@ int	pwd_builtin(t_all *all)
 		return (1);
 	}
 	ft_printf("%s\n", path);
-	free (path);
 	return (0);
 }

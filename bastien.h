@@ -76,7 +76,7 @@ typedef struct s_all {
 
 
 int		is_valid_command(char **cmd);
-int		execute_command(t_all *all);
+int		execute_command(t_ast *node, t_all *all);
 int		execute_single(t_ast *ast, t_all *all);
 void	execute_command_child(t_ast *node, t_all *all);
 int		pipe_child_process(t_ast *node, t_all *all, int fd_in, int fd_out);
@@ -91,7 +91,7 @@ int		execute_ast(t_all *all);
 **************************************************************************** */
 
 int		node_builtin(char *name_cmd);
-int		execute_builtin(t_all *all);
+int		execute_builtin(t_ast *node, t_all *all);
 
 /* ****************************************************************************
 						  execute_command_external.c
@@ -101,10 +101,10 @@ char	**parse_path(t_env *env, char *key);
 char	*find_path(char *cmd, t_env *env);
 char	**env_to_array(t_env *env);
 void	free_array_envp(char **envp);
-int		prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char **envp);
+int		prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char ***envp);
 void	exec_child_process(char *cmd_path, t_ast *ast, char **envp);
 void	wait_child_status(t_all *all, int pid);
-int		execute_external(t_all *all);
+int		execute_external(t_ast *node, t_all *all);
 
 /* ****************************************************************************
 						  execute_command_external.c
@@ -137,7 +137,7 @@ int	count_cmd_tokens(t_token *tokens);
 
 void	free_cmd_args(char **args, int count);
 
-char	**dup_cmd_tokens(t_token **tokens, int count);
+char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all);
 
 int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all);
 
@@ -445,15 +445,15 @@ int		is_operator_char(char c);
 									builtins
 **************************************************************************** */
 
-int		env_builtin(t_all *all);
-int		unset_builtin(t_all *all);
-int		exit_builtin(t_all *all);
+int		env_builtin(t_ast *node, t_all *all);
+int		unset_builtin(t_ast *node, t_all *all);
+int		exit_builtin(t_ast *node, t_all *all);
 
-int		echo_builtin(t_all *all);
+int		echo_builtin(t_ast *node, t_all *all);
 int		change_pwd(t_all *all);
-int		cd_builtin(t_all *all);
+int		cd_builtin(t_ast *node, t_all *all);
 int		pwd_builtin(t_all *all);
-int		export_builtin(t_all *all);
+int		export_builtin(t_ast *node, t_all *all);
 
 void	print_ast(t_ast *ast);
 

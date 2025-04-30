@@ -1,11 +1,11 @@
 #include "bastien.h"
 
-int	env_builtin(t_all *all)
+int	env_builtin(t_ast *node, t_all *all)
 {
 	t_env	*tmp_env;
 
 	tmp_env = all->env;
-	if (all->ast->cmd[1])
+	if (node->cmd[1])
 	{
 		write(2, "env: too many arguments\n", 25);
 		all->exit_status = 1;

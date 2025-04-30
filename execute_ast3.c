@@ -18,18 +18,18 @@ int	is_valid_command(char **cmd)
 	return (0);
 }
 
-int	execute_command(t_all *all)
+int	execute_command(t_ast *node, t_all *all)
 {
 	int	status;
 
-	if (!all->ast || !all->ast->cmd || !all->ast->cmd[0])
+	if (!node || !node->cmd || !node->cmd[0])
 		return (1);
-	if (!is_valid_command(all->ast->cmd))
+	if (!is_valid_command(node->cmd))
 		return (0);
-	if (node_builtin(all->ast->cmd[0]))
-		status = execute_builtin(all);
+	if (node_builtin(node->cmd[0]))
+		status = execute_builtin(node, all);
 	else
-		status = execute_external(all);
+		status = execute_external(node, all);
 	if (status != 0)
 		return (0);
 	return (1);
@@ -45,7 +45,7 @@ int	execute_single(t_ast *node, t_all *all)
 	}
 	if (!all->ast->cmd || !all->ast->cmd[0])
 		return (1);
-	if (!execute_command(all))
+	if (!execute_command(node, all))
 		return (0);
 	return (1);
 }
@@ -64,12 +64,11 @@ void	execute_command_child(t_ast *node, t_all *all)
 	if (!is_valid_command(node->cmd))
 		exit(0);
 	if (node_builtin(node->cmd[0]))
-		exit(execute_builtin(all));
+		exit(execute_builtin(node, all));
 	else
 	{
-		if (!prepare_env_and_path(all, node, &cmd_path, envp))
+		if (!prepare_env_and_path(all, node, &cmd_path, &envp))
 			exit(all->exit_status);
-		printf("cmd_path = %s - node->cmd[0] = %s - node->cmd[1] = %s\n", cmd_path, node->cmd[0], node->cmd[1]);
 		execve(cmd_path, node->cmd, envp);
 		perror("execve");
 		free(cmd_path);
@@ -258,7 +257,6 @@ int	execute_pipe(t_ast **ast_ptr, t_all *all, int *fd_in, pid_t *last_pid)
 	// Dernier nœud du bloc de pipes
 	if (node)
 	{
-		printf("node->cmd[0] = %s\n", node->cmd[0]);
 		pid = fork();
 		if (pid == -1)
 			return (perror_message(all, "fork failed"));

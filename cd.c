@@ -38,7 +38,7 @@ int	change_oldpwd(t_all *all)
 	old_pwd = get_env_value(all->env, "PWD");
 	if (!old_pwd)
 	{
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (0);
 	}
 	if (!update_env_var(all->env, "OLDPWD", old_pwd))
@@ -56,7 +56,7 @@ int	change_pwd(t_all *all)
 	new_pwd = getcwd(NULL, 0);
 	if (!new_pwd)
 	{
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (0);
 	}
 	if (!update_env_var(all->env, "PWD", new_pwd))
@@ -88,11 +88,11 @@ char	*ft_dir_to_reach(t_all *all, char *cmd)
 	return (target);
 }
 
-int	cd_builtin(t_all *all)
+int	cd_builtin(t_ast *node, t_all *all)
 {
 	char	*dir_to_reach;
 
-	dir_to_reach = ft_dir_to_reach(all, all->ast->cmd[1]);
+	dir_to_reach = ft_dir_to_reach(all, node->cmd[1]);
 	if(!dir_to_reach)
 		return (1);
 	if(!change_oldpwd(all))
@@ -106,5 +106,5 @@ int	cd_builtin(t_all *all)
 	if(!change_pwd(all))
 		return (1);
 	all->exit_status = 0;
-	return (g_exit_status);
+	return (all->exit_status);
 }

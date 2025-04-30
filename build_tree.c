@@ -68,7 +68,7 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 	ast = parse_ast(tokens, all);
 	if (!ast)
 		return (NULL);
-	print_ast(all->ast);
+	//print_ast(all->ast);
 	free_token_list(tokens);
 	return (ast);
 }
@@ -173,7 +173,7 @@ void	free_cmd_args(char **args, int count)
 	free(args);
 }
 
-char	**dup_cmd_tokens(t_token **tokens, int count)
+char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 {
 	char	**args;
 	int		i;
@@ -182,7 +182,7 @@ char	**dup_cmd_tokens(t_token **tokens, int count)
 	if (!args)
 	{
 		perror("Malloc failed");
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (NULL);
 	}
 	i = -1;
@@ -201,7 +201,7 @@ int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 	int		count;
 
 	count = count_cmd_tokens(*tokens);
-	args = dup_cmd_tokens(tokens, count);
+	args = dup_cmd_tokens(tokens, count, all);
 	if (!args)
 		return (0);
 	if (!*current_cmd)

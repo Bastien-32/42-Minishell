@@ -3,7 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-static int	ft_isnumeric(const char *str)
+static int	ft_is_numeric(const char *str)
 {
 	int	i;
 
@@ -35,11 +35,11 @@ static void	free_env_and_ast_in_builtin_exit(t_all *all)
 	rl_clear_history();
 }
 
-int	exit_builtin(t_all *all)
+int	exit_builtin(t_ast *node, t_all *all)
 {
 	long	code;
 
-	if (all->ast->cmd[1] && ft_isnumeric(all->ast->cmd[1]) && all->ast->cmd[2])
+	if (node->cmd[1] && ft_is_numeric(node->cmd[1]) && node->cmd[2])
 	{
 		ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("bash : exit: too many arguments\n", 2);
@@ -47,18 +47,18 @@ int	exit_builtin(t_all *all)
 		return (1);
 	}
 	ft_putstr_fd("exit\n", 2);
-	if (!all->ast->cmd[1])
+	if (!node->cmd[1])
 	{
 		free_env_and_ast_in_builtin_exit(all);
 		exit(0);
 	}
-	if (!ft_isnumeric(all->ast->cmd[1]))
+	if (!ft_is_numeric(node->cmd[1]))
 	{
-		print_msg_exit_not_numeric(all->ast->cmd[1]);
+		print_msg_exit_not_numeric(node->cmd[1]);
 		free_env_and_ast_in_builtin_exit(all);
 		exit(255);
 	}
-	code = (unsigned char)ft_atol(all->ast->cmd[1]);
+	code = (unsigned char)ft_atol(node->cmd[1]);
 	free_env_and_ast_in_builtin_exit(all);
 	exit(code);
 }

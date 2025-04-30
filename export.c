@@ -82,21 +82,21 @@ void	add_new_env_var(t_env **env, char *env_keyname, char *value)
 	add_env_back(env, new_env);
 }
 
-int	export_builtin(t_all *all)
+int	export_builtin(t_ast *node, t_all *all)
 {
 	int		i;
 	char	*env_keyname;
 	char	*value;
 
-	if (all->ast->cmd[1] == NULL)
+	if (node->cmd[1] == NULL)
 	{
 		print_env(all->env);
 		return (0);
 	}
 	i = 1;
-	while (all->ast->cmd[i])
+	while (node->cmd[i])
 	{
-		if (validate_and_split_env_var(all, all->ast->cmd[i], &env_keyname, &value))
+		if (validate_and_split_env_var(all, node->cmd[i], &env_keyname, &value))
 		{
 			if (value == NULL)
 				return (0);
