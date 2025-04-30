@@ -51,34 +51,29 @@ void	print_tokens(t_token *tokens)
 }
 
 //lignes a supprimer dans fonction
-t_ast	*ft_build_tree(char *line, t_env *env)
+t_ast	*ft_build_tree(char *line, t_all *all)
 {
 	t_token	*tokens;
 	t_ast	*ast;
 
 	tokens = NULL;
-	tokens = tokenize(line, env);
+	tokens = tokenize(line, all);
 	if (!tokens)
 	{
-		g_exit_status = 2;
+		all->exit_status = 2;
 		return (NULL);
 	}
-	free (line);
-	expand_token_values(tokens, env);
-	//print_tokens(tokens);
-	ast = parse_ast(tokens, env);
+	free(line);
+	expand_token_values(tokens, all);
+	ast = parse_ast(tokens, all);
 	if (!ast)
-	{
-		//free_ast_error(ast);
 		return (NULL);
-	}
+	print_ast(all->ast);
 	free_token_list(tokens);
-	//print_ast(ast);															// A supprimer
-
 	return (ast);
 }
 
-t_token	*tokenize(char *line, t_env *env)
+t_token	*tokenize(char *line, t_all *all)
 {
 	int		i;
 	t_token	*tokens;
@@ -90,29 +85,29 @@ t_token	*tokenize(char *line, t_env *env)
 		while (is_space(line[i]))
 			i++;
 		if (is_operator_char(line[i]))
-			i = handle_operator(line, i, &tokens, env);
+			i = handle_operator(line, i, &tokens, all->env);
 		else
 		{
-			i = handle_word(line, i, &tokens, env);
+			i = handle_word(line, i, &tokens, all->env);
 			if (i == -1)
 			{
 				free_token_list(tokens);
+				all->exit_status = 2;
 				return (NULL);
 			}
 		}
 	}
-	//print_tokens(tokens);
 	return (tokens);
 }
 
-void	expand_token_values(t_token *tokens, t_env *env)
+void	expand_token_values(t_token *tokens, t_all *all)
 {
 	while (tokens)
 	{
 		if (tokens->type == COMMAND && tokens->quote_type != '\'')
 		{
 			if (env_vars(tokens->value))
-				tokens->value = fill_value_env(tokens->value, env);
+				tokens->value = fill_value_env(tokens->value, all->env);
 		}
 		tokens = tokens->next;
 	}
@@ -200,8 +195,7 @@ char	**dup_cmd_tokens(t_token **tokens, int count)
 	return (args);
 }
 
-int	handle_command(t_token **tokens, t_ast **current_cmd,
-	t_ast **ast, t_env *env)
+int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 {
 	char	**args;
 	int		count;
@@ -215,7 +209,7 @@ int	handle_command(t_token **tokens, t_ast **current_cmd,
 		*current_cmd = new_ast_node(args);
 		if (!*current_cmd)
 			return (0);
-		add_back_ast(ast, *current_cmd, env, *tokens);
+		add_back_ast(all, *current_cmd, *tokens);
 	}
 	else
 		(*current_cmd)->cmd = args;
@@ -238,8 +232,7 @@ void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
 	}
 }
 
-int	handle_redirection(t_token **tokens, t_ast **current_cmd,
-	t_ast **ast, t_env *env)
+int	handle_redirection(t_token **tokens, t_ast **current_cmd, t_all *all)
 {
 	t_token	*redir;
 
@@ -247,7 +240,7 @@ int	handle_redirection(t_token **tokens, t_ast **current_cmd,
 	*tokens = (*tokens)->next;
 	if (!*tokens || (*tokens)->type != COMMAND)
 	{
-		g_exit_status = 0;
+		all->exit_status = 0;
 		return (1);
 	}
 	if (!*current_cmd)
@@ -255,25 +248,24 @@ int	handle_redirection(t_token **tokens, t_ast **current_cmd,
 		*current_cmd = new_ast_node(NULL);
 		if (!*current_cmd)
 			return (0);
-		add_back_ast(ast, *current_cmd, env, *tokens);
+		add_back_ast(all, *current_cmd, *tokens);
 	}
 	fill_redirection(*current_cmd, redir, (*tokens)->value);
 	*tokens = (*tokens)->next;
 	return (1);
 }
 
-int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd,
-	t_ast **ast, t_env *env)
+int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd, t_all *all)
 {
 	if ((*tokens)->type == COMMAND)
 	{
-		if (!handle_command(tokens, current_cmd, ast, env))
+		if (!handle_command(tokens, current_cmd, all))
 			return (0);
 	}
 	else if ((*tokens)->type == REDIR_IN || (*tokens)->type == REDIR_OUT
 		|| (*tokens)->type == APPEND || (*tokens)->type == HEREDOC)
 	{
-		if (!handle_redirection(tokens, current_cmd, ast, env))
+		if (!handle_redirection(tokens, current_cmd, all))
 			return (0);
 	}
 	else if ((*tokens)->type == PIPE)
@@ -302,31 +294,29 @@ int	only_space_in_str(char *str)
 	return (1);
 }
 
-t_ast	*parse_ast(t_token *tokens, t_env *env)
+t_ast	*parse_ast(t_token *tokens, t_all *all)
 {
-	t_ast	*ast;
 	t_ast	*current_cmd;
 
-	ast = NULL;
 	current_cmd = NULL;
 	while (tokens)
 	{
-		if (!parse_token_for_ast(&tokens, &current_cmd, &ast, env))
+		if (!parse_token_for_ast(&tokens, &current_cmd, all))
 			return (NULL);
 	}
-	if (ast->cmd[0][0] == '\0' || only_space_in_str(ast->cmd[0]))
+	if (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0]))
 	{
 		ft_putstr_fd("bash:", 2);
-		ft_putstr_fd(ast->cmd[0], 2);
+		ft_putstr_fd(all->ast->cmd[0], 2);
 		ft_putstr_fd(" : command not found\n", 2);
-		free_cmd_args(ast->cmd, 0);
-		free(ast);
-		g_exit_status = 127;
+		free_cmd_args(all->ast->cmd, 0);
+		free(all->ast);
+		all->exit_status = 127;
 		return (NULL);
 	}
 
 	// 🔽 DEBUG ICI
-	/* t_ast *tmp = ast;
+	/* t_ast *tmp = all->ast;
 	while (tmp)
 	{
 		printf("DEBUG AST → cmd: %s | pipe_out: %d\n",
@@ -334,5 +324,5 @@ t_ast	*parse_ast(t_token *tokens, t_env *env)
 		tmp = tmp->next;
 	} */
 	// 🔼 FIN DEBUG
-	return (ast);
+	return (all->ast);
 }

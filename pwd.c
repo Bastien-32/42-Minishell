@@ -1,6 +1,6 @@
 #include "bastien.h"
 
-int	pwd_builtin(void)
+int	pwd_builtin(t_all *all)
 {
 	char	*path;
 
@@ -8,6 +8,7 @@ int	pwd_builtin(void)
 	if (path == NULL)
 	{
 		perror("getcwd");
+		all->exit_status = 1;
 		return (1);
 	}
 	ft_printf("%s\n", path);

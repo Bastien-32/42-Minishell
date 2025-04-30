@@ -27,11 +27,13 @@ int is_valid_identifier(const char *str)
 	return (1);
 }
 
-int validate_and_split_env_var(char *arg, char **env_keyname, char **value)
+int validate_and_split_env_var(t_all *all ,char *arg,
+	char **env_keyname, char **value)
 {
 	if (!is_valid_identifier(arg))
 	{
 		ft_printf("export: '%s' is not a valid identifier\n", arg);
+		all->exit_status = 1;
 		return (0);
 	}
 	*env_keyname = arg;
@@ -80,29 +82,29 @@ void	add_new_env_var(t_env **env, char *env_keyname, char *value)
 	add_env_back(env, new_env);
 }
 
-int	export_builtin(char **args, t_env **env)
+int	export_builtin(t_all *all)
 {
 	int		i;
 	char	*env_keyname;
 	char	*value;
 
-	if (args[1] == NULL)
+	if (all->ast->cmd[1] == NULL)
 	{
-		print_env(*env);
+		print_env(all->env);
 		return (0);
 	}
 	i = 1;
-	while (args[i])
+	while (all->ast->cmd[i])
 	{
-		if (validate_and_split_env_var(args[i], &env_keyname, &value))
+		if (validate_and_split_env_var(all, all->ast->cmd[i], &env_keyname, &value))
 		{
 			if (value == NULL)
 				return (0);
 			else
 			{
-				if (!update_or_add_env_var(*env, env_keyname, value))
+				if (!update_or_add_env_var(all->env, env_keyname, value))
 				{
-					add_new_env_var(env, env_keyname, value);
+					add_new_env_var(&all->env, env_keyname, value);
 				}
 			}
 		}
@@ -110,10 +112,6 @@ int	export_builtin(char **args, t_env **env)
 	}
 	return (0);
 }
-
-
-
-
 
 int	export_sorted(t_env *env)
 {

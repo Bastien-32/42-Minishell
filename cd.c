@@ -31,25 +31,25 @@ int	update_env_var(t_env *env, const char *key, char *new_value)
 	return (1);
 }
 
-int	change_oldpwd(t_env *env)
+int	change_oldpwd(t_all *all)
 {
 	char	*old_pwd;
 
-	old_pwd = get_env_value(env, "PWD");
+	old_pwd = get_env_value(all->env, "PWD");
 	if (!old_pwd)
 	{
 		g_exit_status = 1;
 		return (0);
 	}
-	if (!update_env_var(env, "OLDPWD", old_pwd))
+	if (!update_env_var(all->env, "OLDPWD", old_pwd))
 	{
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (0);
 	}
 	return (1);
 }
 
-int	change_pwd(t_env *env)
+int	change_pwd(t_all *all)
 {
 	char	*new_pwd;
 
@@ -59,27 +59,27 @@ int	change_pwd(t_env *env)
 		g_exit_status = 1;
 		return (0);
 	}
-	if (!update_env_var(env, "PWD", new_pwd))
+	if (!update_env_var(all->env, "PWD", new_pwd))
 	{
 		free(new_pwd);
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (0);
 	}
 	free(new_pwd);
 	return (1);
 }
 
-char	*ft_dir_to_reach(t_env *env, char *cmd)
+char	*ft_dir_to_reach(t_all *all, char *cmd)
 {
 	char	*target;
 
 	if (!cmd)
 	{
-		target = get_env_value(env, "HOME");
+		target = get_env_value(all->env, "HOME");
 		if (!target)
 		{
 			write(2, "cd: HOME not set\n", 18);
-			g_exit_status = 1;
+			all->exit_status = 1;
 			return (NULL);
 		}
 	}
@@ -88,25 +88,23 @@ char	*ft_dir_to_reach(t_env *env, char *cmd)
 	return (target);
 }
 
-int	cd_builtin(char **cmd, t_env *env)
+int	cd_builtin(t_all *all)
 {
 	char	*dir_to_reach;
 
-	dir_to_reach = ft_dir_to_reach(env, cmd[1]);
+	dir_to_reach = ft_dir_to_reach(all, all->ast->cmd[1]);
 	if(!dir_to_reach)
 		return (1);
-	if(!change_oldpwd(env))
+	if(!change_oldpwd(all))
 		return (1);
 	if (chdir(dir_to_reach) != 0)
 	{
 		perror("cd");
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (1);
 	}
-	if(!change_pwd(env))
+	if(!change_pwd(all))
 		return (1);
-	g_exit_status = 0;
+	all->exit_status = 0;
 	return (g_exit_status);
 }
-
-//hello

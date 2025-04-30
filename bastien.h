@@ -64,6 +64,11 @@ typedef struct s_ast
 	struct s_ast	*next;			// Commande suivante (chaînée)
 }	t_ast;
 
+typedef struct s_all {
+	t_env	*env;
+	t_ast	*ast;
+	int		exit_status;
+}			t_all;
 
 /* ****************************************************************************
 								 execute_ast.c
@@ -71,22 +76,22 @@ typedef struct s_ast
 
 
 int		is_valid_command(char **cmd);
-int		execute_command(t_ast *ast, t_env **env);
-int		execute_single(t_ast *ast, t_env **env);
-void	execute_command_child(t_ast *ast, t_env *env);
-int		pipe_child_process(t_ ast *ast, t_env *env, int fd_in, int fd_out);
-int		execute_pipe(t_ast **ast_ptr, t_env **env, int *fd_in, pid_t *last_pid);
-void	restore_std_and_wait_all_children(pid_t last_pid,
+int		execute_command(t_all *all);
+int		execute_single(t_ast *ast, t_all *all);
+void	execute_command_child(t_ast *node, t_all *all);
+int		pipe_child_process(t_ast *node, t_all *all, int fd_in, int fd_out);
+int		execute_pipe(t_ast **ast_ptr, t_all *all, int *fd_in, pid_t *last_pid);
+void	restore_std_and_wait_all_children(t_all *all,pid_t last_pid,
 		int stdin_tmp, int stdout_tmp);
-int		return_error_restore_fds(int stdin_tmp, int stdout_tmp);
-int		execute_ast(t_ast *ast, t_env **env);
+int		return_error_restore_fds(t_all *all,int stdin_tmp, int stdout_tmp);
+int		execute_ast(t_all *all);
 
 /* ****************************************************************************
 						  execute_command_builtin.c
 **************************************************************************** */
 
 int		node_builtin(char *name_cmd);
-int		execute_builtin(t_ast *ast, t_env **env);
+int		execute_builtin(t_all *all);
 
 /* ****************************************************************************
 						  execute_command_external.c
@@ -96,17 +101,17 @@ char	**parse_path(t_env *env, char *key);
 char	*find_path(char *cmd, t_env *env);
 char	**env_to_array(t_env *env);
 void	free_array_envp(char **envp);
-int		prepare_env_and_path(t_ast *ast, t_env *env, char **cmd_path, char ***envp);
+int		prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char **envp);
 void	exec_child_process(char *cmd_path, t_ast *ast, char **envp);
-void	wait_child_status(int pid);
-int		execute_external(t_ast *ast, t_env *env);
+void	wait_child_status(t_all *all, int pid);
+int		execute_external(t_all *all);
 
 /* ****************************************************************************
 						  execute_command_external.c
 **************************************************************************** */
 
-int		perror_message(char *str);
-int		execute_redirection(t_ast *ast);
+int		perror_message(t_all *all,char *str);
+int		execute_redirection(t_ast *node, t_all *all);
 
 /* ****************************************************************************
 									ast.c
@@ -115,28 +120,18 @@ int		execute_redirection(t_ast *ast);
 t_ast	*new_ast_node(char **value);
 void	free_ast_error(t_ast *ast);
 int		clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens);
-int		add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token);
+int		add_back_ast(t_all *all, t_ast *new, t_token *token);
 t_ast	*parse_commands_in_block(t_token **tokens);
 
 /* ****************************************************************************
 								 build_tree.c
 **************************************************************************** */
 
-t_ast	*ft_build_tree(char *line, t_env *env);
-t_token	*tokenize(char *line, t_env *env);
+t_ast	*ft_build_tree(char *line, t_all *all);
 
-/**
- * @brief Expands environment variables for each token in the list.
- *
- * Iterates through the list of tokens and expands any environment variable
- * references found within their values.
- *
- * @param tokens The list of tokens to process.
- * @param env The environment used to resolve variable values.
- */
-void	expand_token_values(t_token *tokens, t_env *env);
-/* Abstract Syntax Tree */
-t_ast	*parse_ast(t_token *tokens, t_env *env);
+t_token	*tokenize(char *line, t_all *all);
+
+void	expand_token_values(t_token *tokens, t_all *all);
 
 int	count_cmd_tokens(t_token *tokens);
 
@@ -144,19 +139,15 @@ void	free_cmd_args(char **args, int count);
 
 char	**dup_cmd_tokens(t_token **tokens, int count);
 
-int	handle_command(t_token **tokens, t_ast **current_cmd,
-	t_ast **ast, t_env *env);
+int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all);
 
 void	fill_redirection(t_ast *ast, t_token *redir, char *filename);
 
-int	handle_redirection(t_token **tokens, t_ast **current_cmd,
-	t_ast **ast, t_env *env);
+int	handle_redirection(t_token **tokens, t_ast **current_cmd, t_all *all);
 
-int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd,
-	t_ast **ast, t_env *env);
+int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd, t_all *all);
 
-t_ast	*parse_ast(t_token *tokens, t_env *env);
-
+t_ast	*parse_ast(t_token *tokens, t_all *all);
 
 /* ****************************************************************************
 									env.c
@@ -454,20 +445,21 @@ int		is_operator_char(char c);
 									builtins
 **************************************************************************** */
 
-int		env_builtin(char **args, t_env *env);
-int		unset_builtin(char **args, t_env **env);
-int		exit_builtin(char **args, t_env *env, t_ast *ast);
+int		env_builtin(t_all *all);
+int		unset_builtin(t_all *all);
+int		exit_builtin(t_all *all);
 
-int		echo_builtin(char **args);
-int change_pwd(t_env *env);
-int cd_builtin(char **args, t_env *env);
-int		pwd_builtin(void);
-int		export_builtin(char **args, t_env **env);
+int		echo_builtin(t_all *all);
+int		change_pwd(t_all *all);
+int		cd_builtin(t_all *all);
+int		pwd_builtin(t_all *all);
+int		export_builtin(t_all *all);
 
 void	print_ast(t_ast *ast);
 
 void	setup_signals_main(void);
 void	setup_signals_child(void);
 void	handle_sigint(int sig);
+void	handle_sigquit(int sig);
 
 # endif

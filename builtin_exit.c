@@ -3,7 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-static int	ft_is_numeric(const char *str)
+static int	ft_isnumeric(const char *str)
 {
 	int	i;
 
@@ -28,37 +28,37 @@ void	print_msg_exit_not_numeric(char *str)
 	ft_putstr_fd(": numeric argument required\n", 2);
 }
 
-static void	free_env_and_ast_in_builtin_exit(t_env *env, t_ast *ast)
+static void	free_env_and_ast_in_builtin_exit(t_all *all)
 {
-	free_env_list(env);
-	free_ast_error(ast);
+	free_env_list(all->env);
+	free_ast_error(all->ast);
 	rl_clear_history();
 }
 
-int	exit_builtin(char **args, t_env *env, t_ast *ast)
+int	exit_builtin(t_all *all)
 {
 	long	code;
 
-	if (args[1] && ft_is_numeric(args[1]) && args[2])
+	if (all->ast->cmd[1] && ft_isnumeric(all->ast->cmd[1]) && all->ast->cmd[2])
 	{
 		ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("bash : exit: too many arguments\n", 2);
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (1);
 	}
 	ft_putstr_fd("exit\n", 2);
-	if (!args[1])
+	if (!all->ast->cmd[1])
 	{
-		free_env_and_ast_in_builtin_exit(env, ast);
+		free_env_and_ast_in_builtin_exit(all);
 		exit(0);
 	}
-	if (!ft_is_numeric(args[1]))
+	if (!ft_isnumeric(all->ast->cmd[1]))
 	{
-		print_msg_exit_not_numeric(args[1]);
-		free_env_and_ast_in_builtin_exit(env, ast);
+		print_msg_exit_not_numeric(all->ast->cmd[1]);
+		free_env_and_ast_in_builtin_exit(all);
 		exit(255);
 	}
-	code = (unsigned char)ft_atol(args[1]);
-	free_env_and_ast_in_builtin_exit(env, ast);
+	code = (unsigned char)ft_atol(all->ast->cmd[1]);
+	free_env_and_ast_in_builtin_exit(all);
 	exit(code);
 }

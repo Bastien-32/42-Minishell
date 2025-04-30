@@ -50,23 +50,23 @@ int	clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens)
 	return (0);
 }
 
-int	add_back_ast(t_ast **ast, t_ast *new, t_env *env, t_token *token)
+int	add_back_ast(t_all *all, t_ast *new, t_token *token)
 {
 	t_ast	*tmp;
 
 	if (!new)
 	{
-		free_env_error(env, 0);
+		free_env_error(all->env, 0);
 		free_tokens_error(token, 0);
-		free_ast_error(*ast);
+		free_ast_error(all->ast);
 		return (0);
 	}
-	if (!*ast)
+	if (!all->ast)
 	{
-		*ast = new;
+		all->ast = new;
 		return (1);
 	}
-	tmp = *ast;
+	tmp = all->ast;
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new;
