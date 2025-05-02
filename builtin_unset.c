@@ -29,14 +29,14 @@ void	remove_node_env(t_env **env, char **args, int i)
 	}
 }
 
-int	unset_builtin(char **args, t_env **env)
+int	unset_builtin(t_ast *node, t_all *all)
 {
 	int	i;
 
-	if (!args[1])
+	if (!node->cmd[1])
 		return (0);
 	i = 1;
-	remove_node_env(env, args, i);
-	g_exit_status = 0;
+	remove_node_env(&all->env, node->cmd, i);
+	all->exit_status = 0;
 	return (0);
 }

@@ -87,23 +87,23 @@ char	**env_to_array(t_env *env)
 	return (envp);
 }
 
-int	prepare_env_and_path(t_ast *ast, t_env *env, char **cmd_path, char ***envp)
+int	prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char ***envp)
 {
-	*cmd_path = find_path(ast->cmd[0], env);
+	*cmd_path = find_path(node->cmd[0], all->env);
 	if (!*cmd_path)
 	{
 		ft_putstr_fd("bash: ", 2);
-		ft_putstr_fd(ast->cmd[0], 2);
+		ft_putstr_fd(node->cmd[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
-		g_exit_status = 127;
+		all->exit_status = 127;
 		return (0);
 	}
-	*envp = env_to_array(env);
+	*envp = env_to_array(all->env);
 	if (!*envp)
 	{
 		perror("env_to_array");
 		free(*cmd_path);
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (0);
 	}
 	return (1);
@@ -122,29 +122,31 @@ void	exec_child_process(char *cmd_path, t_ast *ast, char **envp)
 	} */
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+	//printf("Child PID = %d\n", getpid());
+	
 	execve(cmd_path, ast->cmd, envp);
 	perror("execve");
 	exit(127);
 }
 
-void	wait_child_status(int pid)
+void	wait_child_status(t_all *all, int pid)
 {
 	int	status;
 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-		g_exit_status = WEXITSTATUS(status);
+		all->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-		g_exit_status = 128 + WTERMSIG(status);
+		all->exit_status = 128 + WTERMSIG(status);
 }
 
-int	execute_external(t_ast *ast, t_env *env)
+int	execute_external( t_ast *node, t_all *all)
 {
 	char	*cmd_path;
 	char	**envp;
 	pid_t	pid;
 
-	if (!prepare_env_and_path(ast, env, &cmd_path, &envp))
+	if (!prepare_env_and_path(all, node, &cmd_path, &envp))
 		return (1);
 	pid = fork();
 	if (pid == -1)
@@ -152,12 +154,12 @@ int	execute_external(t_ast *ast, t_env *env)
 		perror("fork");
 		free(cmd_path);
 		free_array_envp(envp);
-		g_exit_status = 1;
+		all->exit_status = 1;
 		return (1);
 	}
 	if (pid == 0)
-		exec_child_process(cmd_path, ast, envp);
-	wait_child_status(pid);
+		exec_child_process(cmd_path, all->ast, envp);
+	wait_child_status(all, pid);
 	free(cmd_path);
 	free_array_envp(envp);
 	//printf("end execute_external\n");

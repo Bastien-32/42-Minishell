@@ -1,60 +1,60 @@
 #include "bastien.h"
 
-int	perror_message(char *str)
+int	perror_message(t_all *all, char *str)
 {
-	g_exit_status = 1;
+	all->exit_status = 1;
 	perror(str);
 	return (0);
 }
 
-int	ft_redir_in(t_ast *ast)
+int	ft_redir_in(t_ast *node, t_all *all)
 {
 	int	fd;
 
 	//printf("[REDIR_IN] read from: %s\n", ast->redir_out);
 
-	fd = open(ast->redir_in, O_RDONLY);
+	fd = open(node->redir_in, O_RDONLY);
 	if (fd < 0)
-		return (perror_message("Error opening file REDIR_IN"));
+		return (perror_message(all, "Error opening file REDIR_IN"));
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
 		close(fd);
-		return (perror_message("Error dup2 REDIR_IN"));
+		return (perror_message(all, "Error dup2 REDIR_IN"));
 	}
 	close(fd);
 	return (1);
 }
 
-int	ft_redir_out(t_ast *ast)
+int	ft_redir_out(t_ast *node, t_all *all)
 {
 	int	fd;
 
 	//printf("[REDIR_OUT] redirecting to: %s\n", ast->redir_out);
 
-	fd = open(ast->redir_out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(node->redir_out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-		return (perror_message("Error opening file REDIR_OUT"));
+		return (perror_message(all, "Error opening file REDIR_OUT"));
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
 		close(fd);
-		return (perror_message("Error dup2 REDIR_OUT"));
+		return (perror_message(all, "Error dup2 REDIR_OUT"));
 	}
 	close(fd);
 	return (1);
 }
 
-int	ft_append(t_ast *ast)
+int	ft_append(t_ast *node, t_all *all)
 {
 	int	fd;
 
 	//printf("[APPEND] redirecting to: %s\n", ast->redir_out);
-	fd = open(ast->redir_out, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	fd = open(node->redir_out, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-		return (perror_message("Error opening file APPEND"));
+		return (perror_message(all, "Error opening file APPEND"));
 	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
 		close(fd);
-		return (perror_message("Error dup2 APPEND"));
+		return (perror_message(all, "Error dup2 APPEND"));
 	}
 	close(fd);
 	return (1);
@@ -100,7 +100,7 @@ int	ft_append(t_ast *ast)
 	return (1);
 } */
 
-void	handle_ctrl_d(char *line, t_ast *ast)
+void	handle_ctrl_d(char *line, t_ast *node, t_all *all)
 {
 	int	fd_tmp;
 
@@ -109,40 +109,40 @@ void	handle_ctrl_d(char *line, t_ast *ast)
 	write(1, "heredoc>\n ", 10);   // réafficher l'invite
 	ft_putstr_fd("bash: warning: here-document delimited", 1);
 	ft_putstr_fd("by end-of-file (wanted \'", 1);
-	ft_putstr_fd(ast->redir_in, 1);
+	ft_putstr_fd(node->redir_in, 1);
 	ft_putstr_fd("\')\n", 1);
 	fd_tmp = open("heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_tmp >= 0)
 		close(fd_tmp);
-	g_exit_status = 0;
+	all->exit_status = 0;
 	free(line);
 }
 
-int	put_heredoc_in_stdin(void)
+int	put_heredoc_in_stdin(t_all *all)
 {
 	int	fd_read;
 
 	if (access("heredoc_tmp", F_OK) == -1)
 	{
 		//printf("on sort\n");
-		g_exit_status = 0;
+		all->exit_status = 0;
 		return (1);
 	}
 	fd_read = open("heredoc_tmp", O_RDONLY);
 	if (fd_read < 0)
-		return (perror_message("open heredoc_tmp (read)"));
+		return (perror_message(all, "open heredoc_tmp (read)"));
 	if (dup2(fd_read, STDIN_FILENO) == -1)
 	{
 		close(fd_read);
-		return (perror_message("dup2 heredoc"));
+		return (perror_message(all, "dup2 heredoc"));
 	}
 	close(fd_read);
 	unlink("heredoc_tmp");
-	g_exit_status = 0;
+	all->exit_status = 0;
 	return (1);
 }
 
-int	ft_heredoc(t_ast *ast)
+int	ft_heredoc(t_ast *node, t_all *all)
 {
 	int		fd_tmp;
 	char	*line;
@@ -152,47 +152,47 @@ int	ft_heredoc(t_ast *ast)
 		line = readline("heredoc> ");
 		if (!line)
 		{
-			handle_ctrl_d(line, ast);
+			handle_ctrl_d(line, node, all);
 			break;
 		}
-		if (ft_strcmp(line, ast->redir_in) == 0)
+		if (ft_strcmp(line, node->redir_in) == 0)
 		{
 			free(line);
 			break ;
 		}
 		fd_tmp = open("heredoc_tmp", O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd_tmp < 0)
-			return (perror_message("open heredoc_tmp"));
+			return (perror_message(all, "open heredoc_tmp"));
 		write(fd_tmp, line, ft_strlen(line));
 		write(fd_tmp, "\n", 1);
 		close(fd_tmp);
 		free(line);
 	}
-	return (put_heredoc_in_stdin());
+	return (put_heredoc_in_stdin(all));
 }
 
-int	execute_redirection(t_ast *ast)
+int	execute_redirection(t_ast *node, t_all *all)
 {
-	int	status;
+	int	status;	
 
-	if (!ast)
-		return (perror_message("Redirection: filename missing or invalid"));
+	/* if (!node->ast)
+		return (perror_message(node, "Redirection: filename missing or invalid")); */
 	status = 1;
-	if (ast->redir_in)
+	if (node->redir_in)
 	{
 		//printf("execute REDIR_IN\n");
-		if (ast->type_in == REDIR_IN)
-			status = ft_redir_in(ast);
-		else if (ast->type_in == HEREDOC)
-			status = ft_heredoc(ast);
+		if (node->type_in == REDIR_IN)
+			status = ft_redir_in(node, all);
+		else if (node->type_in == HEREDOC)
+			status = ft_heredoc(node, all);
 	}
-	if (ast->redir_out)
+	if (node->redir_out)
 	{
 		//printf("execute REDIR_OUT\n");
-		if (ast->type_out == REDIR_OUT)
-			status = ft_redir_out(ast);
-		else if (ast->type_out == APPEND)
-			status = ft_append(ast);
+		if (node->type_out == REDIR_OUT)
+			status = ft_redir_out(node, all);
+		else if (node->type_out == APPEND)
+			status = ft_append(node, all);
 	}
 	if (status != 1)
 		return (0);
