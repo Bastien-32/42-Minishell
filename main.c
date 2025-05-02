@@ -125,8 +125,10 @@ int	main(int argc, char **argv, char **envp)
 		{
 			execute_ast(all);
 			free_ast_error(all->ast);
+			free(all);
 		}
 	}
 	free_env_list(all->env);
+	free(all);
 	return (all->exit_status);
 }

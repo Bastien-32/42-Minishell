@@ -1,5 +1,5 @@
 #include "bastien.h"
-
+/* 
 int	first_env_char(char c)
 {
 	if (c == '?' || ft_isalnum(c) || c == '_')
@@ -33,9 +33,9 @@ char	*replace_env_key(char *env_key, char *str_before_env, t_env *env)
 		temp_env = temp_env->next;
 	}
 	return (ft_strjoin_free_s1(str_before_env, ""));
-}
+} */
 
-char	*add_key_value(char *val_tok, int *read_pos,
+/* char	*add_key_value(char *val_tok, int *read_pos,
 	char *str_before_env, t_env *env)
 {
 	int		i;
@@ -59,9 +59,9 @@ char	*add_key_value(char *val_tok, int *read_pos,
 	free(env_key);
 	*read_pos += i;
 	return (new_tok);
-}
+} */
 
-char	*fill_value_env(char *value_token, t_env *env)
+/* char	*fill_value_env(char *value_token, t_env *env)
 {
 	int		read_pos;
 	int		i;
@@ -85,4 +85,4 @@ char	*fill_value_env(char *value_token, t_env *env)
 			new_token = add_key_value(value_token, &read_pos, new_token, env);
 	}
 	return (new_token);
-}
+} */

@@ -89,7 +89,7 @@ char	fill_quote_type(const char *str)
 	return (0);
 }
 
-int	handle_word(char *line, int i, t_token **tokens, t_env *env)
+/* int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 {
 	int		len;
 	char	*string_before_cleaning;
@@ -106,29 +106,130 @@ int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 	free(string_before_cleaning);
 	free(str_cleaned);
 	return (i + len);
-}
-
-/* int	handle_word(char *line, int i, t_token **tokens, t_env *env)
-{
-	int		len;
-	int		read_pos;
-	char	quote_type;
-	int		status;
-
-	len = get_word_length(line, i);
-	if (len == -1)
-		return (-1);
-	while (read_pos < len)
-	{
-		if (line[i + read_pos] == '\"' || line[i + read_pos] == '\'')
-			status =fill_msg_between_quotes(line, i, &read_pos, quote_type);
-		else if (line[i + read_pos] == '$')
-			status = replace_env(line, i + read_pos, quote_type, *tokens, env);
-		else
-			status = msg_without_quotes_env(line, i + read_pos, tokens, env);
-	}
-	if (status == -1)
-		return (-1);
-	return (i + len);
 } */
 
+void	replace_env_key(char *env_key, t_token *token, t_all *all)
+{
+	t_env	*temp_env;
+
+	temp_env = all->env;
+	while (temp_env)
+	{
+		if (ft_strcmp(temp_env->env_keyname, env_key) == 0)
+		{
+			token->value = ft_strjoin_free_s1(token->value,
+					temp_env->value);
+			return ;
+		}
+		temp_env = temp_env->next;
+	}
+	token->value = ft_strjoin_free_s1(token->value, "");
+}
+
+int	fill_value_env2(t_token *tokens, char *line, int posi, t_all *all)
+{
+	int		read_pos;
+	char	*env_key;
+
+	read_pos = 1;
+	if (line[posi + read_pos] == '?')
+	{
+		tokens->value = ft_strjoin_free_s1(tokens->value,
+			ft_itoa(all->exit_status));
+		return (2);
+	}
+	if (!ft_isalpha(line[posi + read_pos]) && line[posi + read_pos] != '_')
+		return (2);
+	while (line[posi + read_pos]
+		&& (ft_isalnum(line[posi + read_pos]) || line[posi + read_pos] == '_'))
+		read_pos++;
+	env_key = ft_strndup(&line[posi + 1], read_pos - 1);
+	replace_env_key(env_key, tokens, all);
+	free(env_key);
+	return (read_pos);
+}
+
+void	fill_tok_between_quotes(char *line, int i, int *read_pos,
+	t_token *tokens, t_all *all)
+{
+	tokens->quote_type = line[i + *read_pos];
+	*read_pos += 1;
+	while (line[i + *read_pos]
+		&& line[i + *read_pos] != tokens->quote_type)
+	{
+		if (line[i + *read_pos] == '$' && tokens->quote_type == '\"')
+			*read_pos += fill_value_env2(tokens, line, i + *read_pos, all);
+		else
+		{
+			tokens->value = ft_strjoin_free_s1(tokens->value,
+				ft_strndup(&line[i + *read_pos], 1));
+			*read_pos += 1;
+		}
+	}
+	if (line[i + *read_pos])
+		*read_pos += 1;
+	tokens->quote_type = 0;
+}
+
+int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
+{
+	int		read_pos;
+	char	*env_key;
+
+	read_pos = 1;
+	if (line[ipos + read_pos] == '?')
+	{
+		tokens->value = ft_strjoin_free_s1(tokens->value,
+			ft_itoa(all->exit_status));
+		return (2);
+	}
+	if (line[ipos + read_pos] == '\"' || line[ipos + read_pos] == '\'')
+		return (1);
+	if (!ft_isalpha(line[ipos + read_pos]) && line[ipos + read_pos] != '_')
+		return (2);
+	while (line[read_pos + ipos] && (ft_isalnum(line[read_pos + ipos])
+			|| line[read_pos + ipos] == '_'))
+		read_pos++;
+	env_key = ft_strndup(&line[ipos + 1], read_pos - 1);
+	replace_env_key(env_key, tokens, all);
+	free(env_key);
+	return (read_pos);
+}
+
+int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
+{
+	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
+		fill_tok_between_quotes(line, i, read_pos, token, all);
+	else if (line[i + *read_pos] == '$')
+		*read_pos = add_key_value(line, i + *read_pos, token, all);
+	else
+	{
+		token->value = ft_strjoin_free_s1(token->value,
+				ft_strndup(&line[i + *read_pos], 1));
+		(*read_pos)++;
+	}
+	if (*read_pos == -1)
+		return (-1);
+	return (0);
+}
+int	handle_word(char *line, int i, t_token **tokens, t_all *all)
+{
+	int			len;
+	int			read_pos;
+	t_token		*new_tok;
+
+	read_pos = 0;
+	new_tok = new_token("", COMMAND, 0);
+	if (!new_tok)
+		return (-1);
+	add_token_back(tokens, new_tok, all->env);
+	if (!new_tok->value)
+		return (-1);
+	len = get_word_length(line, i);
+	while (read_pos < len)
+	{
+		if (parse_word(line, i, &read_pos, new_tok, all) == -1)
+			return (-1);
+	}
+	return (i + len);
+}

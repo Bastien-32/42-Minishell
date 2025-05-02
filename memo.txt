@@ -38,6 +38,23 @@ Attention ! ! Certains de mes tests ne sont pas effectués avec Valgrind!!
 
 =============================================================================
 
+=============================================================================
+Bastien : 
+parsing tokens $ " et ‘ :
+
+bash-3.2$ echo 'salut "$USER" la forme?'
+salut "$USER" la forme?
+bash-3.2$ echo "salut '$USER' la forme?"
+salut 'bastiendallago' la forme?
+
+Echo $ »HOME »
+Echo « $HOME »
+Echo iciondoitvoirlecheminpwd:$PWD’ici on doit voir $USER : $USER’etcemorceaudetexteaprès« puis on doit voir le chemin de path : $PATH »etenfinondoitvoir'$ HOME'toutattaché:$ »HOME »
+
+
+echo "hello $USER, comment ca se passe si tu as un sc dans un dc : 'vois le chemin $PWD' fin"
+hello bastiendallago, comment ca se passe si tu as un sc dans un dc : 'vois le chemin /Users/bastiendallago/Desktop/Cursus/42-Minishell' fin
+============================================================================
 
 =============================================================================
 Sandrine : 

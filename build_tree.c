@@ -64,7 +64,7 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 		return (NULL);
 	}
 	free (line);
-	expand_token_values(tokens, all);
+	//expand_token_values(tokens, all);
 	//print_tokens(tokens);
 	ast = parse_ast(tokens, all);
 	if (!ast)
@@ -89,7 +89,7 @@ t_token	*tokenize(char *line, t_all *all)
 			i = handle_operator(line, i, &tokens, all->env);
 		else
 		{
-			i = handle_word(line, i, &tokens, all->env);
+			i = handle_word(line, i, &tokens, all);
 			if (i == -1)
 			{
 				free_token_list(tokens);
@@ -98,11 +98,11 @@ t_token	*tokenize(char *line, t_all *all)
 			}
 		}
 	}
-	//print_tokens(tokens);
+	print_tokens(tokens);
 	return (tokens);
 }
 
-void	expand_token_values(t_token *tokens, t_all *all)
+/* void	expand_token_values(t_token *tokens, t_all *all)
 {
 	while (tokens)
 	{
@@ -113,7 +113,7 @@ void	expand_token_values(t_token *tokens, t_all *all)
 		}
 		tokens = tokens->next;
 	}
-}
+} */
 
 /* void	fill_name_file(t_ast *ast, t_token **tokens)
 {
@@ -211,7 +211,8 @@ int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 		*current_cmd = new_ast_node(args);
 		if (!*current_cmd)
 			return (0);
-		add_back_ast(all, *current_cmd, *tokens);
+		if (!add_back_ast(all, *current_cmd, *tokens))
+			return (0);
 	}
 	else
 		(*current_cmd)->cmd = args;
@@ -242,14 +243,19 @@ int	handle_redirection(t_token **tokens, t_ast **current_cmd, t_all *all)
 	*tokens = (*tokens)->next;
 	if (!*tokens || (*tokens)->type != COMMAND)
 	{
-		all->exit_status = 0;
-		return (1);
+		all->exit_status = 2;
+		ft_putstr_fd("bash: syntax error near unexpected token ", 2);
+		ft_putstr_fd("'newline'\n", 2);
+		return (0);
 	}
 	if (!*current_cmd)
 	{
 		*current_cmd = new_ast_node(NULL);
 		if (!*current_cmd)
+		{
+			all->exit_status = 1;
 			return (0);
+		}
 		add_back_ast(all, *current_cmd, *tokens);
 	}
 	fill_redirection(*current_cmd, redir, (*tokens)->value);
