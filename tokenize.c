@@ -106,6 +106,79 @@ int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 	free(string_before_cleaning);
 	free(str_cleaned);
 	return (i + len);
+} */
+// dans fill_msg_between_quotes On stocke le type de quote Trouvé. 
+//Pour chaque Lettre différentes de ce quote et de $ On avance dans la chaine jusqu'a les rencontrer ou jusqu'a len 
+// on rajout a token->value les lettres qu'on a avancé jusqe la
+
+int	fill_value_env(t_token **tokens, char *line, int posi, t_env *env)
+{
+	int		read_pos;
+	int		i;
+	char	*env_value_tmp_token;
+	char	*env_key;
+
+	read_pos = 1;
+	env_value_tmp_token = ft_calloc(1, 1);
+	if (!ft_isalpha(line[posi + read_pos]) || line[posi + read_pos] != '_')
+		return (3);
+	while (line[posi + read_pos]
+		&& (ft_isalnum(line[posi + read_pos]) || line[posi + read_pos] == '_'))
+		read_pos++;
+	env_key = ft_strndup(&line[posi + 1], read_pos);
+	(*tokens)->value = replace_env_key(env_key, (*tokens)->value, env);
+	free(env_key);
+	return (read_pos);
+}
+
+void	fill_tok_between_quotes(char *line, int i, int *read_pos, t_token **tokens, t_env *env)
+{
+	(*tokens)->quote_type = line[i + *read_pos];
+	*read_pos += 1;
+	if (line[*read_pos] == '?')
+	{
+		(*tokens)->value = ft_strjoin_free_s1((*tokens)->value, ft_itoa(g_exit_status));
+		(*read_pos)++;
+		return ;
+	}
+	while (line[i + *read_pos]
+		&& line[i + *read_pos] != (*tokens)->quote_type)
+	{
+		if (line[i + *read_pos] == '$')
+			*read_pos += fill_value_env(tokens, line, i + read_pos, env);
+		else
+		{
+			(*tokens)->value = ft_strjoin_free_s1((*tokens)->value,
+				ft_strndup(&line[i + *read_pos], 1));
+			*read_pos += 1;
+		}
+	}
+	*read_pos += 1;
+}
+
+char	*add_key_value(char *line, int i, int *read_pos, t_token **tokens, t_env *env)
+{
+	int		i;
+	char	*env_key;
+	char	*new_tok;
+
+	(*read_pos)++;
+	if (line[i + *read_pos] == '?')
+	{
+		(*tokens)->value = ft_strjoin_free_s1((*tokens)->value, ft_itoa(g_exit_status));
+		(*read_pos)++;
+		return ;
+	}
+	// À reprendre la partie d'ici ! 
+	while (line[*read_pos + i] && (ft_isalnum(line[*read_pos + i])
+			|| val_tok[*read_pos + i] == '_'))
+		i++;
+	env_key = ft_strndup(&val_tok[*read_pos], i);
+
+	new_tok = replace_env_key(env_key, str_before_env, env);
+	free(env_key);
+	*read_pos += i;
+	return (new_tok);
 }
 
 /* int	handle_word(char *line, int i, t_token **tokens, t_env *env)
