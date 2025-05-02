@@ -111,6 +111,50 @@ int	export_builtin(t_ast *node, t_all *all)
 	return (0);
 }
 
+int	count_env(char **env)
+{
+	int	count;
+
+	count = 0;
+	while (env && env[count])
+		count++;
+	return (count);
+}
+
+t_env	*copy_env_list(t_env *env)
+{
+	t_env	*copy;
+	t_env	*last;
+	t_env	*new_node;
+
+	copy = NULL;
+	last = NULL;
+	while (env)
+	{
+		new_node = malloc(sizeof(t_env));
+		if (!new_node)
+			return (free_env_list(copy), NULL);
+		new_node->env_keyname = strdup(env->env_keyname);
+		new_node->value = strdup(env->value);
+		if (!new_node->env_keyname || !new_node->value)
+		{
+			free(new_node->env_keyname);
+			free(new_node->value);
+			free(new_node);
+			free_env_list(copy);
+			return (NULL);
+		}
+		new_node->next = NULL;
+		if (last)
+			last->next = new_node;
+		else
+			copy = new_node;
+		last = new_node;
+		env = env->next;
+	}
+	return (copy);
+}
+
 void	swap_env_values(t_env *a, t_env *b)
 {
 	char	*tmp_key;
