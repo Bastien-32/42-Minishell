@@ -55,7 +55,7 @@ void	execute_command_child(t_ast *node, t_all *all)
 	char	*cmd_path;
 	char	**envp;
 
-	//setup_signals_child();
+	setup_signals_child();
 	if (node->redir_in || node->redir_out)
 	{
 		if (!execute_redirection(node, all))
@@ -193,8 +193,7 @@ int	execute_ast(t_all *all)
 
 void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all, int *fd_in, int *pipe_fd)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	setup_signals_child();
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)
 		exit(perror_message(all, "dup2 fd_in failed"));
 	if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
@@ -213,8 +212,7 @@ void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all, int *fd_in, int *pipe
 //void execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
 void execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
 {
-	/* signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL); */
+	setup_signals_child();
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)
 		exit(perror_message(all, "dup2 last in failed"));
 	if (*fd_in != STDIN_FILENO)
