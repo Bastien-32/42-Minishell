@@ -64,7 +64,7 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 		return (NULL);
 	}
 	free (line);
-	expand_token_values(tokens, all);
+	//expand_token_values(tokens, all);
 	//print_tokens(tokens);
 	ast = parse_ast(tokens, all);
 	if (!ast)
@@ -89,7 +89,7 @@ t_token	*tokenize(char *line, t_all *all)
 			i = handle_operator(line, i, &tokens, all->env);
 		else
 		{
-			i = handle_word(line, i, &tokens, all->env);
+			i = handle_word(line, i, &tokens, all);
 			if (i == -1)
 			{
 				free_token_list(tokens);
@@ -102,7 +102,7 @@ t_token	*tokenize(char *line, t_all *all)
 	return (tokens);
 }
 
-void	expand_token_values(t_token *tokens, t_all *all)
+/* void	expand_token_values(t_token *tokens, t_all *all)
 {
 	while (tokens)
 	{
@@ -113,7 +113,7 @@ void	expand_token_values(t_token *tokens, t_all *all)
 		}
 		tokens = tokens->next;
 	}
-}
+} */
 
 /* void	fill_name_file(t_ast *ast, t_token **tokens)
 {

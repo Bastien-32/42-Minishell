@@ -222,19 +222,7 @@ void	free_env_list(t_env *env);
  */
 int		env_vars(char *value_token);
 
-/**
- * @brief Appends an environment variable's value to a string being expanded.
- *
- * Replaces the environment variable name with its corresponding value from the
- *  environment, and inserts that value into the token string.
- *
- * @param val_tok The original token containing the variable.
- * @param read_pos Pointer to the current reading position in val_tok.
- * @param new_tok The new string being built.
- * @param env The environment containing variable definitions.
- * @return The updated string with the expanded value added.
- */
-char	*add_key_value(char *val_tok, int *read_pos, char *new_tok, t_env *env);
+int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all);
 
 /**
  * @brief Expands all environment variables in a given token value.
@@ -359,20 +347,8 @@ char	*clean_quotes(const char *str, t_token *tokens, t_env *env);
  */
 char	fill_quote_type(const char *str);
 
-/**
- * @brief Identifies a word in the input and adds it to the token list.
- *
- * Parses the command line starting from a given character, and if a word
- * is found (not an operator or space), it is extracted, possibly cleaned 
- * (quotes removed, variables expanded), and added to the token list.
- *
- * @param line The input line.
- * @param i The current index in the line.
- * @param tokens Pointer to the token list to add to.
- * @param env Pointer to the environment (for cleanup on failure).
- * @return The updated index after the word.
- */
-int		handle_word(char *line, int i, t_token **tokens, t_env *env);
+int	handle_word(char *line, int i, t_token **tokens, t_all *all);
+
 
 /* ****************************************************************************
 									utils.c

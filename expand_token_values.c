@@ -1,5 +1,5 @@
 #include "bastien.h"
-
+/* 
 int	first_env_char(char c)
 {
 	if (c == '?' || ft_isalnum(c) || c == '_')
@@ -33,7 +33,7 @@ char	*replace_env_key(char *env_key, char *str_before_env, t_env *env)
 		temp_env = temp_env->next;
 	}
 	return (ft_strjoin_free_s1(str_before_env, ""));
-}
+} */
 
 /* char	*add_key_value(char *val_tok, int *read_pos,
 	char *str_before_env, t_env *env)
