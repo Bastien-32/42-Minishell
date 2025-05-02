@@ -56,9 +56,9 @@ int	add_back_ast(t_all *all, t_ast *new, t_token *token)
 
 	if (!new)
 	{
-		free_env_error(all->env, 0);
 		free_tokens_error(token, 0);
 		free_ast_error(all->ast);
+		free(all);
 		return (0);
 	}
 	if (!all->ast)

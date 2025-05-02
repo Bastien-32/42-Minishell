@@ -98,7 +98,7 @@ t_token	*tokenize(char *line, t_all *all)
 			}
 		}
 	}
-	//print_tokens(tokens);
+	print_tokens(tokens);
 	return (tokens);
 }
 
@@ -211,7 +211,8 @@ int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 		*current_cmd = new_ast_node(args);
 		if (!*current_cmd)
 			return (0);
-		add_back_ast(all, *current_cmd, *tokens);
+		if (!add_back_ast(all, *current_cmd, *tokens))
+			return (0);
 	}
 	else
 		(*current_cmd)->cmd = args;
@@ -242,14 +243,19 @@ int	handle_redirection(t_token **tokens, t_ast **current_cmd, t_all *all)
 	*tokens = (*tokens)->next;
 	if (!*tokens || (*tokens)->type != COMMAND)
 	{
-		all->exit_status = 0;
-		return (1);
+		all->exit_status = 2;
+		ft_putstr_fd("bash: syntax error near unexpected token ", 2);
+		ft_putstr_fd("'newline'\n", 2);
+		return (0);
 	}
 	if (!*current_cmd)
 	{
 		*current_cmd = new_ast_node(NULL);
 		if (!*current_cmd)
+		{
+			all->exit_status = 1;
 			return (0);
+		}
 		add_back_ast(all, *current_cmd, *tokens);
 	}
 	fill_redirection(*current_cmd, redir, (*tokens)->value);

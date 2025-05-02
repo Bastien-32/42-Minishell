@@ -126,9 +126,6 @@ void	replace_env_key(char *env_key, t_token *token, t_all *all)
 	token->value = ft_strjoin_free_s1(token->value, "");
 }
 
-// dans fill_tok_between_quotes On stocke le type de quote Trouvé. 
-//Pour chaque Lettre différentes de ce quote et de $ On avance dans la chaine jusqu'a les rencontrer ou jusqu'a len 
-// on rajout a token->value les lettres qu'on a avancé jusqe la
 int	fill_value_env2(t_token *tokens, char *line, int posi, t_all *all)
 {
 	int		read_pos;
@@ -226,7 +223,6 @@ int	handle_word(char *line, int i, t_token **tokens, t_all *all)
 	if (!new_tok)
 		return (-1);
 	add_token_back(tokens, new_tok, all->env);
-	new_tok->value = ft_calloc(1, 1);
 	if (!new_tok->value)
 		return (-1);
 	len = get_word_length(line, i);
