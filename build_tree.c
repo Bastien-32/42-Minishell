@@ -64,9 +64,9 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 		return (NULL);
 	}
 	free (line);
-	expand_token_values(tokens, env);
+	expand_token_values(tokens, all);
 	//print_tokens(tokens);
-	ast = parse_ast(tokens, env);
+	ast = parse_ast(tokens, all);
 	if (!ast)
 		return (NULL);
 	//print_ast(all->ast);

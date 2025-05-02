@@ -89,7 +89,7 @@ char	fill_quote_type(const char *str)
 	return (0);
 }
 
-/* int	handle_word(char *line, int i, t_token **tokens, t_env *env)
+int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 {
 	int		len;
 	char	*string_before_cleaning;
@@ -106,9 +106,9 @@ char	fill_quote_type(const char *str)
 	free(string_before_cleaning);
 	free(str_cleaned);
 	return (i + len);
-} */
+}
 
-int	handle_word(char *line, int i, t_token **tokens, t_env *env)
+/* int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 {
 	int		len;
 	int		read_pos;
@@ -130,28 +130,5 @@ int	handle_word(char *line, int i, t_token **tokens, t_env *env)
 	if (status == -1)
 		return (-1);
 	return (i + len);
-}
+} */
 
-// int	handle_word(char *line, int i, t_token **tokens, t_env *env)
-// {
-// 	int		len;
-// 	int		read_pos;
-// 	char	quote_type;
-// 	int		status;
-
-// 	len = get_word_length(line, i);
-// 	if (len == -1)
-// 		return (-1);
-// 	while (read_pos < len)
-// 	{
-// 		if (line[i + read_pos] == '\"' || line[i + read_pos] == '\'')
-// 			status =fill_msg_between_quotes(line, i, &read_pos, quote_type);
-// 		else if (line[i + read_pos] == '$')
-// 			status = replace_env(line, i + read_pos, quote_type, *tokens, env);
-// 		else
-// 			status = msg_without_quotes_env(line, i + read_pos, tokens, env);
-// 	}
-// 	if (status == -1)
-// 		return (-1);
-// 	return (i + len);
-// }
