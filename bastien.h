@@ -14,7 +14,9 @@
 
 # include "libft.h"
 
+extern sig_atomic_t	g_sigint_received;
 extern sig_atomic_t	g_exit_status;
+
 
 typedef enum	e_token_type
 {
@@ -457,8 +459,9 @@ int		export_builtin(t_ast *node, t_all *all);
 
 void	print_ast(t_ast *ast);
 
-void	setup_signals_main(void);
+void	handle_signals(void);
 void	setup_signals_child(void);
+void	setup_signals_parent(void);
 void	handle_sigint(int sig);
 void	handle_sigquit(int sig);
 

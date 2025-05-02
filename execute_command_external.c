@@ -120,10 +120,10 @@ void	exec_child_process(char *cmd_path, t_ast *ast, char **envp)
 		printf("cmd[%d] = %s\n", i, ast->cmd[i]);
 		i++;
 	} */
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	// signal(SIGINT, SIG_DFL);
+	// signal(SIGQUIT, SIG_DFL);
 	//printf("Child PID = %d\n", getpid());
-	
+	setup_signals_child();
 	execve(cmd_path, ast->cmd, envp);
 	perror("execve");
 	exit(127);

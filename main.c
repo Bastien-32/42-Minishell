@@ -1,6 +1,8 @@
 #include "bastien.h"
 
+sig_atomic_t	g_sigint_received = 0;
 sig_atomic_t	g_exit_status = 0;
+
 /* 
 int	main(int argc, char **argv, char **envp)
 {
@@ -84,9 +86,11 @@ int	main(int argc, char **argv, char **envp)
 	all->env = init_env(envp);
 	all->exit_status = 0;
 	all->ast = NULL;
+    
 	while (1)
 	{
-		//setup_signals_main();
+		setup_signals_parent();
+		rl_catch_signals = 0;
 		if (isatty(STDIN_FILENO))
 			line = readline("minishell> ");
 		else
@@ -100,10 +104,20 @@ int	main(int argc, char **argv, char **envp)
 			else
 				line = NULL;
 		}
+		
 		if (!line && !isatty(STDIN_FILENO))
-			break ;
+		break ;
 		if (!line && isatty(STDIN_FILENO))
-			return (write(1, "\033[1A\033[2Kminishell> exit\n", 25), 0);
+		return (write(1, "\033[1A\033[2Kminishell> exit\n", 25), 0);
+		
+		if (g_sigint_received)
+		{
+			g_sigint_received = 0;
+			free(line);
+			continue;
+		}
+		
+		
 		if (*line && isatty(STDIN_FILENO))
 			add_history(line);
 		all->ast = ft_build_tree(line, all);
