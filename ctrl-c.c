@@ -27,7 +27,7 @@ void	handle_sigint(int sig)
 	}
 }
 
-// sigquit = ctrl-\ 
+/* sigquit = ctrl-\ */
 void	handle_sigquit(int sig)
 {
 	(void)sig;

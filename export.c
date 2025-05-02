@@ -2,17 +2,17 @@
 
 void	print_env(t_env *env)
 {
-	t_env	*current;
+	t_env	*lst;
 
-	current = env;
-	while (current)
+	lst = env;
+	while (lst)
 	{
-		ft_printf("%s=%s\n", current->env_keyname, current->value);
-		current = current->next;
+		ft_printf("%s=%s\n", lst->env_keyname, lst->value);
+		lst = lst->next;
 	}
 }
 
-int is_valid_identifier(const char *str)
+int	is_valid_identifier(const char *str)
 {
 	if (!str || !*str)
 		return (0);
@@ -27,7 +27,7 @@ int is_valid_identifier(const char *str)
 	return (1);
 }
 
-int validate_and_split_env_var(t_all *all ,char *arg,
+int	validate_and_split_env_var(t_all *all, char *arg,
 	char **env_keyname, char **value)
 {
 	if (!is_valid_identifier(arg))
@@ -52,21 +52,21 @@ int validate_and_split_env_var(t_all *all ,char *arg,
 
 int	update_or_add_env_var(t_env *env, char *env_keyname, char *value)
 {
-	t_env	*current;
+	t_env	*lst;
 
-	current = env;
-	while (current)
+	lst = env;
+	while (lst)
 	{
-		if (ft_strcmp(current->env_keyname, env_keyname) == 0)
+		if (ft_strcmp(lst->env_keyname, env_keyname) == 0)
 		{
-			free(current->value);
+			free(lst->value);
 			if (value != NULL)
-				current->value = ft_strdup(value);
+				lst->value = ft_strdup(value);
 			else
-				current->value = NULL;
+				lst->value = NULL;
 			return (1);
 		}
-		current = current->next;
+		lst = lst->next;
 	}
 	return (0);
 }
@@ -89,23 +89,21 @@ int	export_builtin(t_ast *node, t_all *all)
 	char	*value;
 
 	if (node->cmd[1] == NULL)
-	{
-		print_env(all->env);
-		return (0);
-	}
+		return (export_sorted(all->env), 0);
 	i = 1;
 	while (node->cmd[i])
 	{
 		if (validate_and_split_env_var(all, node->cmd[i], &env_keyname, &value))
 		{
 			if (value == NULL)
-				return (0);
+			{
+				if (!update_or_add_env_var(all->env, env_keyname, NULL))
+					add_new_env_var(&all->env, env_keyname, NULL);
+			}
 			else
 			{
 				if (!update_or_add_env_var(all->env, env_keyname, value))
-				{
 					add_new_env_var(&all->env, env_keyname, value);
-				}
 			}
 		}
 		i++;
@@ -113,21 +111,65 @@ int	export_builtin(t_ast *node, t_all *all)
 	return (0);
 }
 
+void	swap_env_values(t_env *a, t_env *b)
+{
+	char	*tmp_key;
+	char	*tmp_val;
+
+	tmp_key = a->env_keyname;
+	tmp_val = a->value;
+	a->env_keyname = b->env_keyname;
+	a->value = b->value;
+	b->env_keyname = tmp_key;
+	b->value = tmp_val;
+}
+
+void	sort_env_list(t_env *env)
+{
+	t_env	*lst;
+	int		swapped;
+
+	if (!env)
+		return ;
+	swapped = 1;
+	while (swapped)
+	{
+		swapped = 0;
+		lst = env;
+		while (lst->next)
+		{
+			if (ft_strcmp(lst->env_keyname, lst->next->env_keyname) > 0)
+			{
+				swap_env_values(lst, lst->next);
+				swapped = 1;
+			}
+			lst = lst->next;
+		}
+	}
+}
+
 int	export_sorted(t_env *env)
 {
-	t_env	*current;
-	int		count;
-	char	**env_var;
+	t_env	*copy;
+	t_env	*lst;
 
-	current = env;
-	count = 0;
-	while(current != NULL)
+	copy = NULL;
+	lst = env;
+	while (lst)
 	{
-		count++;
-		current = current->next;
+		add_env_back(&copy, create_env_node(lst->env_keyname, lst->value));
+		lst = lst->next;
 	}
-	env_var = malloc(sizeof(char) * (count));
-	if (!env_var)
-		return (0);
+	sort_env_list(copy);
+	lst = copy;
+	while (lst)
+	{
+		if (lst->value)
+			ft_printf("declare -x %s=\"%s\"\n", lst->env_keyname, lst->value);
+		else
+			ft_printf("declare -x %s\n", lst->env_keyname);
+		lst = lst->next;
+	}
+	free_env_list(copy);
 	return (0);
 }
