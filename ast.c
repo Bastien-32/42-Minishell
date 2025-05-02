@@ -17,15 +17,34 @@ t_ast	*new_ast_node(char **value)
 	return (ast);
 }
 
-void	free_ast_error(t_ast *ast)
+void	free_ast_node(t_ast *ast)
 {
 	int	i;
+
+	if (!ast)
+		return ;
+	i = 0;
+	if (ast->cmd)
+	{
+		while (ast->cmd[i])
+			free(ast->cmd[i++]);
+		free(ast->cmd);
+	}
+	free(ast->redir_in);
+	free(ast->redir_out);
+	free(ast);
+}
+
+void	free_ast_error(t_ast *ast)
+{
+	int		i;
+	t_ast	*next;
 
 	if (ast == NULL)
 		return ;
 	while (ast)
 	{
-		t_ast *next = ast->next;
+		next = ast->next;
 		if (ast->cmd)
 		{
 			i = 0;

@@ -198,14 +198,17 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 
 int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 {
+	char	*letter_to_dup;
+
 	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
 		fill_tok_between_quotes(line, i, read_pos, token, all);
 	else if (line[i + *read_pos] == '$')
 		*read_pos = add_key_value(line, i + *read_pos, token, all);
 	else
 	{
-		token->value = ft_strjoin_free_s1(token->value,
-				ft_strndup(&line[i + *read_pos], 1));
+		letter_to_dup = ft_strndup(&line[i + *read_pos], 1);
+		token->value = ft_strjoin_free_s1(token->value, letter_to_dup);
+		free(letter_to_dup);
 		(*read_pos)++;
 	}
 	if (*read_pos == -1)

@@ -65,11 +65,12 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 	}
 	free (line);
 	//expand_token_values(tokens, all);
-	//print_tokens(tokens);
 	ast = parse_ast(tokens, all);
 	if (!ast)
 		return (NULL);
 	//print_ast(all->ast);
+	printf("🔍 AST créé : %s\n", all->ast ? all->ast->cmd[0] : "NULL");
+
 	free_token_list(tokens);
 	return (ast);
 }
@@ -98,7 +99,7 @@ t_token	*tokenize(char *line, t_all *all)
 			}
 		}
 	}
-	print_tokens(tokens);
+	//print_tokens(tokens);
 	return (tokens);
 }
 
@@ -196,6 +197,7 @@ char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 	args[i] = NULL;
 	return (args);
 }
+
 
 int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 {
@@ -317,8 +319,8 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 		ft_putstr_fd("bash:", 2);
 		ft_putstr_fd(all->ast->cmd[0], 2);
 		ft_putstr_fd(" : command not found\n", 2);
-		free_cmd_args(all->ast->cmd, 0);
-		free(all->ast);
+		free_ast_error(all->ast);
+		all->ast = NULL;
 		all->exit_status = 127;
 		return (NULL);
 	}
