@@ -45,7 +45,7 @@ int	exit_builtin(t_ast *node, t_all *all)
 		ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("bash : exit: too many arguments\n", 2);
 		all->exit_status = 1;
-		return (1);
+		return (0);
 	}
 	ft_putstr_fd("exit\n", 2);
 	if (!node->cmd[1])
