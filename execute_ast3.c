@@ -168,26 +168,35 @@ int	execute_ast(t_all *all)
 	int		tmp_stdin; 
 	int		tmp_stdout;
 	pid_t	last_pid;
+	t_ast	*temp;
 
 	last_pid = -1;
 	fd_in = 0;
 	tmp_stdin = dup(STDIN_FILENO);
 	tmp_stdout = dup(STDOUT_FILENO);
+	temp = all ->ast;
 	while (all->ast)
 	{
 		if (all->ast->pipe_out == 0)
 		{
 			if (!execute_single(all->ast, all))
+			{
+				free_ast_error(temp);
 				return (return_error_restore_fds(all, tmp_stdin, tmp_stdout));
+			}
 		}
 		else
 		{
 			if (!execute_pipe(&all->ast, all, &fd_in, &last_pid))
+			{
+				free_ast_error(temp);
 				return (return_error_restore_fds(all, tmp_stdin, tmp_stdout));
+			}
 		}
 		all->ast = all->ast->next;
 	}
 	restore_std_and_wait_all_children(all, last_pid, tmp_stdin, tmp_stdout);
+	free_ast_error(temp);
 	return (0);
 }
 
