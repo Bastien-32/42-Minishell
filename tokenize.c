@@ -134,7 +134,7 @@ int	fill_value_env2(t_token *tokens, char *line, int posi, t_all *all)
 	read_pos = 1;
 	if (line[posi + read_pos] == '?')
 	{
-		tokens->value = ft_strjoin_free_s1(tokens->value,
+		tokens->value = ft_strjoin_free_all(tokens->value,
 			ft_itoa(all->exit_status));
 		return (2);
 	}
@@ -163,6 +163,12 @@ void	fill_tok_between_quotes(char *line, int i, int *read_pos,
 				ft_strndup(&line[i + *read_pos], 1));
 			*read_pos += 1;
 		}
+		else if (line[i + *read_pos] == '$' && line[i + *read_pos + 1] == ' ')
+		{
+			tokens->value = ft_strjoin_free_all(tokens->value,
+				ft_strndup(&line[i + *read_pos], 1));
+			*read_pos += 1;
+		}
 		else if (line[i + *read_pos] == '$' && tokens->quote_type == '\"')
 			*read_pos += fill_value_env2(tokens, line, i + *read_pos, all);
 		else
@@ -181,15 +187,12 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 {
 	int		read_pos;
 	char	*env_key;
-	char	*exit_code;
 
 	read_pos = 1;
-	exit_code = ft_itoa(all->exit_status);
 	if (line[ipos + read_pos] == '?')
 	{
-		tokens->value = ft_strjoin_free_s1(tokens->value,
-			exit_code);
-		free(exit_code);
+		tokens->value = ft_strjoin_free_all(tokens->value,
+			ft_itoa(all->exit_status));
 		return (2);
 	}
 	if (line[ipos + read_pos] == '\"' || line[ipos + read_pos] == '\'')
@@ -211,8 +214,15 @@ int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 
 	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
 		fill_tok_between_quotes(line, i, read_pos, token, all);
+	else if (line[i + *read_pos] == '$' &&
+		(line[i + *read_pos + 1] == ' ' || line[i + *read_pos + 1] == '\0'))
+	{
+		token->value = ft_strjoin_free_all(token->value,
+			ft_strndup(&line[i + *read_pos], 1));
+		*read_pos += 1;
+	}
 	else if (line[i + *read_pos] == '$')
-		*read_pos = add_key_value(line, i + *read_pos, token, all);
+		*read_pos += add_key_value(line, i + *read_pos, token, all);
 	else
 	{
 		letter_to_dup = ft_strndup(&line[i + *read_pos], 1);
@@ -224,6 +234,7 @@ int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 		return (-1);
 	return (0);
 }
+
 int	handle_word(char *line, int i, t_token **tokens, t_all *all)
 {
 	int			len;
