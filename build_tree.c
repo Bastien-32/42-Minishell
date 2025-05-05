@@ -38,6 +38,8 @@ void	print_ast(t_ast *ast)
 	}
 }
 
+/// @brief 
+/// @param tokens 
 void	print_tokens(t_token *tokens)
 {
 	int	i = 0;

@@ -157,7 +157,13 @@ void	fill_tok_between_quotes(char *line, int i, int *read_pos,
 	while (line[i + *read_pos]
 		&& line[i + *read_pos] != tokens->quote_type)
 	{
-		if (line[i + *read_pos] == '$' && tokens->quote_type == '\"')
+		if (line[i + *read_pos] == '$' && line[i + *read_pos + 1] == '\"' && tokens->quote_type == '\"')
+		{
+			tokens->value = ft_strjoin_free_all(tokens->value,
+				ft_strndup(&line[i + *read_pos], 1));
+			*read_pos += 1;
+		}
+		else if (line[i + *read_pos] == '$' && tokens->quote_type == '\"')
 			*read_pos += fill_value_env2(tokens, line, i + *read_pos, all);
 		else
 		{
