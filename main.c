@@ -118,7 +118,8 @@ int	main(int argc, char **argv, char **envp)
 			free(line);
 			continue;
 		}
-		
+		if (*line && isatty(STDIN_FILENO))
+			add_history(line);
 		
 		lines = ft_split(line, '\n');
 		i = 0;
