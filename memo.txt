@@ -4,10 +4,6 @@ valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --
 
 gestion d'erreurs
 
-export : 
-tri alphabetique + "declare x" devant et affichage variable meme sans valeur (thomas le saulter)
-
-
 heredoc : ne fonctionne pas avec des | 
 Test : cat << EOF | grep test
 
@@ -15,49 +11,19 @@ Test : cat << EOF | grep test
 =============================================================================
 testeur : mstest m co
 
-Attention ! ! Certains de mes tests ne sont pas effectués avec Valgrind!! 
-		Relancer avec mstest vm co
-
-1 : voir s'il faut le gerer ou pas
-2 a 6 : ok avec bash le tester deconne
-
-17 18 : ok avec bash le tester deconne
-
-20 21 24: ok avec bash le tester deconne
-
-25 26 : ca passe au tester mais Ça ne reproduit pas le comportement bash
-
-27 : retravailler le message d'erreur et tester le 28 apres Qui affiche pour le moment le bon message d'erreur
-28 : ok avec bash le tester deconne
-
-29 : ok avec bash le tester deconne
-
-35 : ok avec bash le tester deconne
-
-53 : ok avec bash le tester deconne
 
 =============================================================================
 
 =============================================================================
 Bastien : 
-parsing tokens $ " et ‘ :
-
-bash-3.2$ echo 'salut "$USER" la forme?'
-salut "$USER" la forme?
-bash-3.2$ echo "salut '$USER' la forme?"
-salut 'bastiendallago' la forme?
-
-Echo $ »HOME »
-Echo « $HOME »
-Echo iciondoitvoirlecheminpwd:$PWD’ici on doit voir $USER : $USER’etcemorceaudetexteaprès« puis on doit voir le chemin de path : $PATH »etenfinondoitvoir'$ HOME'toutattaché:$ »HOME »
-
-
-echo "hello $USER, comment ca se passe si tu as un sc dans un dc : 'vois le chemin $PWD' fin"
-hello bastiendallago, comment ca se passe si tu as un sc dans un dc : 'vois le chemin /Users/bastiendallago/Desktop/Cursus/42-Minishell' fin
+ctl d valgrind
+heredoc avec pipes
 ============================================================================
 
 =============================================================================
 Sandrine : 
-
-
+export AA="123"
+export AA
+export
+on devrait voir AA = 123 mais on a AA seulement
 ============================================================================
