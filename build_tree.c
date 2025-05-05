@@ -69,7 +69,7 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 	if (!ast)
 		return (NULL);
 	//print_ast(all->ast);
-	printf("🔍 AST créé : %s\n", all->ast ? all->ast->cmd[0] : "NULL");
+	//exprintf("🔍 AST créé : %s\n", all->ast ? all->ast->cmd[0] : "NULL");
 
 	free_token_list(tokens);
 	return (ast);
@@ -308,8 +308,10 @@ int	only_space_in_str(char *str)
 t_ast	*parse_ast(t_token *tokens, t_all *all)
 {
 	t_ast	*current_cmd;
+	t_token	*temp_tok;
 
 	current_cmd = NULL;
+	temp_tok = tokens;
 	while (tokens)
 	{
 		if (!parse_token_for_ast(&tokens, &current_cmd, all))
@@ -321,6 +323,7 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 		ft_putstr_fd(all->ast->cmd[0], 2);
 		ft_putstr_fd(" : command not found\n", 2);
 		free_ast_error(all->ast);
+		free_token_list(temp_tok);
 		all->ast = NULL;
 		all->exit_status = 127;
 		return (NULL);

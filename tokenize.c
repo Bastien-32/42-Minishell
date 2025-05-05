@@ -161,7 +161,7 @@ void	fill_tok_between_quotes(char *line, int i, int *read_pos,
 			*read_pos += fill_value_env2(tokens, line, i + *read_pos, all);
 		else
 		{
-			tokens->value = ft_strjoin_free_s1(tokens->value,
+			tokens->value = ft_strjoin_free_all(tokens->value,
 				ft_strndup(&line[i + *read_pos], 1));
 			*read_pos += 1;
 		}
@@ -175,12 +175,15 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 {
 	int		read_pos;
 	char	*env_key;
+	char	*exit_code;
 
 	read_pos = 1;
+	exit_code = ft_itoa(all->exit_status);
 	if (line[ipos + read_pos] == '?')
 	{
 		tokens->value = ft_strjoin_free_s1(tokens->value,
-			ft_itoa(all->exit_status));
+			exit_code);
+		free(exit_code);
 		return (2);
 	}
 	if (line[ipos + read_pos] == '\"' || line[ipos + read_pos] == '\'')
