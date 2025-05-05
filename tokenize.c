@@ -229,6 +229,8 @@ int	handle_word(char *line, int i, t_token **tokens, t_all *all)
 	if (!new_tok->value)
 		return (-1);
 	len = get_word_length(line, i);
+	if (len == -1)
+		return (-1);
 	while (read_pos < len)
 	{
 		if (parse_word(line, i, &read_pos, new_tok, all) == -1)

@@ -188,11 +188,12 @@ char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 		all->exit_status = 1;
 		return (NULL);
 	}
-	i = -1;
-	while (++i < count && *tokens && (*tokens)->type == COMMAND)
+	i = 0;
+	while (i < count && *tokens && (*tokens)->type == COMMAND)
 	{
 		args[i] = ft_strdup((*tokens)->value);
 		*tokens = (*tokens)->next;
+		i++;
 	}
 	args[i] = NULL;
 	return (args);
