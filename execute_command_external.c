@@ -147,7 +147,7 @@ int	execute_external( t_ast *node, t_all *all)
 	pid_t	pid;
 
 	if (!prepare_env_and_path(all, node, &cmd_path, &envp))
-		return (1);
+		return (0);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -155,7 +155,7 @@ int	execute_external( t_ast *node, t_all *all)
 		free(cmd_path);
 		free_array_envp(envp);
 		all->exit_status = 1;
-		return (1);
+		return (0);
 	}
 	if (pid == 0)
 		exec_child_process(cmd_path, all->ast, envp);

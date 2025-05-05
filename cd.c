@@ -94,17 +94,17 @@ int	cd_builtin(t_ast *node, t_all *all)
 
 	dir_to_reach = ft_dir_to_reach(all, node->cmd[1]);
 	if(!dir_to_reach)
-		return (1);
+		return (0);
 	if(!change_oldpwd(all))
-		return (1);
+		return (0);
 	if (chdir(dir_to_reach) != 0)
 	{
 		perror("cd");
 		all->exit_status = 1;
-		return (1);
+		return (0);
 	}
 	if(!change_pwd(all))
-		return (1);
+		return (0);
 	all->exit_status = 0;
 	return (all->exit_status);
 }
