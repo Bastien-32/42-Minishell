@@ -30,6 +30,8 @@ int	is_valid_identifier(const char *str)
 int	validate_and_split_env_var(t_all *all, char *arg,
 	char **env_keyname, char **value)
 {
+	//char	*equal_sign;
+
 	if (!is_valid_identifier(arg))
 	{
 		ft_putstr_fd("bash: export: `", 2);
@@ -39,7 +41,7 @@ int	validate_and_split_env_var(t_all *all, char *arg,
 		return (0);
 	}
 	*env_keyname = arg;
-	*value = strchr(arg, '=');
+	*value = ft_strchr(arg, '=');
 	if (*value != NULL)
 	{
 		**value = '\0';
@@ -50,6 +52,18 @@ int	validate_and_split_env_var(t_all *all, char *arg,
 		*value = NULL;
 	}
 	return (1);
+	// equal_sign = ft_strchr(arg, '=');
+	// if (equal_sign)
+	// {
+	// 	*env_keyname = ft_substr(arg, 0, equal_sign - arg);
+	// 	*value = ft_strdup(equal_sign + 1);
+	// }
+	// else
+	// {
+	// 	*env_keyname = ft_strdup(arg);
+	// 	*value = NULL;
+	// }
+	// return (1);
 }
 
 int	update_or_add_env_var(t_env *env, char *env_keyname, char *value)
@@ -61,6 +75,8 @@ int	update_or_add_env_var(t_env *env, char *env_keyname, char *value)
 	{
 		if (ft_strcmp(lst->env_keyname, env_keyname) == 0)
 		{
+			if (value == NULL && lst->value != NULL)
+				return (1);
 			free(lst->value);
 			if (value != NULL)
 				lst->value = ft_strdup(value);
