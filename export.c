@@ -32,7 +32,9 @@ int	validate_and_split_env_var(t_all *all, char *arg,
 {
 	if (!is_valid_identifier(arg))
 	{
-		ft_printf("bash: export: « %s » : is not a valid identifier\n", arg);
+		ft_putstr_fd("bash: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
 		all->exit_status = 1;
 		return (0);
 	}

@@ -47,7 +47,7 @@ int	exit_builtin(t_ast *node, t_all *all)
 		all->exit_status = 1;
 		return (0);
 	}
-	ft_putstr_fd("exit\n", 2);
+	ft_putstr_fd("exit", 2);
 	if (!node->cmd[1])
 	{
 		free_env_and_ast_in_builtin_exit(all);
