@@ -107,10 +107,10 @@ void	handle_ctrl_d(char *line, t_ast *node, t_all *all)
 	write(1, "\033[1A", 4);     // remonter d'une ligne
 	write(1, "\033[2K", 4);     // effacer la ligne
 	write(1, "heredoc>\n ", 10);   // réafficher l'invite
-	ft_putstr_fd("bash: warning: here-document delimited", 1);
-	ft_putstr_fd("by end-of-file (wanted \'", 1);
+	ft_putstr_fd("bash: warning: « here-document » delimited ", 1);
+	ft_putstr_fd("by end-of-file (wanted « ", 1);
 	ft_putstr_fd(node->redir_in, 1);
-	ft_putstr_fd("\')\n", 1);
+	ft_putstr_fd(" »)\n", 1);
 	fd_tmp = open("heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_tmp >= 0)
 		close(fd_tmp);

@@ -205,8 +205,10 @@ void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all, int *fd_in, int *pipe
 	setup_signals_child();
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)
 		exit(perror_message(all, "dup2 fd_in failed"));
+	printf("test1\n");
 	if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
 		exit(perror_message(all, "dup2 pipe write failed"));
+	printf("test2\n");
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
 	if (*fd_in != STDIN_FILENO)
@@ -235,6 +237,7 @@ void execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
 int cmd_followed_by_pipe(t_all *all, t_ast **node, int *fd_in, int *pipe_fd)
 {
 	pid_t	pid; 
+
 
 	if (pipe(pipe_fd) == -1)
 		return (perror_message(all, "pipe failed"));

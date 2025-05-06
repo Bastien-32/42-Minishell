@@ -18,6 +18,7 @@ testeur : mstest m co
 Bastien : 
 ctl d valgrind
 heredoc avec pipes
+heredeoc avec delimiteur renseigne de suite
 ============================================================================
 
 =============================================================================
