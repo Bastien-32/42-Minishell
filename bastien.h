@@ -119,7 +119,7 @@ int		execute_redirection(t_ast *node, t_all *all);
 						  execute_command_external.c
 **************************************************************************** */
 
-int	ft_heredoc(t_ast *node, t_all *all);
+//int	ft_heredoc(t_ast *node, t_all *all);
 
 /* ****************************************************************************
 									ast.c
@@ -449,5 +449,7 @@ void	setup_signals_child(void);
 void	setup_signals_parent(void);
 void	handle_sigint(int sig);
 void	handle_sigquit(int sig);
+
+void free_heredocs_temp(t_ast *ast);
 
 # endif

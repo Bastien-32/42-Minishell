@@ -3,15 +3,14 @@
 int	perror_message(t_all *all, char *str)
 {
 	all->exit_status = 1;
+	fflush(stdout);										// À supprimer à la fin
 	perror(str);
 	return (0);
 }
 
 int	ft_redir_in(t_ast *node, t_all *all)
-{
+{ 
 	int	fd;
-
-	//printf("[REDIR_IN] read from: %s\n", ast->redir_out);
 
 	fd = open(node->redir_in, O_RDONLY);
 	if (fd < 0)
@@ -29,8 +28,6 @@ int	ft_redir_out(t_ast *node, t_all *all)
 {
 	int	fd;
 
-	//printf("[REDIR_OUT] redirecting to: %s\n", ast->redir_out);
-
 	fd = open(node->redir_out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		return (perror_message(all, "Error opening file REDIR_OUT"));
@@ -47,7 +44,6 @@ int	ft_append(t_ast *node, t_all *all)
 {
 	int	fd;
 
-	//printf("[APPEND] redirecting to: %s\n", ast->redir_out);
 	fd = open(node->redir_out, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 		return (perror_message(all, "Error opening file APPEND"));
@@ -100,7 +96,7 @@ int	ft_append(t_ast *node, t_all *all)
 	return (1);
 } */
 
-void	handle_ctrl_d(char *line, t_ast *node, t_all *all)
+/* void	handle_ctrl_d(char *line, t_ast *node, t_all *all)
 {
 	int	fd_tmp;
 
@@ -116,7 +112,7 @@ void	handle_ctrl_d(char *line, t_ast *node, t_all *all)
 		close(fd_tmp);
 	all->exit_status = 0;
 	free(line);
-}
+} */
 
 int	put_heredoc_in_stdin(t_all *all)
 {
@@ -142,7 +138,7 @@ int	put_heredoc_in_stdin(t_all *all)
 	return (1);
 }
 
-int	ft_heredoc(t_ast *node, t_all *all)
+/* int	ft_heredoc(t_ast *node, t_all *all)
 {
 	int		fd_tmp;
 	char	*line;
@@ -153,7 +149,7 @@ int	ft_heredoc(t_ast *node, t_all *all)
 		if (!line)
 		{
 			handle_ctrl_d(line, node, all);
-			break;
+			break ;
 		}
 		if (ft_strcmp(line, node->redir_in) == 0)
 		{
@@ -169,7 +165,7 @@ int	ft_heredoc(t_ast *node, t_all *all)
 		free(line);
 	}
 	return (put_heredoc_in_stdin(all));
-}
+} */
 
 int	execute_redirection(t_ast *node, t_all *all)
 {
@@ -183,8 +179,8 @@ int	execute_redirection(t_ast *node, t_all *all)
 		//printf("execute REDIR_IN\n");
 		if (node->type_in == REDIR_IN)
 			status = ft_redir_in(node, all);
-		else if (node->type_in == HEREDOC)
-			status = ft_heredoc(node, all);
+		/* else if (node->type_in == HEREDOC)
+			status = ft_heredoc(node, all); */
 	}
 	if (node->redir_out)
 	{

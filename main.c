@@ -71,22 +71,89 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
-int	prepare_heredocs(t_all *all)
+void	handle_ctrl_d_in_heredoc(char *line, t_ast *node, t_all *all)
 {
-	t_ast *node = all->ast;
+	int	fd_tmp;
+
+	write(1, "\033[1A", 4);     // remonter d'une ligne
+	write(1, "\033[2K", 4);     // effacer la ligne
+	write(1, "heredoc>\n ", 10);   // réafficher l'invite
+	ft_putstr_fd("bash: warning: « here-document » delimited ", 1);
+	ft_putstr_fd("by end-of-file (wanted « ", 1);
+	ft_putstr_fd(node->redir_in, 1);
+	ft_putstr_fd(" »)\n", 1);
+	fd_tmp = open("heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd_tmp >= 0)
+		close(fd_tmp);
+	all->exit_status = 0;
+	free(line);
+}
+
+void	ft_heredoc(t_ast *node, t_all *all, int hd_index)
+{
+	int		fd_tmp;
+	char	*line;
+	char	*heredoc_file;
+	char	*index_str;
+
+	index_str = ft_itoa(hd_index);
+	heredoc_file = ft_strjoin("heredoc_tmp", index_str);
+	free(index_str);
+	fd_tmp = open(heredoc_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	close(fd_tmp);
+	while (1)
+	{
+		line = readline("heredoc> ");
+		if (!line)
+		{
+			handle_ctrl_d_in_heredoc(line, node, all);
+			break ;
+		}
+		if (ft_strcmp(line, node->redir_in) == 0)
+		{
+			free(line);
+			break ;
+		}
+		fd_tmp = open(heredoc_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		/* if (fd_tmp < 0)
+			return (perror_message(all, "open heredoc_file")); */
+		write(fd_tmp, line, ft_strlen(line));
+		write(fd_tmp, "\n", 1);
+		close(fd_tmp);
+		free(line);
+	}
+	free(node->redir_in);
+	node->redir_in = ft_strdup(heredoc_file);
+	node->type_in = REDIR_IN;
+	free(heredoc_file);
+}
+
+void	prepare_heredocs(t_all *all)
+{
+	t_ast	*node = all->ast;
+	int	i;
+
+	i = 0;
+	while (node)
+	{
+		i++;
+		if (node->type_in == HEREDOC)
+			ft_heredoc(node, all, i);
+		node = node->next;
+	}
+}
+
+void free_heredocs_temp(t_ast *ast)
+{
+	t_ast	*node = ast;
 
 	while (node)
 	{
-		if (node->type_in == HEREDOC)
-		{
-			if (!ft_heredoc(node, all))
-				return (0);
-		}
+		if (node->redir_in && ft_strncmp("heredoc_tmp", node->redir_in, 11) == 0)
+			unlink(node->redir_in);
 		node = node->next;
 	}
-	return (1);
 }
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_all	*all;
@@ -144,17 +211,9 @@ int	main(int argc, char **argv, char **envp)
 		while (all->lines[i])
 		{
 			all->ast = ft_build_tree(all->lines[i], all);
+			prepare_heredocs(all);
 			if (all->ast)
-			{
-				/* if (!prepare_heredocs(all))
-				{
-					free_ast_error(all->ast);
-					free(line);
-					continue;
-				} */
 				execute_ast(all);
-				free_ast_error(all->ast);
-			}
 			i++;
 		}
 		free_tab(all->lines);
