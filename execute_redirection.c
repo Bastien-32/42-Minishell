@@ -173,7 +173,7 @@ int	ft_heredoc(t_ast *node, t_all *all)
 
 int	execute_redirection(t_ast *node, t_all *all)
 {
-	int	status;	
+	int	status;
 
 	/* if (!node->ast)
 		return (perror_message(node, "Redirection: filename missing or invalid")); */

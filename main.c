@@ -71,6 +71,21 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
+int	prepare_heredocs(t_all *all)
+{
+	t_ast *node = all->ast;
+
+	while (node)
+	{
+		if (node->type_in == HEREDOC)
+		{
+			if (!ft_heredoc(node, all))
+				return (0);
+		}
+		node = node->next;
+	}
+	return (1);
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -131,6 +146,12 @@ int	main(int argc, char **argv, char **envp)
 			all->ast = ft_build_tree(all->lines[i], all);
 			if (all->ast)
 			{
+				/* if (!prepare_heredocs(all))
+				{
+					free_ast_error(all->ast);
+					free(line);
+					continue;
+				} */
 				execute_ast(all);
 				free_ast_error(all->ast);
 			}
