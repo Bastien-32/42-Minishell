@@ -30,7 +30,7 @@ int	is_valid_identifier(const char *str)
 int	validate_and_split_env_var(t_all *all, char *arg,
 	char **env_keyname, char **value)
 {
-	//char	*equal_sign;
+	char	*equal_sign;
 
 	if (!is_valid_identifier(arg))
 	{
@@ -40,30 +40,33 @@ int	validate_and_split_env_var(t_all *all, char *arg,
 		all->exit_status = 1;
 		return (0);
 	}
-	*env_keyname = arg;
-	*value = ft_strchr(arg, '=');
-	if (*value != NULL)
-	{
-		**value = '\0';
-		(*value)++;
-	}
-	else
-	{
-		*value = NULL;
-	}
-	return (1);
-	// equal_sign = ft_strchr(arg, '=');
-	// if (equal_sign)
+	// *env_keyname = arg;
+	// *value = ft_strchr(arg, '=');
+	// if (*value != NULL)
 	// {
-	// 	*env_keyname = ft_substr(arg, 0, equal_sign - arg);
-	// 	*value = ft_strdup(equal_sign + 1);
+	// 	**value = '\0';
+	// 	(*value)++;
 	// }
 	// else
 	// {
-	// 	*env_keyname = ft_strdup(arg);
 	// 	*value = NULL;
 	// }
 	// return (1);
+	
+	equal_sign = ft_strchr(arg, '=');
+
+	if (equal_sign != NULL)
+	{
+		*equal_sign = '\0';
+		*env_keyname = arg;
+		*value = equal_sign + 1;
+	} 
+	else
+	{
+		*env_keyname = arg;
+		*value = NULL;
+	}
+	return (1);
 }
 
 int	update_or_add_env_var(t_env *env, char *env_keyname, char *value)
