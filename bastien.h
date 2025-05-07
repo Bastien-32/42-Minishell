@@ -15,8 +15,6 @@
 # include "libft.h"
 
 extern sig_atomic_t	g_sigint_received;
-extern sig_atomic_t	g_exit_status;
-
 
 typedef enum	e_token_type
 {
@@ -70,6 +68,7 @@ typedef struct s_all {
 	t_env	*env;
 	t_ast	*ast;
 	int		exit_status;
+	char	**lines;
 }			t_all;
 
 /* ****************************************************************************
@@ -426,6 +425,7 @@ int		is_operator_char(char c);
 int		env_builtin(t_ast *node, t_all *all);
 int		unset_builtin(t_ast *node, t_all *all);
 int		exit_builtin(t_ast *node, t_all *all);
+void	free_tab(char **tab);
 
 int		echo_builtin(t_ast *node, t_all *all);
 int		change_pwd(t_all *all);
@@ -437,7 +437,7 @@ int		export_sorted(t_env *env);
 
 void	print_ast(t_ast *ast);
 
-void	handle_signals(void);
+//void	handle_signals(void);
 void	setup_signals_child(void);
 void	setup_signals_parent(void);
 void	handle_sigint(int sig);

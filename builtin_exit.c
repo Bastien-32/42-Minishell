@@ -32,6 +32,7 @@ static void	free_env_and_ast_in_builtin_exit(t_all *all)
 {
 	free_env_list(all->env);
 	free_ast_error(all->ast);
+	free_tab(all->lines);
 	free(all);
 	rl_clear_history();
 }

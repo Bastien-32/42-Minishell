@@ -16,15 +16,12 @@ testeur : mstest m co
 
 =============================================================================
 Bastien : 
-ctl d valgrind
+
 heredoc avec pipes
 heredeoc avec delimiteur renseigne de suite
 ============================================================================
 
 =============================================================================
 Sandrine : 
-export AA="123"
-export AA
-export
-on devrait voir AA = 123 mais on a AA seulement
+
 ============================================================================

@@ -4,7 +4,7 @@ t_env	*create_env_node(const char *env_keyname, const char *value)
 {
 	t_env	*node;
 
-	node = malloc(sizeof(t_env));
+	node = ft_calloc(1, sizeof(t_env));
 	if (!node)
 		return (NULL);
 	node->env_keyname = ft_strdup(env_keyname);
@@ -80,7 +80,8 @@ void	free_env_list(t_env *env)
 	{
 		tmp = env->next;
 		free(env->env_keyname);
-		free(env->value);
+		if (env->value)
+			free(env->value);
 		free(env);
 		env = tmp;
 	}

@@ -1,7 +1,6 @@
 #include "bastien.h"
 
 sig_atomic_t	g_sigint_received = 0;
-sig_atomic_t	g_exit_status = 0;
 /* 
 int	main(int argc, char **argv, char **envp)
 {
@@ -78,7 +77,6 @@ int	main(int argc, char **argv, char **envp)
 	t_all	*all;
 	char	*line;
 	char	*tmp_line;
-	char	**lines;
 	int		i;
 
 	(void)argc;
@@ -110,7 +108,12 @@ int	main(int argc, char **argv, char **envp)
 		if (!line && !isatty(STDIN_FILENO))
 			break ;
 		if (!line && isatty(STDIN_FILENO))
-			return (write(1, "\033[1A\033[2Kminishell> exit\n", 25), 0);
+		{
+			free(line);
+			free_env_list(all->env);
+			free(all);
+			return (write(1, "exit\n", 5), 0);
+		}
 		
 		if (g_sigint_received)
 		{
@@ -121,11 +124,11 @@ int	main(int argc, char **argv, char **envp)
 		if (*line && isatty(STDIN_FILENO))
 			add_history(line);
 		
-		lines = ft_split(line, '\n');
+		all->lines = ft_split(line, '\n');
 		i = 0;
-		while (lines[i])
+		while (all->lines[i])
 		{
-			all->ast = ft_build_tree(lines[i], all);
+			all->ast = ft_build_tree(all->lines[i], all);
 			if (all->ast)
 			{
 				execute_ast(all);
@@ -133,7 +136,7 @@ int	main(int argc, char **argv, char **envp)
 			}
 			i++;
 		}
-		free_tab(lines);
+		free_tab(all->lines);
 		free(line);
 	}
 	free_env_list(all->env);

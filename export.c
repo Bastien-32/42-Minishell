@@ -40,21 +40,7 @@ int	validate_and_split_env_var(t_all *all, char *arg,
 		all->exit_status = 1;
 		return (0);
 	}
-	// *env_keyname = arg;
-	// *value = ft_strchr(arg, '=');
-	// if (*value != NULL)
-	// {
-	// 	**value = '\0';
-	// 	(*value)++;
-	// }
-	// else
-	// {
-	// 	*value = NULL;
-	// }
-	// return (1);
-	
 	equal_sign = ft_strchr(arg, '=');
-
 	if (equal_sign != NULL)
 	{
 		*equal_sign = '\0';
