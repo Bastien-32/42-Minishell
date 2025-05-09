@@ -211,9 +211,13 @@ int	main(int argc, char **argv, char **envp)
 		while (all->lines[i])
 		{
 			all->ast = ft_build_tree(all->lines[i], all);
-			prepare_heredocs(all);
+			//prepare_heredocs(all);
 			if (all->ast)
+			{
+				prepare_heredocs(all);
 				execute_ast(all);
+			}
+			all->ast = NULL;
 			i++;
 		}
 		free_tab(all->lines);

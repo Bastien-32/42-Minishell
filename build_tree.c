@@ -172,11 +172,11 @@ int	count_cmd_tokens(t_token *tokens)
 	return (count);
 }
 
-void	free_cmd_args(char **args, int count)
-{
-	while (--count >= 0)
-		free(args[count]);
-	free(args);
+	void	free_cmd_args(char **args, int count)
+	{
+		while (--count >= 0)
+			free(args[count]);
+		free(args);
 }
 
 char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
@@ -203,27 +203,83 @@ char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 }
 
 
-int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
-{
-	char	**args;
-	int		count;
+// int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
+// {
+// 	char	**args;
+// 	int		count;
 
-	count = count_cmd_tokens(*tokens);
-	args = dup_cmd_tokens(tokens, count, all);
-	if (!args)
-		return (0);
-	if (!*current_cmd)
-	{
-		*current_cmd = new_ast_node(args);
-		if (!*current_cmd)
-			return (0);
-		if (!add_back_ast(all, *current_cmd, *tokens))
-			return (0);
-	}
-	else
-		(*current_cmd)->cmd = args;
-	return (1);
+// 	count = count_cmd_tokens(*tokens);
+// 	args = dup_cmd_tokens(tokens, count, all);
+// 	if (!args)
+// 	{
+// 		free_cmd_args(args, count);
+// 		return (0);
+// 	}
+// 	if (!*current_cmd)
+// 	{
+// 		*current_cmd = new_ast_node(args);
+// 		if (!*current_cmd)
+// 			return (0);
+// 		if (!add_back_ast(all, *current_cmd, *tokens))
+// 		{
+// 			free_ast_error(*current_cmd);
+// 			return (0);
+// 		}
+// 	}
+// 	else
+// 		(*current_cmd)->cmd = args;
+// 	return (1);
+// }
+
+// Version NULL-terminée, plus sûre et plus simple à utiliser partout
+void free_cmd_argss(char **args)
+{
+    if (!args)
+        return;
+    for (int i = 0; args[i]; i++)
+        free(args[i]);
+    free(args);
 }
+
+int handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
+{
+    char    **args;
+    int     count;
+
+    count = count_cmd_tokens(*tokens);
+    args = dup_cmd_tokens(tokens, count, all);
+    if (!args)
+        return (0); // dup_cmd_tokens gère déjà la libération partielle
+
+    if (!*current_cmd)
+    {
+        *current_cmd = new_ast_node(args);
+        if (!*current_cmd)
+        {
+            free_cmd_argss(args); // Libère le tableau si le noeud n'a pas pu être créé
+            return (0);
+        }
+        if (!add_back_ast(all, *current_cmd, *tokens))
+        {
+            free_ast_error(*current_cmd); // Libère le noeud AST (qui contient args)
+            *current_cmd = NULL;
+            return (0);
+        }
+    }
+    else
+    {
+        // Si current_cmd existe déjà, on doit libérer l'ancien cmd si non NULL
+        if ((*current_cmd)->cmd)
+            free_cmd_argss((*current_cmd)->cmd);
+        (*current_cmd)->cmd = args;
+    }
+    return (1);
+}
+
+
+
+
+
 
 void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
 {
