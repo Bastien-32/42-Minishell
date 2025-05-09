@@ -211,6 +211,7 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 {
 	char	*letter_to_dup;
+	char	c[2];
 
 	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
 		fill_tok_between_quotes(line, i, read_pos, token, all);
@@ -223,6 +224,13 @@ int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 	}
 	else if (line[i + *read_pos] == '$')
 		*read_pos += add_key_value(line, i + *read_pos, token, all);
+	else if (line[i + *read_pos] == '\\' && (line[i + *read_pos + 1]))
+	{
+		c[0] = line[i + *read_pos + 1]; 
+		c[1] = '\0';
+		token->value = ft_strjoin_free_s1(token->value, ft_strdup(c));
+		*read_pos += 2;
+	}
 	else
 	{
 		letter_to_dup = ft_strndup(&line[i + *read_pos], 1);
