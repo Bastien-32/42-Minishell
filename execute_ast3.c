@@ -112,7 +112,7 @@ int	return_error_restore_fds(t_all *all,int stdin_tmp, int stdout_tmp)
 	close(stdout_tmp);
 	if (all->exit_status == 0)
 		all->exit_status = 127;
-	return (1);
+	return (0);
 }
 
 void	restore_std_and_wait_all_children(t_all *all ,pid_t last_pid,

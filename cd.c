@@ -73,7 +73,7 @@ char	*ft_dir_to_reach(t_all *all, char *cmd)
 {
 	char	*target;
 
-	if (!cmd)
+	if (!cmd || cmd[0] == '~')
 	{
 		target = get_env_value(all->env, "HOME");
 		if (!target)

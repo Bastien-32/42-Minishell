@@ -226,7 +226,7 @@ int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 		*read_pos += add_key_value(line, i + *read_pos, token, all);
 	else if (line[i + *read_pos] == '\\' && (line[i + *read_pos + 1]))
 	{
-		c[0] = line[i + *read_pos + 1]; 
+		c[0] = line[i + *read_pos + 1];
 		c[1] = '\0';
 		token->value = ft_strjoin_free_s1(token->value, ft_strdup(c));
 		*read_pos += 2;
