@@ -228,7 +228,7 @@ int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
 	{
 		c[0] = line[i + *read_pos + 1];
 		c[1] = '\0';
-		token->value = ft_strjoin_free_s1(token->value, ft_strdup(c));
+		token->value = ft_strjoin_free_all(token->value, ft_strdup(c));
 		*read_pos += 2;
 	}
 	else

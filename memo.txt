@@ -2,6 +2,8 @@
 compiler avec : 
 valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell 
 
+valgrind --suppressions=readline.supp --leak-check=full --show-leak-kinds=all --track-fds=yes  --track-origins=yes ./minishell
+
 gestion d'erreurs
 
 heredoc : ne fonctionne pas avec des | 

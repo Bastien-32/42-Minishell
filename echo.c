@@ -1,5 +1,25 @@
 #include "bastien.h"
 
+int	not_n(char *str)
+{
+	int	i;
+
+	i = 2;
+	if (str[0] != '-')
+		return (1);
+	if (str[1] != 'n')
+		return (1);
+	if (str[i] == '\0')
+		return (0);
+	while (str[i])
+	{
+		if (str[i] != 'n')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	echo_builtin(t_ast *node, t_all *all)
 {
 	int	n_flag;
@@ -7,8 +27,10 @@ int	echo_builtin(t_ast *node, t_all *all)
 
 	n_flag = 0;
 	i = 1;
-	while (node->cmd[i] && ft_strcmp(node->cmd[i], "-n") == 0)
+	while (node->cmd[i])
 	{
+		if (not_n(node->cmd[i]))
+			break ;
 		n_flag = 1;
 		i++;
 	}
