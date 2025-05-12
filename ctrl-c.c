@@ -6,7 +6,9 @@ void	handle_sigint(int sig)
 	(void)sig;
 	if (g_sigint_received == 1 && sig == SIGINT)
 	{
+		//ft_putstr_fd("on passe ici 1\n", 1);
 		ft_putstr_fd("^C", 1);
+		//ft_putstr_fd("on passe ici 1\n", 1);
 		rl_done = 1;
 		g_sigint_received = SIGINT;
 	}
@@ -14,14 +16,14 @@ void	handle_sigint(int sig)
 	{
 		if (waitpid(-1, NULL, WNOHANG) == -1)
 		{
-			ft_printf("^C\n");
+			ft_putstr_fd("^C\n", 1);
 			rl_replace_line("", 0);
 			rl_on_new_line();
 			rl_redisplay();
 		}
 		else
 		{
-			printf("\n");
+			ft_putstr_fd("\n", 1);
 		}
 		g_sigint_received = SIGINT;
 	}

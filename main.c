@@ -1,6 +1,6 @@
 #include "bastien.h"
 
-sig_atomic_t	g_sigint_received = 0;
+volatile sig_atomic_t	g_sigint_received = 0;
 /* 
 int	main(int argc, char **argv, char **envp)
 {
@@ -173,6 +173,12 @@ int	main(int argc, char **argv, char **envp)
 	{
 		setup_signals_parent();
 		rl_catch_signals = 0;
+		if (g_sigint_received)
+		{
+			g_sigint_received = 0;
+			all->exit_status = 0;
+			continue;
+		}
 		if (isatty(STDIN_FILENO))
 			line = readline("minishell> ");
 		else
@@ -186,7 +192,6 @@ int	main(int argc, char **argv, char **envp)
 			else
 				line = NULL;
 		}
-		
 		if (!line && !isatty(STDIN_FILENO))
 			break ;
 		if (!line && isatty(STDIN_FILENO))
@@ -197,12 +202,13 @@ int	main(int argc, char **argv, char **envp)
 			return (write(1, "exit\n", 5), 0);
 		}
 		
-		if (g_sigint_received)
+		
+		if (line[0] == '\0')
 		{
-			g_sigint_received = 0;
 			free(line);
 			continue;
 		}
+
 		if (*line && isatty(STDIN_FILENO))
 			add_history(line);
 		

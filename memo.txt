@@ -17,8 +17,18 @@ testeur : mstest m co
 =============================================================================
 Bastien : 
 
-heredoc avec pipes
-heredeoc avec delimiteur renseigne de suite
+
+gestion commande avec que des espaces ou tab si on fait 2x tab ffiche les fichiers alors que rien ne doit se passer
+par contre si ' " avant le tab doit afficher les fichier au second appui sur tab
+
+quand on exporte une variable (aa="123"), quand on fait env, elle apparait en fin de liste alors que dans bash elle est au milieu des autres
+
+segfault qund on supprime le $PATH et qu'on execute une commande apres (ls)
+
+Définissez $PATH sur une valeur de répertoire multiple (directory1:directory2) et assurez-vous que les répertoires sont vérifiés dans l'ordre de gauche à droite.
+
+echo 42 | echo no | echo smth | grep 42 doit revenir a la ligne sans erreur valgrind
+
 ============================================================================
 
 =============================================================================

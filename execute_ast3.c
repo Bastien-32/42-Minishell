@@ -155,10 +155,9 @@ void	restore_std_and_wait_all_children(t_all *all ,pid_t last_pid,
 		}
 		else if (WIFEXITED(status))
 		{
-		if (pid == last_pid)
-			all->exit_status = WEXITSTATUS(status);
+			if (pid == last_pid)
+				all->exit_status = WEXITSTATUS(status);
 		}
-
 	}
 }
 

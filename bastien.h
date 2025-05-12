@@ -14,7 +14,7 @@
 
 # include "libft.h"
 
-extern sig_atomic_t	g_sigint_received;
+extern volatile sig_atomic_t	g_sigint_received;
 
 typedef enum	e_token_type
 {

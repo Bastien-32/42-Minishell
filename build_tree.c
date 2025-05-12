@@ -234,46 +234,46 @@ char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 // Version NULL-terminée, plus sûre et plus simple à utiliser partout
 void free_cmd_argss(char **args)
 {
-    if (!args)
-        return;
-    for (int i = 0; args[i]; i++)
-        free(args[i]);
-    free(args);
+	if (!args)
+		return;
+	for (int i = 0; args[i]; i++)
+		free(args[i]);
+	free(args);
 }
 
-int handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
+int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 {
-    char    **args;
-    int     count;
+	char	**args;
+	int		count;
 
-    count = count_cmd_tokens(*tokens);
-    args = dup_cmd_tokens(tokens, count, all);
-    if (!args)
-        return (0); // dup_cmd_tokens gère déjà la libération partielle
+	count = count_cmd_tokens(*tokens);
+	args = dup_cmd_tokens(tokens, count, all);
+	if (!args)
+		return (0); // dup_cmd_tokens gère déjà la libération partielle
 
-    if (!*current_cmd)
-    {
-        *current_cmd = new_ast_node(args);
-        if (!*current_cmd)
-        {
-            free_cmd_argss(args); // Libère le tableau si le noeud n'a pas pu être créé
-            return (0);
-        }
-        if (!add_back_ast(all, *current_cmd, *tokens))
-        {
-            free_ast_error(*current_cmd); // Libère le noeud AST (qui contient args)
-            *current_cmd = NULL;
-            return (0);
-        }
-    }
-    else
-    {
-        // Si current_cmd existe déjà, on doit libérer l'ancien cmd si non NULL
-        if ((*current_cmd)->cmd)
-            free_cmd_argss((*current_cmd)->cmd);
-        (*current_cmd)->cmd = args;
-    }
-    return (1);
+	if (!*current_cmd)
+	{
+		*current_cmd = new_ast_node(args);
+		if (!*current_cmd)
+		{
+			free_cmd_argss(args); // Libère le tableau si le noeud n'a pas pu être créé
+			return (0);
+		}
+		if (!add_back_ast(all, *current_cmd, *tokens))
+		{
+			free_ast_error(*current_cmd); // Libère le noeud AST (qui contient args)
+			*current_cmd = NULL;
+			return (0);
+		}
+	}
+	else
+	{
+		// Si current_cmd existe déjà, on doit libérer l'ancien cmd si non NULL
+		if ((*current_cmd)->cmd)
+			free_cmd_argss((*current_cmd)->cmd);
+		(*current_cmd)->cmd = args;
+	}
+	return (1);
 }
 
 
