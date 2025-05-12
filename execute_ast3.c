@@ -50,7 +50,7 @@ int	execute_single(t_ast *node, t_all *all)
 	return (1);
 }
 
-void	execute_command_child(t_ast *node, t_all *all)
+/* void	execute_command_child(t_ast *node, t_all *all)
 {
 	char	*cmd_path;
 	char	**envp;
@@ -65,6 +65,41 @@ void	execute_command_child(t_ast *node, t_all *all)
 		exit(0);
 	if (node_builtin(node->cmd[0]))
 		exit(execute_builtin(node, all));
+	else
+	{
+		if (!prepare_env_and_path(all, node, &cmd_path, &envp))
+			exit(all->exit_status);
+		execve(cmd_path, node->cmd, envp);
+		perror("execve");
+		free(cmd_path);
+		free_array_envp(envp);
+		exit(127);
+	}
+} */
+
+void	execute_command_child(t_ast *node, t_all *all)
+{
+	char	*cmd_path;
+	char	**envp;
+	int		exit_status;
+
+	setup_signals_child();
+	if (node->redir_in || node->redir_out)
+	{
+		if (!execute_redirection(node, all))
+			exit(1);
+	}
+	if (!is_valid_command(node->cmd))
+		exit(0);
+	if (node_builtin(node->cmd[0]))
+	{
+		exit_status = execute_builtin(node, all);
+		free_ast_error(all->ast);
+		free_env_list(all->env);
+		free_tab(all->lines);
+		free(all);
+		exit(exit_status);
+	}
 	else
 	{
 		if (!prepare_env_and_path(all, node, &cmd_path, &envp))
@@ -270,6 +305,7 @@ int	execute_pipe(t_ast **ast_ptr, t_all *all, int *fd_in, pid_t *last_pid)
 		if (pid == 0)
 			execute_last_cmd(all, node, fd_in);
 		*last_pid = pid;
+		
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
 	}

@@ -13,6 +13,8 @@ char	**parse_path(t_env *env, char *key)
 			break ;
 		temp_env = temp_env->next;
 	}
+	if (!temp_env)
+		return (NULL);
 	path_value = temp_env->value;
 	path_array = ft_split(path_value, ':');
 	if (!path_array)
@@ -162,6 +164,5 @@ int	execute_external( t_ast *node, t_all *all)
 	wait_child_status(all, pid);
 	free(cmd_path);
 	free_array_envp(envp);
-	//printf("end execute_external\n");
 	return (0);
 }

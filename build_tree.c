@@ -78,6 +78,7 @@ t_ast	*ft_build_tree(char *line, t_all *all)
 	return (ast);
 }
 
+
 t_token	*tokenize(char *line, t_all *all)
 {
 	int		i;
