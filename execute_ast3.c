@@ -37,7 +37,6 @@ int	execute_command(t_ast *node, t_all *all)
 
 int	execute_single(t_ast *node, t_all *all)
 {
-	//printf("on entre dans execute single \n");
 	if (all->ast->redir_in || all->ast->redir_out)
 	{
 		if (!execute_redirection(node, all))
@@ -50,32 +49,14 @@ int	execute_single(t_ast *node, t_all *all)
 	return (1);
 }
 
-/* void	execute_command_child(t_ast *node, t_all *all)
+void	exit_child_builtin(t_all *all, int exit_status)
 {
-	char	*cmd_path;
-	char	**envp;
-
-	setup_signals_child();
-	if (node->redir_in || node->redir_out)
-	{
-		if (!execute_redirection(node, all))
-			exit(1);
-	}
-	if (!is_valid_command(node->cmd))
-		exit(0);
-	if (node_builtin(node->cmd[0]))
-		exit(execute_builtin(node, all));
-	else
-	{
-		if (!prepare_env_and_path(all, node, &cmd_path, &envp))
-			exit(all->exit_status);
-		execve(cmd_path, node->cmd, envp);
-		perror("execve");
-		free(cmd_path);
-		free_array_envp(envp);
-		exit(127);
-	}
-} */
+	free_ast_error(all->ast);
+	free_env_list(all->env);
+	free_tab(all->lines);
+	free(all);
+	exit(exit_status);
+}
 
 void	execute_command_child(t_ast *node, t_all *all)
 {
@@ -94,22 +75,15 @@ void	execute_command_child(t_ast *node, t_all *all)
 	if (node_builtin(node->cmd[0]))
 	{
 		exit_status = execute_builtin(node, all);
-		free_ast_error(all->ast);
-		free_env_list(all->env);
-		free_tab(all->lines);
-		free(all);
-		exit(exit_status);
+		exit_child_builtin(all, exit_status);
 	}
-	else
-	{
-		if (!prepare_env_and_path(all, node, &cmd_path, &envp))
-			exit(all->exit_status);
-		execve(cmd_path, node->cmd, envp);
-		perror("execve");
-		free(cmd_path);
-		free_array_envp(envp);
-		exit(127);
-	}
+	if (!prepare_env_and_path(all, node, &cmd_path, &envp))
+		exit(all->exit_status);
+	execve(cmd_path, node->cmd, envp);
+	perror("execve");
+	free(cmd_path);
+	free_array_envp(envp);
+	exit(127);
 }
 
 int	pipe_child_process(t_ast *node, t_all *all, int fd_in, int fd_out)
@@ -163,20 +137,6 @@ void	restore_std_and_wait_all_children(t_all *all ,pid_t last_pid,
 	close(stdout_tmp);
 	while ((pid = wait(&status)) > 0)
 	{
-		// if (pid == last_pid)
-		// {
-		// 	if (WIFEXITED(status))
-		// 		g_exit_status = WEXITSTATUS(status);
-		// 	else if (WIFSIGNALED(status))
-		// 	{
-		// 		sig = WTERMSIG(status);
-		// 		if (sig == SIGQUIT)
-		// 			write(2, "Quit (core dumped)\n", 19);
-		// 		//else if (sig == SIGINT)
-		// 		//	write(2, "\n", 1);
-		// 		g_exit_status = 128 + sig;
-		// 	}
-		// }
 		if (WIFSIGNALED(status))
 		{
 			sig = WTERMSIG(status);
@@ -253,8 +213,7 @@ void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all, int *fd_in, int *pipe
 	exit(all->exit_status);
 }
 
-//void execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
-void execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
+void	execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
 {
 	setup_signals_child();
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)
@@ -267,7 +226,7 @@ void execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
 	exit(all->exit_status);
 }
 
-int cmd_followed_by_pipe(t_all *all, t_ast **node, int *fd_in, int *pipe_fd)
+int	cmd_followed_by_pipe(t_all *all, t_ast **node, int *fd_in, int *pipe_fd)
 {
 	pid_t	pid; 
 
@@ -296,7 +255,6 @@ int	execute_pipe(t_ast **ast_ptr, t_all *all, int *fd_in, pid_t *last_pid)
 	while (node && node->pipe_out == 1)
 		if (!cmd_followed_by_pipe(all, &node, fd_in, pipe_fd))
 			return (0);
-	// Dernier nœud du bloc de pipes
 	if (node)
 	{
 		pid = fork();

@@ -1,14 +1,11 @@
 #include "bastien.h"
 
-// sigint = ctrl-C
 void	handle_sigint(int sig)
 {
 	(void)sig;
 	if (g_sigint_received == 1 && sig == SIGINT)
 	{
-		//ft_putstr_fd("on passe ici 1\n", 1);
 		ft_putstr_fd("^C", 1);
-		//ft_putstr_fd("on passe ici 1\n", 1);
 		rl_done = 1;
 		g_sigint_received = SIGINT;
 	}
@@ -29,7 +26,6 @@ void	handle_sigint(int sig)
 	}
 }
 
-/* sigquit = ctrl-\ */
 void	handle_sigquit(int sig)
 {
 	(void)sig;

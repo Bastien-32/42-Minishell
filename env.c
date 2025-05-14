@@ -64,7 +64,7 @@ void	handle_shlvl(t_env **env)
 			if (!new_shlvl)
 				free_env_error(*env, 1);
 			tmp_env->value = new_shlvl;
-			return;
+			return ;
 		}
 		tmp_env = tmp_env->next;
 	}
@@ -96,32 +96,6 @@ t_env	*init_env(char **envp)
 		}
 		i++;
 	}
-	//env->nb_env = i;
 	handle_shlvl(&env);
 	return (env);
-}
-
-void	free_env_error(t_env *env, int need_exit)
-{
-	free_env_list(env);
-	if (need_exit)
-	{
-		write(2, "Malloc node env failed\n", 24);
-		exit(1);
-	}
-}
-
-void	free_env_list(t_env *env)
-{
-	t_env	*tmp;
-
-	while (env)
-	{
-		tmp = env->next;
-		free(env->env_keyname);
-		if (env->value)
-			free(env->value);
-		free(env);
-		env = tmp;
-	}
 }

@@ -14,7 +14,7 @@ int	env_builtin(t_ast *node, t_all *all)
 	while (tmp_env)
 	{
 		if (tmp_env->value != NULL)
-			printf("%s=%s\n", tmp_env->env_keyname, tmp_env->value);
+			ft_printf("%s=%s\n", tmp_env->env_keyname, tmp_env->value);
 		tmp_env = tmp_env->next;
 	}
 	return (0);

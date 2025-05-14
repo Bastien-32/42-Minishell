@@ -1,16 +1,5 @@
 #include "bastien.h"
 
-char	*get_env_value(t_env *env, const char *key)
-{
-	while (env)
-	{
-		if (ft_strcmp(env->env_keyname, key) == 0)
-			return (env->value);
-		env = env->next;
-	}
-	return (NULL);
-}
-
 int	update_env_var(t_env *env, const char *key, char *new_value)
 {
 	t_env	*tmp;
@@ -93,9 +82,9 @@ int	cd_builtin(t_ast *node, t_all *all)
 	char	*dir_to_reach;
 
 	dir_to_reach = ft_dir_to_reach(all, node->cmd[1]);
-	if(!dir_to_reach)
+	if (!dir_to_reach)
 		return (0);
-	if(!change_oldpwd(all))
+	if (!change_oldpwd(all))
 		return (0);
 	if (chdir(dir_to_reach) != 0)
 	{
@@ -103,7 +92,7 @@ int	cd_builtin(t_ast *node, t_all *all)
 		all->exit_status = 1;
 		return (0);
 	}
-	if(!change_pwd(all))
+	if (!change_pwd(all))
 		return (0);
 	all->exit_status = 0;
 	return (all->exit_status);

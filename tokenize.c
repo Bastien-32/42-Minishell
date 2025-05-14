@@ -3,26 +3,26 @@
 int	handle_operator(const char *line, int i, t_token **tokens, t_env *env)
 {
 	if (line[i] == '|')
-		add_token_back(tokens, new_token("|", PIPE, 0), env);
+		add_token_back(tokens, new_token("|", PIPE, 0, i), env);
 	else if (line[i] == '<')
 	{
 		if (line[i + 1] == '<')
 		{
-			add_token_back(tokens, new_token("<<", HEREDOC, 0), env);
+			add_token_back(tokens, new_token("<<", HEREDOC, 0, i), env);
 			i++;
 		}
 		else
-			add_token_back(tokens, new_token("<", REDIR_IN, 0), env);
+			add_token_back(tokens, new_token("<", REDIR_IN, 0, i), env);
 	}
 	else if (line[i] == '>')
 	{
 		if (line[i + 1] == '>')
 		{
-			add_token_back(tokens, new_token(">>", APPEND, 0), env);
+			add_token_back(tokens, new_token(">>", APPEND, 0, i), env);
 			i++;
 		}
 		else
-			add_token_back(tokens, new_token(">", REDIR_OUT, 0), env);
+			add_token_back(tokens, new_token(">", REDIR_OUT, 0, i), env);
 	}
 	return (i + 1);
 }
@@ -89,25 +89,6 @@ char	fill_quote_type(const char *str)
 	return (0);
 }
 
-/* int	handle_word(char *line, int i, t_token **tokens, t_env *env)
-{
-	int		len;
-	char	*string_before_cleaning;
-	char	*str_cleaned;
-	char	quote_type;
-
-	len = get_word_length(line, i);
-	if (len == -1)
-		return (-1);
-	string_before_cleaning = ft_strndup(&line[i], len);
-	quote_type = fill_quote_type(string_before_cleaning);
-	str_cleaned = clean_quotes(string_before_cleaning, *tokens, env);
-	add_token_back(tokens, new_token(str_cleaned, COMMAND, quote_type), env);
-	free(string_before_cleaning);
-	free(str_cleaned);
-	return (i + len);
-} */
-
 void	replace_env_key(char *env_key, t_token *token, t_all *all)
 {
 	t_env	*temp_env;
@@ -135,7 +116,7 @@ int	fill_value_env2(t_token *tokens, char *line, int posi, t_all *all)
 	if (line[posi + read_pos] == '?')
 	{
 		tokens->value = ft_strjoin_free_all(tokens->value,
-			ft_itoa(all->exit_status));
+				ft_itoa(all->exit_status));
 		return (2);
 	}
 	if (!ft_isalpha(line[posi + read_pos]) && line[posi + read_pos] != '_')
@@ -149,39 +130,68 @@ int	fill_value_env2(t_token *tokens, char *line, int posi, t_all *all)
 	return (read_pos);
 }
 
-void	fill_tok_between_quotes(char *line, int i, int *read_pos,
+void	append_char_to_token(t_token *tokens, char c)
+{
+	char	str[2];
+
+	str[0] = c;
+	str[1] = '\0';
+	tokens->value = ft_strjoin_free_all(tokens->value, ft_strdup(str));
+}
+
+void	handle_dollar(char *line, int *read_pos, t_token *tokens, t_all *all)
+{
+	int		i;
+	char	next;
+
+	i = tokens->pos_tok_in_line;
+	next =  line[i + *read_pos + 1];
+	if ((next == '\"' || next == ' ') && tokens->quote_type == '\"')
+	{
+		append_char_to_token(tokens, '$');
+		*read_pos += 1;
+	}
+	else if (tokens->quote_type == '\"')
+	{
+		*read_pos += fill_value_env2(tokens, line, i + *read_pos, all);
+	}
+	else
+	{
+		append_char_to_token(tokens, '$');
+		*read_pos += 1;
+	}
+}
+
+void	fill_tok_between_quotes(char *line, int *read_pos,
 	t_token *tokens, t_all *all)
 {
+	int	i;
+
+	i = tokens->pos_tok_in_line;
 	tokens->quote_type = line[i + *read_pos];
-	*read_pos += 1;
-	while (line[i + *read_pos]
-		&& line[i + *read_pos] != tokens->quote_type)
+	(*read_pos)++;
+
+	while (line[i + *read_pos] && line[i + *read_pos] != tokens->quote_type)
 	{
-		if (line[i + *read_pos] == '$' && line[i + *read_pos + 1] == '\"' && tokens->quote_type == '\"')
-		{
-			tokens->value = ft_strjoin_free_all(tokens->value,
-				ft_strndup(&line[i + *read_pos], 1));
-			*read_pos += 1;
-		}
-		else if (line[i + *read_pos] == '$' && line[i + *read_pos + 1] == ' ')
-		{
-			tokens->value = ft_strjoin_free_all(tokens->value,
-				ft_strndup(&line[i + *read_pos], 1));
-			*read_pos += 1;
-		}
-		else if (line[i + *read_pos] == '$' && tokens->quote_type == '\"')
-			*read_pos += fill_value_env2(tokens, line, i + *read_pos, all);
+		if (line[i + *read_pos] == '$')
+			handle_dollar(line, read_pos, tokens, all);
 		else
 		{
-			tokens->value = ft_strjoin_free_all(tokens->value,
-				ft_strndup(&line[i + *read_pos], 1));
-			*read_pos += 1;
+			append_char_to_token(tokens, line[i + *read_pos]);
+			(*read_pos)++;
 		}
 	}
 	if (line[i + *read_pos])
-		*read_pos += 1;
+		(*read_pos)++;
 	tokens->quote_type = 0;
 }
+
+
+
+// void	fill_tok_between_quotes(char *line, int *read_pos,
+// 	t_token *tokens, t_all *all)
+// {
+
 
 int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 {
@@ -192,7 +202,7 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 	if (line[ipos + read_pos] == '?')
 	{
 		tokens->value = ft_strjoin_free_all(tokens->value,
-			ft_itoa(all->exit_status));
+				ft_itoa(all->exit_status));
 		return (2);
 	}
 	if (line[ipos + read_pos] == '\"' || line[ipos + read_pos] == '\'')
@@ -208,13 +218,15 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 	return (read_pos);
 }
 
-int	parse_word(char *line, int i, int *read_pos, t_token *token, t_all *all)
+int	parse_word(char *line, int *read_pos, t_token *token, t_all *all)
 {
 	char	*letter_to_dup;
 	char	c[2];
+	int		i;
 
+	i = token->pos_tok_in_line;
 	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
-		fill_tok_between_quotes(line, i, read_pos, token, all);
+		fill_tok_between_quotes(line, read_pos, token, all);
 	else if (line[i + *read_pos] == '$' &&
 		(line[i + *read_pos + 1] == ' ' || line[i + *read_pos + 1] == '\0'))
 	{
@@ -250,7 +262,7 @@ int	handle_word(char *line, int i, t_token **tokens, t_all *all)
 	t_token		*new_tok;
 
 	read_pos = 0;
-	new_tok = new_token("", COMMAND, 0);
+	new_tok = new_token("", COMMAND, 0, i);
 	if (!new_tok)
 		return (-1);
 	add_token_back(tokens, new_tok, all->env);
@@ -261,7 +273,7 @@ int	handle_word(char *line, int i, t_token **tokens, t_all *all)
 		return (-1);
 	while (read_pos < len)
 	{
-		if (parse_word(line, i, &read_pos, new_tok, all) == -1)
+		if (parse_word(line, &read_pos, new_tok, all) == -1)
 			return (-1);
 	}
 	return (i + len);

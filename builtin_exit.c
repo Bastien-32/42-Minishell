@@ -1,8 +1,5 @@
 #include "bastien.h"
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
 static int	ft_is_numeric(const char *str)
 {
 	int	i;

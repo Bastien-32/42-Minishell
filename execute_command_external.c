@@ -64,7 +64,6 @@ void	free_array_envp(char **envp)
 	free(envp);
 }
 
-
 int	nb_env(t_env *env)
 {
 	int	i;
@@ -83,7 +82,6 @@ char	**env_to_array(t_env *env)
 	char	**envp;
 	int		i;
 
-	//i = env->nb_env;
 	i = nb_env(env);
 	envp = malloc(sizeof(char *) * (i + 1));
 	if (!envp)
@@ -128,18 +126,6 @@ int	prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char ***envp)
 
 void	exec_child_process(char *cmd_path, t_ast *ast, char **envp)
 {
-	/*int	i;
-
-	i = 0;
- 	printf("[child] launching execve: %s\n", cmd_path);
-	while (ast->cmd[i])
-	{
-		printf("cmd[%d] = %s\n", i, ast->cmd[i]);
-		i++;
-	} */
-	// signal(SIGINT, SIG_DFL);
-	// signal(SIGQUIT, SIG_DFL);
-	//printf("Child PID = %d\n", getpid());
 	setup_signals_child();
 	execve(cmd_path, ast->cmd, envp);
 	perror("execve");

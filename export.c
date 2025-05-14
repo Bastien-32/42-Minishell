@@ -46,7 +46,7 @@ int	validate_and_split_env_var(t_all *all, char *arg,
 		*equal_sign = '\0';
 		*env_keyname = arg;
 		*value = equal_sign + 1;
-	} 
+	}
 	else
 	{
 		*env_keyname = arg;

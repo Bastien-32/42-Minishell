@@ -4,7 +4,7 @@ int	pwd_builtin(t_all *all)
 {
 	char	*path;
 
-	path = getcwd(NULL, 0);//(cela permet de recuperer le repertoire courant)
+	path = getcwd(NULL, 0);
 	if (path == NULL)
 	{
 		perror("getcwd");

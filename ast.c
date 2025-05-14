@@ -17,50 +17,6 @@ t_ast	*new_ast_node(char **value)
 	return (ast);
 }
 
-void	free_ast_node(t_ast *ast)
-{
-	int	i;
-
-	if (!ast)
-		return ;
-	i = 0;
-	if (ast->cmd)
-	{
-		while (ast->cmd[i])
-			free(ast->cmd[i++]);
-		free(ast->cmd);
-	}
-	free(ast->redir_in);
-	free(ast->redir_out);
-	free(ast);
-}
-
-void	free_ast_error(t_ast *ast)
-{
-	int		i;
-	t_ast	*next;
-
-	if (ast == NULL)
-		return ;
-	while (ast)
-	{
-		next = ast->next;
-		if (ast->cmd)
-		{
-			i = 0;
-			while (ast->cmd[i])
-				free(ast->cmd[i++]);
-			free(ast->cmd);
-		}
-		if (ast->redir_in)
-			free(ast->redir_in);
-		if (ast->redir_out)
-			free(ast->redir_out);
-		free(ast);
-		ast = next;
-	}
-}
-
 int	clean_ast_and_exit(t_ast *ast, t_env *env, t_token *tokens)
 {
 	free_env_error(env, 0);
@@ -91,7 +47,6 @@ int	add_back_ast(t_all *all, t_ast *new, t_token *token)
 	tmp->next = new;
 	return (1);
 }
-
 
 t_ast	*parse_commands_in_block(t_token **tokens)
 {
