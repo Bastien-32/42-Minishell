@@ -141,7 +141,7 @@ t_token	*tokenize(char *line, t_all *all);
 
 void	expand_token_values(t_token *tokens, t_all *all);
 
-int	count_cmd_tokens(t_token *tokens);
+int	count_cmd_tokens(t_token *tokens, t_ast **current_cmd, t_all *all);
 
 void	free_cmd_args(char **args, int count);
 
