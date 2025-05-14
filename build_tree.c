@@ -173,12 +173,6 @@ int	count_cmd_tokens(t_token *tokens)
 	return (count);
 }
 
-	void	free_cmd_args(char **args, int count)
-	{
-		while (--count >= 0)
-			free(args[count]);
-		free(args);
-}
 
 char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 {
@@ -232,14 +226,13 @@ char	**dup_cmd_tokens(t_token **tokens, int count, t_all *all)
 // 	return (1);
 // }
 
-// Version NULL-terminée, plus sûre et plus simple à utiliser partout
-void free_cmd_argss(char **args)
-{
-	if (!args)
-		return;
-	for (int i = 0; args[i]; i++)
-		free(args[i]);
-	free(args);
+	void	free_cmd_args(char **args, int count)
+	{
+		if (!args)
+			return;
+		while (--count >= 0)
+			free(args[count]);
+		free(args);
 }
 
 int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
@@ -257,7 +250,7 @@ int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 		*current_cmd = new_ast_node(args);
 		if (!*current_cmd)
 		{
-			free_cmd_argss(args); // Libère le tableau si le noeud n'a pas pu être créé
+			free_cmd_args(args, count); // Libère le tableau si le noeud n'a pas pu être créé
 			return (0);
 		}
 		if (!add_back_ast(all, *current_cmd, *tokens))
@@ -271,7 +264,7 @@ int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 	{
 		// Si current_cmd existe déjà, on doit libérer l'ancien cmd si non NULL
 		if ((*current_cmd)->cmd)
-			free_cmd_argss((*current_cmd)->cmd);
+			free_cmd_args((*current_cmd)->cmd, count);
 		(*current_cmd)->cmd = args;
 	}
 	return (1);

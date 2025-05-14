@@ -64,12 +64,27 @@ void	free_array_envp(char **envp)
 	free(envp);
 }
 
+
+int	nb_env(t_env *env)
+{
+	int	i;
+
+	i = 0;
+	while (env)
+	{
+		i++;
+		env = env->next;
+	}
+	return (i);
+}
+
 char	**env_to_array(t_env *env)
 {
 	char	**envp;
 	int		i;
 
-	i = env->nb_env;
+	//i = env->nb_env;
+	i = nb_env(env);
 	envp = malloc(sizeof(char *) * (i + 1));
 	if (!envp)
 		return (NULL);
