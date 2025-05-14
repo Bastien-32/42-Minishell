@@ -326,6 +326,8 @@ int	handle_command(t_token **tokens, t_ast **current_cmd, t_all *all)
 
 void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
 {
+	int	fd;
+
 	if (redir->type == REDIR_IN || redir->type == HEREDOC)
 	{
 		free(ast->redir_in);
@@ -338,6 +340,14 @@ void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
 			free(ast->redir_out);
 		ast->redir_out = ft_strdup(filename);
 		ast->type_out = redir->type;
+		if (redir->type == REDIR_OUT)
+			fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		else
+			fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
+		if (fd == -1)
+			perror("fill_redirection: open failed");
+		else
+			close(fd);
 	}
 }
 
