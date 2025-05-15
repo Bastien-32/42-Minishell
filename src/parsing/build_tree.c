@@ -103,7 +103,8 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 		if (!parse_token_for_ast(&tokens, &current_cmd, all))
 			return (NULL);
 	}
-	if (all->ast->cmd[0] && (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0])))
+	if ((all->ast->cmd && all->ast->cmd[0])
+		&& (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0])))
 	{
 		ft_putstr_fd("bash:", 2);
 		ft_putstr_fd(all->ast->cmd[0], 2);
