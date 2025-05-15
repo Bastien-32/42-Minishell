@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 int	cmd_followed_by_pipe(t_all *all, t_ast **node, int *fd_in, int *pipe_fd)
 {
@@ -19,7 +19,8 @@ int	cmd_followed_by_pipe(t_all *all, t_ast **node, int *fd_in, int *pipe_fd)
 	return (1);
 }
 
-void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all, int *fd_in, int *pipe_fd)
+void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all,
+			int *fd_in, int *pipe_fd)
 {
 	setup_signals_child();
 	if (*fd_in != STDIN_FILENO && dup2(*fd_in, STDIN_FILENO) == -1)

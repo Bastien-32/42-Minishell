@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 int	handle_redirection_in_command(t_token *tokens, t_ast **current_cmd,
 	t_all *all)

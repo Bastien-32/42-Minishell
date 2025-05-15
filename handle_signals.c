@@ -1,4 +1,6 @@
-#include "bastien.h"
+#include "minishell.h"
+
+volatile sig_atomic_t	g_sigint_received = 0;
 
 void	handle_sigint(int sig)
 {
@@ -45,4 +47,27 @@ void	setup_signals_parent(void)
 {
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, handle_sigquit);
+}
+
+char	*read_input(t_all *all)
+{
+	char	*line;
+
+	rl_catch_signals = 0;
+	if (g_sigint_received)
+	{
+		g_sigint_received = 0;
+		all->exit_status = 0;
+		return (NULL);
+	}
+	if (isatty(STDIN_FILENO))
+		line = readline("minishell> ");
+	else
+		line = handle_noninteractive_input();
+	exit_if_no_line(all, line);
+	if (line[0] == '\0')
+		return (free(line), NULL);
+	if (*line && isatty(STDIN_FILENO))
+		add_history(line);
+	return (line);
 }

@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 int	execute_command(t_ast *node, t_all *all)
 {
@@ -54,9 +54,8 @@ int	is_valid_command(char **cmd)
 	while (cmd[0][i])
 	{
 		if (cmd[0][i] != ' ' && cmd[0][i] != '\t')
-			return (1); 
+			return (1);
 		i++;
 	}
 	return (0);
 }
-

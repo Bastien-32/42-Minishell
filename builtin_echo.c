@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 int	not_n(char *str)
 {

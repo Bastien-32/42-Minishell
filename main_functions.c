@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 char	*handle_noninteractive_input(void)
 {
@@ -29,36 +29,12 @@ void	exit_if_no_line(t_all *all, char *line)
 	}
 }
 
-char	*read_input(t_all *all)
-{
-	char	*line;
-
-	rl_catch_signals = 0;
-	if (g_sigint_received)
-	{
-		g_sigint_received = 0;
-		all->exit_status = 0;
-		return (NULL);
-	}
-	if (isatty(STDIN_FILENO))
-		line = readline("minishell> ");
-	else
-		line = handle_noninteractive_input();
-	exit_if_no_line(all, line);
-	if (line[0] == '\0')
-		return (free(line), NULL);
-	if (*line && isatty(STDIN_FILENO))
-		add_history(line);
-	return (line);
-}
-
 t_all	*init_all(int argc, char **argv, char **envp)
 {
 	t_all	*all;
 
 	(void)argc;
 	(void)argv;
-
 	all = malloc(sizeof(t_all));
 	if (!all)
 		return (NULL);

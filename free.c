@@ -1,8 +1,10 @@
-#include "bastien.h"
+#include "minishell.h"
 
 void	free_tab(char **tab)
 {
-	int	i = 0;
+	int	i;
+
+	i = 0;
 	if (!tab)
 		return ;
 	while (tab[i])

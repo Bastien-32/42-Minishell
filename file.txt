@@ -1,5 +1,0 @@
-hello there
-hello world
-world only
-nothing here
-hello world again

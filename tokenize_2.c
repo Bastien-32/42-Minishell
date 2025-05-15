@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 void	handle_dollar(char *line, int *read_pos, t_token *tokens, t_all *all)
 {
@@ -6,7 +6,7 @@ void	handle_dollar(char *line, int *read_pos, t_token *tokens, t_all *all)
 	char	next;
 
 	i = tokens->posi;
-	next =  line[i + *read_pos + 1];
+	next = line[i + *read_pos + 1];
 	if ((next == '\"' || next == ' ') && tokens->quote_type == '\"')
 	{
 		append_char_to_token(tokens, '$');
@@ -31,7 +31,6 @@ void	fill_tok_between_quotes(char *line, int *read_pos,
 	i = tokens->posi;
 	tokens->quote_type = line[i + *read_pos];
 	(*read_pos)++;
-
 	while (line[i + *read_pos] && line[i + *read_pos] != tokens->quote_type)
 	{
 		if (line[i + *read_pos] == '$')
@@ -76,13 +75,13 @@ int	parse_word(char *line, int *read_pos, t_token *token, t_all *all)
 {
 	char	curr;
 	char	next;
-	
+
 	curr = line[token->posi + *read_pos];
 	next = line[token->posi + *read_pos + 1];
 	if (curr == '\"' || curr == '\'')
 		fill_tok_between_quotes(line, read_pos, token, all);
 	else if (curr == '$' && (next != ' ' && next != '\0'))
-		*read_pos += add_key_value(line, token->posi + *read_pos, token, all);	
+		*read_pos += add_key_value(line, token->posi + *read_pos, token, all);
 	else if (curr == '\\' && next)
 	{
 		append_char_to_token(token, curr);

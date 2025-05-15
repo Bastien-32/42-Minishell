@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 void	exec_child_process(char *cmd_path, t_ast *ast, char **envp)
 {

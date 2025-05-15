@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 void	remove_node_env(t_env **env, char **args, int i)
 {

@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 char	*get_env_value(t_env *env, const char *key)
 {

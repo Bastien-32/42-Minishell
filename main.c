@@ -1,6 +1,6 @@
-#include "bastien.h"
+#include "minishell.h"
 
-volatile sig_atomic_t	g_sigint_received = 0;
+//extern volatile sig_atomic_t	g_sigint_received = 0;
 
 int	main(int argc, char **argv, char **envp)
 {

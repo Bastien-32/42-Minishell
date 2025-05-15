@@ -1,4 +1,4 @@
-#include "bastien.h"
+#include "minishell.h"
 
 int	execute_ast(t_all *all)
 {
@@ -15,7 +15,8 @@ int	execute_ast(t_all *all)
 	temp = all->ast;
 	if (!execute_ast_loop(all, temp, &fd_in, &last_pid))
 		return (return_error_restore_fds(all, tmp_stdin, tmp_stdout));
-	restore_fds_and_wait_all_children(all, last_pid, tmp_stdin, tmp_stdout);
+	restore_fds(tmp_stdin, tmp_stdout);
+	wait_all_children(all, last_pid);
 	free_heredocs_temp(temp);
 	free_ast_error(temp);
 	return (0);
