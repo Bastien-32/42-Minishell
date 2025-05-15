@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_tree.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sapupier <sapupier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/15 18:43:39 by sapupier          #+#    #+#             */
+/*   Updated: 2025/05/15 18:43:40 by sapupier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 t_ast	*ft_build_tree(char *line, t_all *all)
@@ -94,26 +106,26 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 	t_ast	*current_cmd;
 	t_token	*temp_tok;
 
-	if (!pipe_in_first_pos(tokens, all) || !nothing_after_pipe(tokens, all))
+	if (!pipe_in_first_pos(tokens, all))
 		return (NULL);
+	if (!nothing_after_pipe(tokens, all))
+		return (free_ast_error(all->ast), free_token_list(tokens), NULL);
 	current_cmd = NULL;
 	temp_tok = tokens;
 	while (tokens)
 	{
 		if (!parse_token_for_ast(&tokens, &current_cmd, all))
-			return (NULL);
+			return (free_ast_error(all->ast), free_token_list(temp_tok), NULL);
 	}
 	if ((all->ast->cmd && all->ast->cmd[0])
 		&& (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0])))
 	{
-		ft_putstr_fd("bash:", 2);
 		ft_putstr_fd(all->ast->cmd[0], 2);
 		ft_putstr_fd(" : command not found\n", 2);
 		free_ast_error(all->ast);
-		free_token_list(temp_tok);
 		all->ast = NULL;
 		all->exit_status = 127;
-		return (NULL);
+		return (free_token_list(temp_tok), NULL);
 	}
 	return (all->ast);
 }
