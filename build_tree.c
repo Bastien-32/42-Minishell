@@ -94,7 +94,7 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 	t_ast	*current_cmd;
 	t_token	*temp_tok;
 
-	if (!pipe_in_first_position(tokens, all))
+	if (!pipe_in_first_pos(tokens, all) || !nothing_after_pipe(tokens, all))
 		return (NULL);
 	current_cmd = NULL;
 	temp_tok = tokens;
@@ -103,7 +103,7 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 		if (!parse_token_for_ast(&tokens, &current_cmd, all))
 			return (NULL);
 	}
-	if (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0]))
+	if (all->ast->cmd[0] && (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0])))
 	{
 		ft_putstr_fd("bash:", 2);
 		ft_putstr_fd(all->ast->cmd[0], 2);
