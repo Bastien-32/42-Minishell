@@ -12,7 +12,7 @@ t_token	*new_token(char *value, t_type type, char quote_type, int i)
 		return (NULL);
 	token->type = type;
 	token->quote_type = quote_type;
-	token->pos_tok_in_line = i;
+	token->posi = i;
 	token->next = NULL;
 	return (token);
 }

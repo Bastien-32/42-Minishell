@@ -32,7 +32,7 @@ typedef struct	s_token
 	t_type			type;
 	char			quote_type;
 	struct s_token	*next;
-	int				pos_tok_in_line;
+	int				posi;
 }					t_token;
 
 typedef struct s_env
@@ -95,17 +95,17 @@ t_env	*init_env(char **envp);
 
 int		is_valid_command(char **cmd);
 int		execute_command(t_ast *node, t_all *all);
-int		execute_single(t_ast *ast, t_all *all);
+int	execute_ast_loop(t_all *all, t_ast *start, int *fd_in, pid_t *last_pid);
+int		execute_cmd_without_pipe(t_ast *ast, t_all *all);
 void	exit_child_builtin(t_all *all, int exit_status);
 void	execute_command_child(t_ast *node, t_all *all);
-int		pipe_child_process(t_ast *node, t_all *all, int fd_in, int fd_out);
 int		return_error_restore_fds(t_all *all,int stdin_tmp, int stdout_tmp);
 void	restore_std_and_wait_all_children(t_all *all ,pid_t last_pid, int stdin_tmp, int stdout_tmp);
 int		execute_ast(t_all *all);
 void	execute_cmd_followed_by_pipe(t_ast *node, t_all *all, int *fd_in, int *pipe_fd);
 void	execute_last_cmd(t_all *all, t_ast *node, int *fd_in);
 int		cmd_followed_by_pipe(t_all *all, t_ast **node, int *fd_in, int *pipe_fd);
-int		execute_pipe(t_ast **ast_ptr, t_all *all, int *fd_in, pid_t *last_pid);
+int		execute_cmd_with_pipe(t_ast **ast_ptr, t_all *all, int *fd_in, pid_t *last_pid);
 
 /* ****************************************************************************
 						  execute_command_builtin.c

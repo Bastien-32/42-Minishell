@@ -144,7 +144,7 @@ void	handle_dollar(char *line, int *read_pos, t_token *tokens, t_all *all)
 	int		i;
 	char	next;
 
-	i = tokens->pos_tok_in_line;
+	i = tokens->posi;
 	next =  line[i + *read_pos + 1];
 	if ((next == '\"' || next == ' ') && tokens->quote_type == '\"')
 	{
@@ -167,7 +167,7 @@ void	fill_tok_between_quotes(char *line, int *read_pos,
 {
 	int	i;
 
-	i = tokens->pos_tok_in_line;
+	i = tokens->posi;
 	tokens->quote_type = line[i + *read_pos];
 	(*read_pos)++;
 
@@ -185,13 +185,6 @@ void	fill_tok_between_quotes(char *line, int *read_pos,
 		(*read_pos)++;
 	tokens->quote_type = 0;
 }
-
-
-
-// void	fill_tok_between_quotes(char *line, int *read_pos,
-// 	t_token *tokens, t_all *all)
-// {
-
 
 int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 {
@@ -218,36 +211,55 @@ int	add_key_value(char *line, int ipos, t_token *tokens, t_all *all)
 	return (read_pos);
 }
 
+// int	parse_word(char *line, int *read_pos, t_token *token, t_all *all)
+// {
+// 	int		i;
+
+// 	i = token->pos_tok_in_line;
+// 	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
+// 		fill_tok_between_quotes(line, read_pos, token, all);
+// 	else if (line[i + *read_pos] == '$' &&
+// 		(line[i + *read_pos + 1] == ' ' || line[i + *read_pos + 1] == '\0'))
+// 	{
+// 		append_char_to_token(token, line[i + *read_pos]);
+// 		*read_pos += 1;
+// 	}
+// 	else if (line[i + *read_pos] == '$')
+// 		*read_pos += add_key_value(line, i + *read_pos, token, all);
+// 	else if (line[i + *read_pos] == '\\' && (line[i + *read_pos + 1]))
+// 	{
+// 		append_char_to_token(token, line[i + *read_pos]);
+// 		*read_pos += 2;
+// 	}
+// 	else
+// 	{
+// 		append_char_to_token(token, line[i + *read_pos]);
+// 		(*read_pos)++;
+// 	}
+// 	if (*read_pos == -1)
+// 		return (-1);
+// 	return (0);
+// }
+
 int	parse_word(char *line, int *read_pos, t_token *token, t_all *all)
 {
-	char	*letter_to_dup;
-	char	c[2];
-	int		i;
-
-	i = token->pos_tok_in_line;
-	if (line[i + *read_pos] == '\"' || line[i + *read_pos] == '\'')
+	char	curr;
+	char	next;
+	
+	curr = line[token->posi + *read_pos];
+	next = line[token->posi + *read_pos + 1];
+	if (curr == '\"' || curr == '\'')
 		fill_tok_between_quotes(line, read_pos, token, all);
-	else if (line[i + *read_pos] == '$' &&
-		(line[i + *read_pos + 1] == ' ' || line[i + *read_pos + 1] == '\0'))
+	else if (curr == '$' && (next != ' ' && next != '\0'))
+		*read_pos += add_key_value(line, token->posi + *read_pos, token, all);	
+	else if (curr == '\\' && next)
 	{
-		token->value = ft_strjoin_free_all(token->value,
-			ft_strndup(&line[i + *read_pos], 1));
-		*read_pos += 1;
-	}
-	else if (line[i + *read_pos] == '$')
-		*read_pos += add_key_value(line, i + *read_pos, token, all);
-	else if (line[i + *read_pos] == '\\' && (line[i + *read_pos + 1]))
-	{
-		c[0] = line[i + *read_pos + 1];
-		c[1] = '\0';
-		token->value = ft_strjoin_free_all(token->value, ft_strdup(c));
+		append_char_to_token(token, curr);
 		*read_pos += 2;
 	}
 	else
 	{
-		letter_to_dup = ft_strndup(&line[i + *read_pos], 1);
-		token->value = ft_strjoin_free_s1(token->value, letter_to_dup);
-		free(letter_to_dup);
+		append_char_to_token(token, curr);
 		(*read_pos)++;
 	}
 	if (*read_pos == -1)
