@@ -30,6 +30,8 @@ t_token	*tokenize(char *line, t_all *all)
 	{
 		while (is_space(line[i]))
 			i++;
+		if (!line[i])
+			return (tokens);
 		if (is_operator_char(line[i]))
 			i = handle_operator(line, i, &tokens, all->env);
 		else
@@ -57,6 +59,8 @@ int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd, t_all *all)
 		|| (*tokens)->type == APPEND || (*tokens)->type == HEREDOC)
 	{
 		if (!handle_redirection(tokens, current_cmd, all))
+			return (0);
+		if (!(*tokens))
 			return (0);
 	}
 	else if ((*tokens)->type == PIPE)
@@ -90,6 +94,8 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 	t_ast	*current_cmd;
 	t_token	*temp_tok;
 
+	if (!pipe_in_first_position(tokens, all))
+		return (NULL);
 	current_cmd = NULL;
 	temp_tok = tokens;
 	while (tokens)

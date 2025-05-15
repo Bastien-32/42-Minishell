@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-//extern volatile sig_atomic_t	g_sigint_received = 0;
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_all	*all;
@@ -15,7 +13,7 @@ int	main(int argc, char **argv, char **envp)
 		setup_signals_parent();
 		line = read_input(all);
 		if (!line)
-			continue;
+			continue ;
 		exec_lines(all, line);
 		free(line);
 	}

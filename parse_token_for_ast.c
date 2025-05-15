@@ -80,3 +80,15 @@ void	fill_redirection(t_ast *ast, t_token *redir, char *filename)
 			close(fd);
 	}
 }
+
+int	pipe_in_first_position(t_token *tokens, t_all *all)
+{
+	if (tokens->type == PIPE)
+	{
+		ft_putstr_fd("bash: syntax error near unexpected token `|'\n", 2);
+		free_token_list(tokens);
+		all->exit_status = 2;
+		return (0);
+	}
+	return (1);
+}

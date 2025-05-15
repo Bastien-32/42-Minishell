@@ -217,6 +217,7 @@ void	exec_lines(t_all *all, char *line);
 int		handle_redirection(t_token **tokens, t_ast **current_cmd, t_all *all);
 int		handle_command(t_token **tokens, t_ast **current_cmd, t_all *all);
 void	fill_redirection(t_ast *ast, t_token *redir, char *filename);
+int		pipe_in_first_position(t_token *tokens, t_all *all);
 
 /* ****************************************************************************
 								 restore_fds.c
