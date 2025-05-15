@@ -61,7 +61,7 @@ void	execute_command_child(t_ast *node, t_all *all)
 	execve(cmd_path, node->cmd, envp);
 	perror("execve");
 	free(cmd_path);
-	free_array_envp(envp);
+	free_tab(envp);
 	exit(127);
 }
 

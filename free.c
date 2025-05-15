@@ -1,21 +1,13 @@
 #include "bastien.h"
 
-void	free_ast_node(t_ast *ast)
+void	free_tab(char **tab)
 {
-	int	i;
-
-	if (!ast)
+	int	i = 0;
+	if (!tab)
 		return ;
-	i = 0;
-	if (ast->cmd)
-	{
-		while (ast->cmd[i])
-			free(ast->cmd[i++]);
-		free(ast->cmd);
-	}
-	free(ast->redir_in);
-	free(ast->redir_out);
-	free(ast);
+	while (tab[i])
+		free(tab[i++]);
+	free(tab);
 }
 
 void	free_ast_error(t_ast *ast)

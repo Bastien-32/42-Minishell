@@ -55,29 +55,6 @@ int	ft_append(t_ast *node, t_all *all)
 	return (1);
 }
 
-int	put_heredoc_in_stdin(t_all *all)
-{
-	int	fd_read;
-
-	if (access("heredoc_tmp", F_OK) == -1)
-	{
-		all->exit_status = 0;
-		return (1);
-	}
-	fd_read = open("heredoc_tmp", O_RDONLY);
-	if (fd_read < 0)
-		return (perror_message(all, "open heredoc_tmp (read)"));
-	if (dup2(fd_read, STDIN_FILENO) == -1)
-	{
-		close(fd_read);
-		return (perror_message(all, "dup2 heredoc"));
-	}
-	close(fd_read);
-	unlink("heredoc_tmp");
-	all->exit_status = 0;
-	return (1);
-}
-
 int	execute_redirection(t_ast *node, t_all *all)
 {
 	int	status;

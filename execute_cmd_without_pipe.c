@@ -17,6 +17,31 @@ int	execute_command(t_ast *node, t_all *all)
 	return (1);
 }
 
+int	execute_external( t_ast *node, t_all *all)
+{
+	char	*cmd_path;
+	char	**envp;
+	pid_t	pid;
+
+	if (!prepare_env_and_path(all, node, &cmd_path, &envp))
+		return (0);
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		free(cmd_path);
+		free_tab(envp);
+		all->exit_status = 1;
+		return (0);
+	}
+	if (pid == 0)
+		exec_child_process(cmd_path, all->ast, envp);
+	wait_child_status(all, pid);
+	free(cmd_path);
+	free_tab(envp);
+	return (0);
+}
+
 int	is_valid_command(char **cmd)
 {
 	int	i;

@@ -3,7 +3,7 @@
 int	execute_ast(t_all *all)
 {
 	int		fd_in;
-	int		tmp_stdin; 
+	int		tmp_stdin;
 	int		tmp_stdout;
 	pid_t	last_pid;
 	t_ast	*temp;
@@ -15,7 +15,7 @@ int	execute_ast(t_all *all)
 	temp = all->ast;
 	if (!execute_ast_loop(all, temp, &fd_in, &last_pid))
 		return (return_error_restore_fds(all, tmp_stdin, tmp_stdout));
-	restore_std_and_wait_all_children(all, last_pid, tmp_stdin, tmp_stdout);
+	restore_fds_and_wait_all_children(all, last_pid, tmp_stdin, tmp_stdout);
 	free_heredocs_temp(temp);
 	free_ast_error(temp);
 	return (0);
@@ -79,7 +79,6 @@ int	execute_cmd_with_pipe(t_ast **ast_ptr, t_all *all,
 		if (pid == 0)
 			execute_last_cmd(all, node, fd_in);
 		*last_pid = pid;
-		
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
 	}
@@ -99,48 +98,3 @@ void	execute_last_cmd(t_all *all, t_ast *node, int *fd_in)
 	execute_command_child(node, all);
 	exit(all->exit_status);
 }
-
-int	return_error_restore_fds(t_all *all,int stdin_tmp, int stdout_tmp)
-{
-	if (dup2(stdin_tmp, STDIN_FILENO) == -1)
-		perror("restore stdin");
-	if (dup2(stdout_tmp, STDOUT_FILENO) == -1)
-		perror("restore stdout");
-	close(stdin_tmp);
-	close(stdout_tmp);
-	if (all->exit_status == 0)
-		all->exit_status = 127;
-	return (0);
-}
-
-void	restore_std_and_wait_all_children(t_all *all ,pid_t last_pid,
-	int stdin_tmp, int stdout_tmp)
-{
-	int		status;
-	pid_t	pid;
-	int		sig;
-
-	dup2(stdin_tmp, STDIN_FILENO);
-	dup2(stdout_tmp, STDOUT_FILENO);
-	close(stdin_tmp);
-	close(stdout_tmp);
-	while ((pid = wait(&status)) > 0)
-	{
-		if (WIFSIGNALED(status))
-		{
-			sig = WTERMSIG(status);
-			if (sig == SIGQUIT)
-				write(1, "Quit (core dumped)\n", 19);
-			else if (sig == SIGINT)
-				write(2, "\n", 1);
-			all->exit_status = 128 + sig;
-		}
-		else if (WIFEXITED(status))
-		{
-			if (pid == last_pid)
-				all->exit_status = WEXITSTATUS(status);
-		}
-	}
-}
-
-

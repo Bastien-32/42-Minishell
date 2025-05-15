@@ -39,29 +39,16 @@ char	*find_path(char *cmd, t_env *env)
 	{
 		folder = ft_strjoin(path_array[i], "/");
 		if (!folder)
-			return (free_array_envp(path_array), NULL);
+			return (free_tab(path_array), NULL);
 		cmd_path = ft_strjoin_free_s1(folder, cmd);
 		if (!cmd_path)
-			return (free_array_envp(path_array), NULL);
+			return (free_tab(path_array), NULL);
 		if (access(cmd_path, X_OK) == 0)
-			return (free_array_envp(path_array), cmd_path);
+			return (free_tab(path_array), cmd_path);
 		free(cmd_path);
 		i++;
 	}
-	return (free_array_envp(path_array), NULL);
-}
-
-void	free_array_envp(char **envp)
-{
-	int	i;
-
-	i = 0;
-	while (envp[i])
-	{
-		free(envp[i]);
-		i++;
-	}
-	free(envp);
+	return (free_tab(path_array), NULL);
 }
 
 int	nb_env(t_env *env)
@@ -91,10 +78,10 @@ char	**env_to_array(t_env *env)
 	{
 		envp[i] = ft_strjoin(env->env_keyname, "=");
 		if (!envp[i])
-			return (free_array_envp(envp), NULL);
+			return (free_tab(envp), NULL);
 		envp[i] = ft_strjoin_free_s1(envp[i], env->value);
 		if (!envp[i])
-			return (free_array_envp(envp), NULL);
+			return (free_tab(envp), NULL);
 		i++;
 		env = env->next;
 	}
@@ -122,48 +109,4 @@ int	prepare_env_and_path(t_all *all, t_ast *node, char **cmd_path, char ***envp)
 		return (0);
 	}
 	return (1);
-}
-
-void	exec_child_process(char *cmd_path, t_ast *ast, char **envp)
-{
-	setup_signals_child();
-	execve(cmd_path, ast->cmd, envp);
-	perror("execve");
-	exit(127);
-}
-
-void	wait_child_status(t_all *all, int pid)
-{
-	int	status;
-
-	waitpid(pid, &status, 0);
-	if (WIFEXITED(status))
-		all->exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		all->exit_status = 128 + WTERMSIG(status);
-}
-
-int	execute_external( t_ast *node, t_all *all)
-{
-	char	*cmd_path;
-	char	**envp;
-	pid_t	pid;
-
-	if (!prepare_env_and_path(all, node, &cmd_path, &envp))
-		return (0);
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		free(cmd_path);
-		free_array_envp(envp);
-		all->exit_status = 1;
-		return (0);
-	}
-	if (pid == 0)
-		exec_child_process(cmd_path, all->ast, envp);
-	wait_child_status(all, pid);
-	free(cmd_path);
-	free_array_envp(envp);
-	return (0);
 }

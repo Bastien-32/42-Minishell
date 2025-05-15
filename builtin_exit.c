@@ -1,6 +1,6 @@
 #include "bastien.h"
 
-static int	ft_is_numeric(const char *str)
+int	ft_is_numeric(const char *str)
 {
 	int	i;
 
@@ -25,7 +25,7 @@ void	print_msg_exit_not_numeric(char *str)
 	ft_putstr_fd(": numeric argument required\n", 2);
 }
 
-static void	free_env_and_ast_in_builtin_exit(t_all *all)
+void	free_env_and_ast_in_builtin_exit(t_all *all)
 {
 	free_env_list(all->env);
 	free_ast_error(all->ast);
