@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sapupier <sapupier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/15 18:46:26 by sapupier          #+#    #+#             */
+/*   Updated: 2025/05/15 18:47:02 by sapupier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -13,8 +25,6 @@
 # include <fcntl.h>
 
 # include "libft.h"
-
-//extern volatile sig_atomic_t	g_sigint_received;
 
 typedef enum e_token_type
 {
