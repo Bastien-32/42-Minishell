@@ -1,5 +1,0 @@
-[child] launching execve: /usr/bin/grep
-cmd[0] = grep
-cmd[1] = dans
-entre dans execute single
-end execute_external

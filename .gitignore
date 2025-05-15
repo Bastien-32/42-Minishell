@@ -2,3 +2,4 @@
 **/*.a
 tmp_*
 minishell
+.vscode
