@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_tree.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sapupier <sapupier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: badal-la <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 18:43:39 by sapupier          #+#    #+#             */
-/*   Updated: 2025/05/15 18:43:40 by sapupier         ###   ########.fr       */
+/*   Updated: 2025/05/16 11:06:38 by badal-la         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ int	parse_token_for_ast(t_token **tokens, t_ast **current_cmd, t_all *all)
 	{
 		if (!handle_redirection(tokens, current_cmd, all))
 			return (0);
-		if (!(*tokens))
-			return (0);
+		/* if (!(*tokens))
+			return (0); */
 	}
 	else if ((*tokens)->type == PIPE)
 	{
@@ -117,6 +117,9 @@ t_ast	*parse_ast(t_token *tokens, t_all *all)
 		if (!parse_token_for_ast(&tokens, &current_cmd, all))
 			return (free_ast_error(all->ast), free_token_list(temp_tok), NULL);
 	}
+	//if ((temp_tok->type== REDIR_IN || temp_tok->type== REDIR_OUT || temp_tok->type== APPEND || temp_tok->type== HEREDOC) && !temp_tok->next)
+	if (temp_tok->type != COMMAND && !temp_tok->next)
+		return (free_ast_error(all->ast), free_token_list(temp_tok), NULL);
 	if ((all->ast->cmd && all->ast->cmd[0])
 		&& (all->ast->cmd[0][0] == '\0' || only_space_in_str(all->ast->cmd[0])))
 	{
